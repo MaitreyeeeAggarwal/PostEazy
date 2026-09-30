@@ -7,22 +7,23 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from core.cache import ContentCache
-from core.hashing import hash_stage_input
-from ingest import load_document
-from distil.claims import extract_claims
-from plan.arc import plan_narrative_arc
-from compile.scenes import compile_scenes
-from assets.tts import TTSEngine
-from assets.align import align_scene_audio
-from assets.stock import StockAssetFetcher
-from assets.music import MusicManager
-from assets.ledger import LicenseLedger
-from render.ffmpeg import render_scene_typography_mov
-from mix.composite import composite_scene
-from mix.audio import mix_master_audio
-from mix.export import export_deliverable
-from qc.checks import run_quality_gates
+from app.pipelines.faceless_video.core.cache import ContentCache
+from app.pipelines.faceless_video.core.hashing import hash_stage_input
+from app.services.ingest import load_document
+from app.pipelines.faceless_video.distil.claims import extract_claims
+from app.pipelines.faceless_video.plan.arc import plan_narrative_arc
+from app.pipelines.faceless_video.compile.scenes import compile_scenes
+from app.pipelines.faceless_video.assets.tts import TTSEngine
+from app.pipelines.faceless_video.assets.align import align_scene_audio
+from app.pipelines.faceless_video.assets.stock import StockAssetFetcher
+from app.pipelines.faceless_video.assets.music import MusicManager
+from app.pipelines.faceless_video.assets.ledger import LicenseLedger
+from app.pipelines.faceless_video.render.ffmpeg import render_scene_typography_mov
+from app.pipelines.faceless_video.mix.composite import composite_scene
+from app.pipelines.faceless_video.mix.audio import mix_master_audio
+from app.pipelines.faceless_video.mix.export import export_deliverable
+from app.pipelines.faceless_video.qc.checks import run_quality_gates
+
 
 
 class PipelineOrchestrator:
