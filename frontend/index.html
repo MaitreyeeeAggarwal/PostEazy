@@ -39,24 +39,46 @@
     </div>
   </header>
 
-  <!-- Hero Section -->
+  <!-- Hero Section (SIH-ThinkPost Integrated) -->
   <section class="hero" id="hero">
-    <div class="container">
-      <div class="hero-pill">✨ Automated Document-to-Content Engine</div>
+    <div class="space-glow-bg"></div>
+    <div class="container hero-container">
+      <div class="hero-tag">SYSTEM IDENTITY • POSTEAZY ENGINE</div>
       <h1 class="hero-title">
-        Turn Dense PDFs & Decks into<br>
-        <span class="hero-title-gradient">Viral Social Content</span>
+        Crafting Next-Gen<br>
+        <span class="hero-title-gradient">Content Engines</span>
       </h1>
       <p class="hero-subtitle">
-        Automatically convert 40-page research papers, whitepapers, and pitch decks into scroll-stopping LinkedIn carousels and high-energy Instagram faceless videos.
+        Transformation • Architecture • Generation<br>
+        Turn dense research papers, whitepapers, and decks into scroll-stopping LinkedIn carousels and faceless videos.
       </p>
 
-      <div class="hero-actions">
+      <!-- Interactive Format Floating Grid -->
+      <div class="hero-format-pills">
+        <button class="format-pill active" onclick="quickSelectFormat('video', 'instagram')">
+          <span class="pill-icon">🎬</span>
+          <span>Instagram Video (9:16)</span>
+        </button>
+        <button class="format-pill" onclick="quickSelectFormat('posts', 'linkedin')">
+          <span class="pill-icon">💼</span>
+          <span>LinkedIn Carousel (4:5)</span>
+        </button>
+        <button class="format-pill" onclick="quickSelectFormat('posts', 'instagram')">
+          <span class="pill-icon">📸</span>
+          <span>Instagram Feed (1:1)</span>
+        </button>
+        <button class="format-pill" onclick="quickSelectFormat('video', 'linkedin')">
+          <span class="pill-icon">📊</span>
+          <span>Exec Briefing (16:9)</span>
+        </button>
+      </div>
+
+      <div class="hero-actions" style="margin-top: 36px;">
         <a href="#studio" class="btn btn-kinetic" style="width: auto;">🚀 Open Content Studio</a>
         <a href="#features" class="btn btn-ghost">Learn How It Works</a>
       </div>
 
-      <!-- Hero Stats -->
+      <!-- Hero Stats Grid -->
       <div class="hero-stats">
         <div class="stat-card">
           <div class="stat-value">10x</div>

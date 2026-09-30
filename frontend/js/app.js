@@ -134,6 +134,21 @@ function selectPlatform(platform) {
   showToast(`Platform preset: ${platform.toUpperCase()}`);
 }
 
+function quickSelectFormat(pipeline, platform) {
+  selectPipeline(pipeline);
+  selectPlatform(platform);
+
+  if (window.event && window.event.currentTarget) {
+    document.querySelectorAll('.format-pill').forEach(pill => pill.classList.remove('active'));
+    window.event.currentTarget.classList.add('active');
+  }
+
+  const studioElem = document.getElementById('studio');
+  if (studioElem) {
+    studioElem.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
 // File Handlers
 function handleFileSelect(event) {
   const file = event.target.files[0];
