@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LinkedIn Post</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 1200px;
+      height: 627px;
+      overflow: hidden;
+      font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Fira Sans", Ubuntu, Oxygen, sans-serif;
+      background-color: #F4F2EE;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(0, 0, 0, 0.9);
+      -webkit-font-smoothing: antialiased;
+    }
+    .post-card {
+      width: 1140px;
+      height: 575px;
+      background: #FFFFFF;
+      border: 1px solid #E0DFDC;
+      border-radius: 10px;
+      padding: 26px 36px 18px 36px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      position: relative;
+    }
+    .post-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .author-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #E7ECEF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border: 1px solid #D0D7DE;
+    }
+    .avatar svg {
+      width: 32px;
+      height: 32px;
+      fill: #707E94;
+    }
+    .author-meta {
+      display: flex;
+      flex-direction: column;
+    }
+    .author-name-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .author-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: rgba(0, 0, 0, 0.9);
+      line-height: 1.2;
+    }
+    .connection-degree {
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.6);
+      font-weight: 400;
+    }
+    .author-title {
+      font-size: 15px;
+      color: rgba(0, 0, 0, 0.6);
+      line-height: 1.3;
+      margin-top: 3px;
+    }
+    .post-time {
+      font-size: 13px;
+      color: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 2px;
+    }
+    .globe-icon {
+      width: 14px;
+      height: 14px;
+      fill: none;
+      stroke: rgba(0, 0, 0, 0.6);
+      stroke-width: 1.8;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .follow-btn {
+      color: #0A66C2;
+      border: 1px solid #0A66C2;
+      border-radius: 18px;
+      padding: 6px 18px;
+      font-size: 15px;
+      font-weight: 600;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+    .more-btn {
+      color: rgba(0, 0, 0, 0.6);
+      font-size: 22px;
+      line-height: 1;
+      padding: 0 4px;
+    }
+    .post-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding: 4px 0 10px 0;
+    }
+    .headline {
+      font-size: 26px;
+      font-weight: 700;
+      color: #191919;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+    .subtext {
+      font-size: 18px;
+      font-weight: 600;
+      color: #0A66C2;
+      line-height: 1.35;
+      margin-bottom: 10px;
+    }
+    .caption {
+      font-size: 17px;
+      font-weight: 400;
+      line-height: 1.5;
+      color: rgba(0, 0, 0, 0.88);
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow: hidden;
+      max-height: 220px;
+    }
+    .reactions-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #EBEBEB;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.6);
+    }
+    .reactions-count {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .reaction-bubbles {
+      display: flex;
+      align-items: center;
+    }
+    .bubble {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid #FFFFFF;
+      margin-left: -4px;
+    }
+    .bubble:first-child { margin-left: 0; }
+    .bubble-like { background: #0A66C2; }
+    .bubble-celebrate { background: #44712E; }
+    .bubble-love { background: #DF704D; }
+    .bubble svg { width: 10px; height: 10px; fill: #FFFFFF; }
+    .action-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 10px;
+    }
+    .action-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(0, 0, 0, 0.6);
+      font-size: 15px;
+      font-weight: 600;
+      padding: 6px 16px;
+      border-radius: 6px;
+    }
+    .action-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: rgba(0, 0, 0, 0.6);
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  </style>
+</head>
+<body>
+  <div class="post-card">
+    <!-- Header mimicking LinkedIn post author bar -->
+    <div class="post-header">
+      <div class="author-info">
+        <div class="avatar">
+          <!-- Generic user avatar shape -->
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="8" r="4.5"/>
+            <path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"/>
+          </svg>
+        </div>
+        <div class="author-meta">
+          <div class="author-name-row">
+            <span class="author-name">Strategic Insights</span>
+            <span class="connection-degree">&bull; 1st</span>
+          </div>
+          <span class="author-title">Executive Perspectives &amp; Market Intelligence</span>
+          <div class="post-time">
+            <span>2h</span>
+            <span>&bull;</span>
+            <!-- Generic globe outline for public visibility -->
+            <svg class="globe-icon" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9"/>
+              <line x1="3" y1="12" x2="21" y2="12"/>
+              <path d="M12 3a15 15 0 0 1 0 18"/>
+              <path d="M12 3a15 15 0 0 0 0 18"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="follow-btn">
+          <span>+</span> Follow
+        </div>
+        <div class="more-btn">&bull;&bull;&bull;</div>
+      </div>
+    </div>
+
+    <!-- Main post content -->
+    <div class="post-content">
+      <h1 class="headline">{{ headline }}</h1>
+      {% if subtext %}
+      <div class="subtext">{{ subtext }}</div>
+      {% endif %}
+      <div class="caption">{{ caption }}</div>
+    </div>
+
+    <!-- Reaction metrics bar -->
+    <div>
+      <div class="reactions-bar">
+        <div class="reactions-count">
+          <div class="reaction-bubbles">
+            <div class="bubble bubble-like">
+              <svg viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.3a2 2 0 0 0 2-1.6l1.4-7A2 2 0 0 0 19.7 11H14z"/></svg>
+            </div>
+            <div class="bubble bubble-celebrate">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/></svg>
+            </div>
+            <div class="bubble bubble-love">
+              <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            </div>
+          </div>
+          <span>348</span>
+        </div>
+        <div>
+          <span>42 comments</span>
+          <span>&bull;</span>
+          <span>16 reposts</span>
+        </div>
+      </div>
+
+      <!-- Action row with generic icon shapes -->
+      <div class="action-row">
+        <div class="action-btn">
+          <!-- Generic thumbs up / like shape -->
+          <svg viewBox="0 0 24 24">
+            <path d="M7 11v10M11 21h7a2 2 0 0 0 2-1.6l1.4-7A2 2 0 0 0 19.4 10H14V5a3 3 0 0 0-3-3l-4 9v10"/>
+            <rect x="3" y="11" width="4" height="10" rx="1"/>
+          </svg>
+          <span>Like</span>
+        </div>
+        <div class="action-btn">
+          <!-- Generic speech bubble / comment shape -->
+          <svg viewBox="0 0 24 24">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          <span>Comment</span>
+        </div>
+        <div class="action-btn">
+          <!-- Generic repost arrows shape -->
+          <svg viewBox="0 0 24 24">
+            <path d="M17 1l4 4-4 4"/>
+            <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+            <path d="M7 23l-4-4 4-4"/>
+            <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+          </svg>
+          <span>Repost</span>
+        </div>
+        <div class="action-btn">
+          <!-- Generic send arrow shape -->
+          <svg viewBox="0 0 24 24">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+          <span>Send</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Content Engine | Automated Document to Social Media Content</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="brand">
+      <div class="brand-icon">⚡</div>
+      <div>
+        <span class="brand-title">Content Engine</span>
+        <span class="brand-badge">v1.0 API</span>
+      </div>
+    </div>
+    <div class="user-nav">
+      <button class="btn-auth" id="authBtn" onclick="toggleAuthModal()">Login / Register</button>
+    </div>
+  </header>
+
+  <!-- Main App Layout -->
+  <main class="container">
+    <div class="app-grid">
+      
+      <!-- Left Panel: Upload & Configuration -->
+      <section class="panel">
+        <h2 class="panel-title">1. Input & Strategy</h2>
+        
+        <!-- Pipeline Selection Tabs -->
+        <div class="pipeline-tabs">
+          <button class="tab-btn active" id="tabVideo" onclick="selectPipeline('video')">
+            🎬 Pipeline B: Faceless Video
+          </button>
+          <button class="tab-btn" id="tabPosts" onclick="selectPipeline('posts')">
+            🖼️ Pipeline A: Static Posts
+          </button>
+        </div>
+
+        <!-- Target Platform Preset Selector -->
+        <div class="form-group">
+          <label class="form-label">Target Platform Preset</label>
+          <div class="platform-selector">
+            <div class="platform-card selected" id="platInstagram" onclick="selectPlatform('instagram')">
+              <span class="platform-icon">📸</span>
+              <div>
+                <div class="platform-name">Instagram</div>
+                <small style="color: var(--text-dim);">Bold & Energetic</small>
+              </div>
+            </div>
+            <div class="platform-card" id="platLinkedin" onclick="selectPlatform('linkedin')">
+              <span class="platform-icon">💼</span>
+              <div>
+                <div class="platform-name">LinkedIn</div>
+                <small style="color: var(--text-dim);">Insightful & Precise</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Document Upload Dropzone -->
+        <div class="form-group">
+          <label class="form-label">Source Document (PDF, PPTX, TXT, MD)</label>
+          <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+            <div class="dropzone-icon">📄</div>
+            <div class="dropzone-text">Click or drag & drop document</div>
+            <div class="dropzone-subtext">Supports research papers, decks, articles up to 25MB</div>
+          </div>
+          <input type="file" id="fileInput" style="display: none;" accept=".pdf,.pptx,.txt,.md,.docx" onchange="handleFileSelect(event)">
+          <div id="fileInfo" class="file-info" style="display: none;">
+            <span id="fileName">document.pdf</span>
+            <span style="cursor: pointer;" onclick="clearFile(event)">✖</span>
+          </div>
+        </div>
+
+        <!-- Render Controls Row: Duration & Format Preset -->
+        <div class="render-controls-row">
+          <div class="form-group" style="flex: 1; margin-bottom: 0;">
+            <label class="form-label">Target Duration (s)</label>
+            <input type="number" id="targetDuration" class="input-control" value="60" min="15" max="90">
+          </div>
+          <div class="form-group" style="flex: 1; margin-bottom: 0;">
+            <label class="form-label">Format Preset</label>
+            <select id="formatPreset" class="select-control">
+              <option value="shorts">Shorts (9:16)</option>
+              <option value="reels">Reels (9:16)</option>
+              <option value="feed">Feed Carousel (4:5)</option>
+              <option value="landscape">Landscape (16:9)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Render Kinetic Video Action Button -->
+        <button class="btn-kinetic" id="btnRenderKinetic" onclick="startKineticRender()">
+          Render Kinetic Video 🎬
+        </button>
+
+        <!-- Status Banner -->
+        <div class="status-banner" id="statusBanner" style="display: none;">
+          Rendering complete! Loading video playback...
+        </div>
+
+        <!-- Secondary Action Buttons -->
+        <div style="display: flex; gap: 12px; margin-top: 16px;">
+          <button class="btn-primary" style="background: rgba(255,255,255,0.08); border: 1px solid var(--border-color); color: #fff;" onclick="generateScriptReview()">
+            📝 1. Review Script
+          </button>
+          <button class="btn-primary" onclick="startGenerationJob()">
+            🚀 2. Render Content
+          </button>
+        </div>
+      </section>
+
+      <!-- Right Panel: Script Editor & Visual Preview Workbench -->
+      <section class="panel">
+        <div class="preview-header">
+          <h2 class="panel-title" style="margin-bottom: 0;">2. Generation Workbench</h2>
+          <span class="status-badge status-queued" id="jobStatusBadge" style="display: none;">Queued</span>
+        </div>
+
+        <!-- Progress Bar Tracker -->
+        <div class="progress-container" id="progressBox" style="display: none;">
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <div class="progress-label">
+            <span id="stageLabel">Initializing pipeline...</span>
+            <span id="progressPercent">0%</span>
+          </div>
+        </div>
+
+        <!-- Script Editor Section -->
+        <div id="scriptSection">
+          <label class="form-label" style="display: flex; justify-content: space-between;">
+            <span>Editable Script Contract (JSON)</span>
+            <small style="color: var(--accent-blue);">Edit values before rendering</small>
+          </label>
+          <textarea class="script-editor" id="scriptEditor" placeholder="Uploaded document script preview will appear here..."></textarea>
+        </div>
+
+        <!-- Preview Display Box -->
+        <div class="form-group" style="margin-top: 24px;">
+          <label class="form-label">Render Preview Output</label>
+          <div class="media-preview-box" id="previewBox">
+            <div style="text-align: center; color: var(--text-dim);">
+              <div style="font-size: 48px; margin-bottom: 12px;">🎨</div>
+              <p>Generated static post carousel or faceless video MP4 will be displayed here.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Toast Message -->
+  <div class="toast" id="toast">Notification message</div>
+
+  <!-- JavaScript App Logic -->
+  <script src="/static/app.js"></script>
+</body>
+</html>

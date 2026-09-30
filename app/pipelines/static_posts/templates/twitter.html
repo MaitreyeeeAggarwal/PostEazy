@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Twitter / X Post</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 1600px;
+      height: 900px;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #FFFFFF;
+      color: #0F1419;
+      -webkit-font-smoothing: antialiased;
+    }
+    .tweet-container {
+      width: 1600px;
+      height: 900px;
+      padding: 60px 90px 45px 90px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: #FFFFFF;
+    }
+    .tweet-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .author-row {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .avatar {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: #EFF3F4;
+      border: 1px solid #CFD9DE;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .avatar svg {
+      width: 38px;
+      height: 38px;
+      fill: #8B98A5;
+    }
+    .author-names {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .display-name {
+      font-size: 30px;
+      font-weight: 700;
+      color: #0F1419;
+      letter-spacing: -0.01em;
+    }
+    .verified-badge {
+      width: 24px;
+      height: 24px;
+      fill: #1D9BF0;
+      flex-shrink: 0;
+    }
+    .handle {
+      font-size: 26px;
+      color: #536471;
+    }
+    .dot-separator {
+      font-size: 26px;
+      color: #536471;
+    }
+    .timestamp {
+      font-size: 26px;
+      color: #536471;
+    }
+    .more-options {
+      color: #536471;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+    .tweet-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 6px 0 20px 0;
+      overflow: hidden;
+    }
+    .headline {
+      font-size: 38px;
+      line-height: 1.32;
+      font-weight: 800;
+      color: #0F1419;
+      margin-bottom: 14px;
+      letter-spacing: -0.02em;
+    }
+    .subtext {
+      font-size: 28px;
+      line-height: 1.38;
+      font-weight: 600;
+      color: #1D9BF0;
+      margin-bottom: 18px;
+    }
+    .caption {
+      font-size: 30px;
+      line-height: 1.48;
+      color: #0F1419;
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow: hidden;
+      max-height: 360px;
+    }
+    .tweet-footer {
+      display: flex;
+      flex-direction: column;
+    }
+    .tweet-metadata {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 22px;
+      color: #536471;
+      padding: 16px 0;
+      border-top: 1px solid #EFF3F4;
+      border-bottom: 1px solid #EFF3F4;
+    }
+    .views-count {
+      font-weight: 700;
+      color: #0F1419;
+    }
+    .engagement-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 18px;
+      color: #536471;
+    }
+    .engagement-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 22px;
+      color: #536471;
+      cursor: pointer;
+    }
+    .engagement-item svg {
+      width: 26px;
+      height: 26px;
+      fill: none;
+      stroke: #536471;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  </style>
+</head>
+<body>
+  <div class="tweet-container">
+    <!-- Twitter / X post author header -->
+    <div class="tweet-header">
+      <div class="author-row">
+        <div class="avatar">
+          <!-- Generic user silhouette shape -->
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="8" r="4.5"/>
+            <path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"/>
+          </svg>
+        </div>
+        <div class="author-names">
+          <span class="display-name">Tech &amp; Strategy</span>
+          <!-- Generic badge shape -->
+          <svg class="verified-badge" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M8.5 12.5l2.5 2.5 5-5" stroke="#FFFFFF" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="handle">@techstrategy</span>
+          <span class="dot-separator">&bull;</span>
+          <span class="timestamp">2h</span>
+        </div>
+      </div>
+      <div class="more-options">&bull;&bull;&bull;</div>
+    </div>
+
+    <!-- Tweet body content -->
+    <div class="tweet-content">
+      <h1 class="headline">{{ headline }}</h1>
+      {% if subtext %}
+      <div class="subtext">{{ subtext }}</div>
+      {% endif %}
+      <div class="caption">{{ caption }}</div>
+    </div>
+
+    <!-- Tweet timestamp & engagement bar -->
+    <div class="tweet-footer">
+      <div class="tweet-metadata">
+        <span>10:24 AM &bull; Oct 15, 2026</span>
+        <span>&bull;</span>
+        <span class="views-count">148.6K</span>
+        <span>Views</span>
+      </div>
+
+      <div class="engagement-row">
+        <!-- Generic reply bubble shape -->
+        <div class="engagement-item">
+          <svg viewBox="0 0 24 24">
+            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+          </svg>
+          <span>52</span>
+        </div>
+        <!-- Generic repost arrows shape -->
+        <div class="engagement-item">
+          <svg viewBox="0 0 24 24">
+            <path d="M17 1l4 4-4 4"/>
+            <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+            <path d="M7 23l-4-4 4-4"/>
+            <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+          </svg>
+          <span>194</span>
+        </div>
+        <!-- Generic heart shape -->
+        <div class="engagement-item">
+          <svg viewBox="0 0 24 24">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          <span>2.1K</span>
+        </div>
+        <!-- Generic bookmark shape -->
+        <div class="engagement-item">
+          <svg viewBox="0 0 24 24">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+          </svg>
+          <span>365</span>
+        </div>
+        <!-- Generic share shape -->
+        <div class="engagement-item">
+          <svg viewBox="0 0 24 24">
+            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+            <polyline points="16 6 12 2 8 6"/>
+            <line x1="12" y1="2" x2="12" y2="15"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

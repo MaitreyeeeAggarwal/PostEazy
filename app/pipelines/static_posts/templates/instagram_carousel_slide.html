@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Instagram Carousel Slide</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 1080px;
+      height: 1080px;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #FFFFFF;
+      color: #262626;
+      -webkit-font-smoothing: antialiased;
+    }
+    .ig-container {
+      width: 1080px;
+      height: 1080px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: #FFFFFF;
+    }
+    .ig-header {
+      height: 72px;
+      padding: 12px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #EFEFEF;
+    }
+    .author-section {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .story-ring {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+      padding: 2.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .avatar-inner {
+      width: 100%;
+      height: 100%;
+      background: #FFFFFF;
+      border-radius: 50%;
+      padding: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .avatar-circle {
+      width: 100%;
+      height: 100%;
+      background: #FAFAFA;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .avatar-circle svg {
+      width: 22px;
+      height: 22px;
+      fill: #8E8E8E;
+    }
+    .username-group {
+      display: flex;
+      flex-direction: column;
+    }
+    .username-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .username {
+      font-size: 16px;
+      font-weight: 700;
+      color: #262626;
+    }
+    .follow-dot {
+      font-size: 13px;
+      color: #737373;
+    }
+    .follow-text {
+      font-size: 14px;
+      font-weight: 600;
+      color: #0095F6;
+    }
+    .sub-location {
+      font-size: 13px;
+      color: #737373;
+      margin-top: 1px;
+    }
+    .more-options {
+      font-size: 20px;
+      font-weight: 700;
+      color: #262626;
+      letter-spacing: 2px;
+    }
+    /* Contained square graphic area */
+    .media-container {
+      width: 100%;
+      height: 660px;
+      background: linear-gradient(135deg, #090d16 0%, #1e1b4b 45%, #3b0764 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 50px 65px;
+      position: relative;
+      overflow: hidden;
+    }
+    .media-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 20px;
+      padding: 44px 48px;
+      backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 480px;
+      position: relative;
+    }
+    .badge {
+      display: inline-block;
+      align-self: flex-start;
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #FFFFFF;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 5px 14px;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 22px;
+    }
+    .headline {
+      font-size: 42px;
+      line-height: 1.25;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
+      word-break: break-word;
+    }
+    .body-text {
+      font-size: 24px;
+      line-height: 1.45;
+      font-weight: 500;
+      color: #F3F4F6;
+      word-break: break-word;
+    }
+    .swipe-hint {
+      position: absolute;
+      bottom: 24px;
+      right: 28px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      padding: 6px 16px;
+      border-radius: 20px;
+      color: #FFFFFF;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    /* Interaction icon row & carousel dots */
+    .interaction-bar {
+      padding: 14px 28px 8px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .left-actions {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .icon-btn {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+    .icon-btn svg {
+      width: 26px;
+      height: 26px;
+      fill: none;
+      stroke: #262626;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .carousel-dots {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #D1D5DB;
+      transition: all 0.2s ease;
+    }
+    .dot.active {
+      width: 9px;
+      height: 9px;
+      background: #0095F6;
+    }
+    /* Caption & Engagement metadata */
+    .caption-section {
+      padding: 0 28px 20px 28px;
+      display: flex;
+      flex-direction: column;
+    }
+    .likes-line {
+      font-size: 15px;
+      font-weight: 700;
+      color: #262626;
+      margin-bottom: 6px;
+    }
+    .caption-wrapper {
+      font-size: 15px;
+      line-height: 1.45;
+      color: #262626;
+      max-height: 110px;
+      overflow: hidden;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .caption-username {
+      font-weight: 700;
+      margin-right: 6px;
+    }
+    .post-timestamp {
+      font-size: 11px;
+      color: #8E8E8E;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="ig-container">
+    <!-- Instagram post top header -->
+    <div class="ig-header">
+      <div class="author-section">
+        <div class="story-ring">
+          <div class="avatar-inner">
+            <div class="avatar-circle">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="8" r="4.5"/>
+                <path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="username-group">
+          <div class="username-row">
+            <span class="username">daily_insights</span>
+            <span class="follow-dot">&bull;</span>
+            <span class="follow-text">Follow</span>
+          </div>
+          <span class="sub-location">Carousel Post &bull; Slide {{ slide_number }}/{{ total_slides }}</span>
+        </div>
+      </div>
+      <div class="more-options">&bull;&bull;&bull;</div>
+    </div>
+
+    <!-- Contained square graphic area mimicking an Instagram media card -->
+    <div class="media-container">
+      <div class="media-card">
+        {% if slide_type == 'hook' %}
+          <div class="badge">KEY TAKEAWAY</div>
+        {% elif slide_type == 'cta' %}
+          <div class="badge">NEXT STEPS</div>
+        {% else %}
+          <div class="badge">INSIGHT {{ slide_number }} OF {{ total_slides }}</div>
+        {% endif %}
+
+        <h1 class="headline">{{ title }}</h1>
+        {% if body %}
+        <div class="body-text">{{ body }}</div>
+        {% endif %}
+
+        {% if slide_number == 1 %}
+        <div class="swipe-hint">Swipe &rarr;</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Action icons row & centered carousel dots -->
+    <div>
+      <div class="interaction-bar">
+        <div class="left-actions">
+          <div class="icon-btn">
+            <svg viewBox="0 0 24 24">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </div>
+          <div class="icon-btn">
+            <svg viewBox="0 0 24 24">
+              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+            </svg>
+          </div>
+          <div class="icon-btn">
+            <svg viewBox="0 0 24 24">
+              <line x1="22" y1="2" x2="11" y2="13"/>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Carousel indicator dots -->
+        <div class="carousel-dots">
+          {% for i in range(1, total_slides + 1) %}
+            <span class="dot {% if i == slide_number %}active{% endif %}"></span>
+          {% endfor %}
+        </div>
+
+        <div class="icon-btn">
+          <svg viewBox="0 0 24 24">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Caption & Like count section -->
+      <div class="caption-section">
+        <div class="likes-line">2,419 likes</div>
+        <div class="caption-wrapper">
+          <span class="caption-username">daily_insights</span>{{ title }}: {{ body }}
+        </div>
+        <div class="post-timestamp">SLIDE {{ slide_number }} OF {{ total_slides }} &bull; 2 HOURS AGO</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

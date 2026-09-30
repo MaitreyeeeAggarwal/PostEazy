@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>doc2video — Dense Documents to Faceless Kinetic Typography</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #090d16;
+            --card-bg: rgba(18, 25, 41, 0.75);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --primary-accent: #7c3aed;
+            --primary-gradient: linear-gradient(135deg, #7c3aed 0%, #3b82f6 50%, #06b6d4 100%);
+            --nvidia-green: #76b900;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(124, 58, 237, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.12) 0px, transparent 50%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(12px);
+        }
+
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-badge {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.75rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+        }
+
+        .tagline {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-left: 1px solid var(--border-color);
+            padding-left: 1rem;
+        }
+
+        .nvidia-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(118, 185, 0, 0.1);
+            border: 1px solid rgba(118, 185, 0, 0.3);
+            color: var(--nvidia-green);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--nvidia-green);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--nvidia-green);
+        }
+
+        main {
+            max-width: 1200px;
+            width: 100%;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            flex: 1;
+        }
+
+        .panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+        }
+
+        .panel-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dropzone {
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.02);
+            margin-bottom: 1.5rem;
+        }
+
+        .dropzone:hover {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .dropzone-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+            font-weight: 500;
+        }
+
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: #7c3aed;
+        }
+
+        .btn-generate {
+            width: 100%;
+            padding: 0.9rem;
+            border: none;
+            border-radius: 8px;
+            background: var(--primary-gradient);
+            color: #fff;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+
+        .btn-generate:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+
+        .btn-generate:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .video-container {
+            width: 100%;
+            max-height: 500px;
+            aspect-ratio: 9/16;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-color);
+            margin-top: 1rem;
+            position: relative;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            cursor: pointer;
+        }
+
+        .play-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 64px;
+            height: 64px;
+            background: rgba(124, 58, 237, 0.85);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: #fff;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            transition: transform 0.2s ease, background 0.2s ease;
+            z-index: 10;
+        }
+
+        .play-overlay:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            background: rgba(124, 58, 237, 1);
+        }
+
+        .controls-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+            padding: 0.6rem 1rem;
+            background: rgba(18, 25, 41, 0.9);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            backdrop-filter: blur(12px);
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .control-btn:hover {
+            background: rgba(124, 58, 237, 0.3);
+            border-color: #7c3aed;
+        }
+
+        .seek-bar {
+            flex: 1;
+            height: 6px;
+            accent-color: #7c3aed;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .time-display {
+            font-size: 0.8rem;
+            font-family: monospace;
+            color: var(--text-muted);
+            min-width: 90px;
+            text-align: right;
+        }
+
+        .placeholder-text {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .status-box {
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            padding: 0.75rem;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-group">
+            <div class="logo-badge">doc2video</div>
+            <div class="tagline">Dense documents in, kinetic video out</div>
+        </div>
+        <div class="nvidia-badge">
+            <div class="dot"></div>
+            Powered by NVIDIA AI Models
+        </div>
+    </header>
+
+    <main>
+        <!-- Configuration & Ingest Panel -->
+        <div class="panel">
+            <div class="panel-title">📄 Document Ingest</div>
+
+            <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+                <div class="dropzone-icon">📁</div>
+                <div style="font-weight: 600; margin-bottom: 0.25rem;">Drop document here or click to browse</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">Supports .pptx, .pdf, .docx, .md, .txt</div>
+                <input type="file" id="fileInput" style="display: none;" onchange="handleFileSelect(event)">
+            </div>
+            <div id="uploadedFileName" style="font-size: 0.85rem; color: #38bdf8; margin-bottom: 1rem;"></div>
+
+            <div class="form-group">
+                <label for="nvidiaModel">NVIDIA Base LLM Model</label>
+                <select id="nvidiaModel">
+                    <option value="meta/llama-3.2-11b-vision-instruct" selected>NVIDIA NIM — meta/llama-3.2-11b-vision-instruct (Recommended - Active)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="apiKey">NVIDIA API Key (NVIDIA NIM / AI Foundation)</label>
+                <input type="text" id="apiKey" placeholder="nvapi-..." value="">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label for="targetSecs">Target Duration (s)</label>
+                    <input type="number" id="targetSecs" value="60" min="15" max="180">
+                </div>
+                <div class="form-group">
+                    <label for="exportPreset">Format Preset</label>
+                    <select id="exportPreset">
+                        <option value="shorts" selected>Shorts (9:16)</option>
+                        <option value="reels">Reels (9:16)</option>
+                        <option value="tiktok">TikTok (9:16)</option>
+                        <option value="youtube">YouTube (16:9)</option>
+                        <option value="linkedin">LinkedIn (1:1)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn-generate" id="generateBtn" onclick="startGeneration()">Render Kinetic Video 🎬</button>
+            <div class="status-box" id="statusBox">Ready to ingest document.</div>
+        </div>
+
+        <!-- Video Preview Panel -->
+        <div class="panel">
+            <div class="panel-title">🎬 Kinetic Typography Output</div>
+            <div class="video-container" id="videoContainer">
+                <div class="placeholder-text" id="videoPlaceholder">
+                    Rendered 9:16 kinetic typography video with stock background & ducked audio will stream here.
+                </div>
+                <video id="videoPlayer" controls style="display: none;"></video>
+                <div id="playOverlay" class="play-overlay" style="display: none;" onclick="togglePlayPause()">▶</div>
+            </div>
+            
+            <!-- Custom Interactive Video Controls Bar -->
+            <div id="customControls" class="controls-bar" style="display: none;">
+                <button id="playPauseBtn" class="control-btn" onclick="togglePlayPause()">⏸ Pause</button>
+                <input type="range" id="seekBar" class="seek-bar" value="0" min="0" max="100" step="0.1" oninput="seekVideo(this.value)">
+                <span id="timeDisplay" class="time-display">0:00 / 0:00</span>
+                <button id="muteBtn" class="control-btn" onclick="toggleMute()">🔊</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let selectedFilename = "";
+        const videoPlayer = document.getElementById("videoPlayer");
+        const playOverlay = document.getElementById("playOverlay");
+        const playPauseBtn = document.getElementById("playPauseBtn");
+        const seekBar = document.getElementById("seekBar");
+        const timeDisplay = document.getElementById("timeDisplay");
+        const muteBtn = document.getElementById("muteBtn");
+        const customControls = document.getElementById("customControls");
+
+        async function handleFileSelect(evt) {
+            const files = evt.target.files;
+            if (!files || files.length === 0) return;
+            
+            const file = files[0];
+            document.getElementById("uploadedFileName").innerText = `Selected: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+            
+            const formData = new FormData();
+            formData.append("file", file);
+
+            document.getElementById("statusBox").innerText = "Uploading document...";
+            try {
+                const resp = await fetch("/api/upload", { method: "POST", body: formData });
+                const data = await resp.json();
+                selectedFilename = data.filename;
+                document.getElementById("statusBox").innerText = `Uploaded '${data.filename}'. Ready to render.`;
+            } catch (err) {
+                document.getElementById("statusBox").innerText = `Upload error: ${err.message}`;
+            }
+        }
+
+        async function startGeneration() {
+            if (!selectedFilename) {
+                alert("Please select and upload a document first.");
+                return;
+            }
+
+            const btn = document.getElementById("generateBtn");
+            const statusBox = document.getElementById("statusBox");
+            const videoPlaceholder = document.getElementById("videoPlaceholder");
+
+            btn.disabled = true;
+            statusBox.innerText = "Processing pipeline: Ingesting -> Distilling -> Narrative Planning -> Asset Acquisition -> Rendering Typography -> Exporting...";
+            
+            const reqData = {
+                filename: selectedFilename,
+                target_seconds: parseFloat(document.getElementById("targetSecs").value),
+                preset: document.getElementById("exportPreset").value,
+                nvidia_api_key: document.getElementById("apiKey").value || null,
+                nvidia_model: document.getElementById("nvidiaModel").value
+            };
+
+            try {
+                const resp = await fetch("/api/generate", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(reqData)
+                });
+                const data = await resp.json();
+
+                if (resp.ok && data.video_url) {
+                    statusBox.innerText = "Rendering complete! Loading video playback...";
+                    videoPlaceholder.style.display = "none";
+                    videoPlayer.style.display = "block";
+                    customControls.style.display = "flex";
+                    
+                    videoPlayer.src = data.video_url;
+                    videoPlayer.load();
+                    videoPlayer.play().then(() => {
+                        updatePlayState(true);
+                    }).catch(err => {
+                        console.log("Autoplay paused:", err);
+                        updatePlayState(false);
+                    });
+                } else {
+                    statusBox.innerText = `Error: ${data.detail || "Rendering failed."}`;
+                }
+            } catch (err) {
+                statusBox.innerText = `Generation error: ${err.message}`;
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function togglePlayPause() {
+            if (!videoPlayer.src) return;
+            if (videoPlayer.paused || videoPlayer.ended) {
+                videoPlayer.play().then(() => {
+                    updatePlayState(true);
+                }).catch(err => {
+                    console.error("Play error:", err);
+                });
+            } else {
+                videoPlayer.pause();
+                updatePlayState(false);
+            }
+        }
+
+        function updatePlayState(isPlaying) {
+            if (isPlaying) {
+                playOverlay.style.display = "none";
+                playPauseBtn.innerHTML = "⏸ Pause";
+            } else {
+                playOverlay.style.display = "flex";
+                playPauseBtn.innerHTML = "▶ Play";
+            }
+        }
+
+        videoPlayer.addEventListener("play", () => updatePlayState(true));
+        videoPlayer.addEventListener("pause", () => updatePlayState(false));
+        videoPlayer.addEventListener("ended", () => updatePlayState(false));
+        videoPlayer.addEventListener("click", togglePlayPause);
+
+        videoPlayer.addEventListener("timeupdate", () => {
+            if (!isNaN(videoPlayer.duration) && videoPlayer.duration > 0) {
+                const pct = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+                seekBar.value = pct;
+                timeDisplay.innerText = `${formatTime(videoPlayer.currentTime)} / ${formatTime(videoPlayer.duration)}`;
+            }
+        });
+
+        function seekVideo(val) {
+            if (!isNaN(videoPlayer.duration) && videoPlayer.duration > 0) {
+                videoPlayer.currentTime = (val / 100) * videoPlayer.duration;
+            }
+        }
+
+        function toggleMute() {
+            videoPlayer.muted = !videoPlayer.muted;
+            muteBtn.innerText = videoPlayer.muted ? "🔇" : "🔊";
+        }
+
+        function formatTime(secs) {
+            const m = Math.floor(secs / 60);
+            const s = Math.floor(secs % 60);
+            return `${m}:${s < 10 ? '0' : ''}${s}`;
+        }
+
+        document.addEventListener("keydown", (e) => {
+            if (e.code === "Space" && document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "SELECT") {
+                e.preventDefault();
+                togglePlayPause();
+            }
+        });
+    </script>
+</body>
+</html>
