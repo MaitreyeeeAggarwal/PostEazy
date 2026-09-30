@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PostEazy | Turn Dense Docs into Social Media Videos & Posts</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Glassmorphism Navbar -->
+  <header class="navbar">
+    <div class="container nav-content">
+      <a href="#" class="brand">
+        <div class="brand-icon">⚡</div>
+        <span class="brand-name">PostEazy</span>
+        <span class="brand-tag">Content Engine</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#hero" class="nav-link">Home</a></li>
+        <li><a href="#studio" class="nav-link">Studio</a></li>
+        <li><a href="#features" class="nav-link">Features</a></li>
+        <li><a href="#presets" class="nav-link">Presets</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <span id="userGreeting" style="display: none; font-size: 14px; color: var(--accent-cyan); font-weight: 600;"></span>
+        <button class="btn btn-ghost" id="authBtn" onclick="openAuthModal('login')">Login</button>
+        <button class="btn btn-gradient" id="registerBtn" onclick="openAuthModal('register')">Get Started</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero" id="hero">
+    <div class="container">
+      <div class="hero-pill">✨ Automated Document-to-Content Engine</div>
+      <h1 class="hero-title">
+        Turn Dense PDFs & Decks into<br>
+        <span class="hero-title-gradient">Viral Social Content</span>
+      </h1>
+      <p class="hero-subtitle">
+        Automatically convert 40-page research papers, whitepapers, and pitch decks into scroll-stopping LinkedIn carousels and high-energy Instagram faceless videos.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#studio" class="btn btn-kinetic" style="width: auto;">🚀 Open Content Studio</a>
+        <a href="#features" class="btn btn-ghost">Learn How It Works</a>
+      </div>
+
+      <!-- Hero Stats -->
+      <div class="hero-stats">
+        <div class="stat-card">
+          <div class="stat-value">10x</div>
+          <div class="stat-label">Faster Repurposing Speed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">2</div>
+          <div class="stat-label">Native Pipelines (Video & Static)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">100%</div>
+          <div class="stat-label">Factually Faithful to Source</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Studio Workspace Section -->
+  <section class="studio-section" id="studio">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Content Generation Studio</h2>
+        <p class="section-subtitle">Upload your document, review the AI-distilled script, and render production-ready assets.</p>
+      </div>
+
+      <div class="studio-grid">
+        
+        <!-- Left Column: Setup & Inputs -->
+        <div class="panel">
+          <div class="panel-heading">1. Strategy & Input Document</div>
+
+          <!-- Pipeline Selection Tabs -->
+          <div class="pipeline-tabs">
+            <button class="tab-btn active" id="tabVideo" onclick="selectPipeline('video')">
+              🎬 Pipeline B: Faceless Video
+            </button>
+            <button class="tab-btn" id="tabPosts" onclick="selectPipeline('posts')">
+              🖼️ Pipeline A: Static Posts
+            </button>
+          </div>
+
+          <!-- Target Platform Preset -->
+          <div class="form-group">
+            <label class="form-label">Platform Voice & Style Preset</label>
+            <div class="platform-selector">
+              <div class="platform-card selected" id="platInstagram" onclick="selectPlatform('instagram')">
+                <span class="platform-icon">📸</span>
+                <div>
+                  <div class="platform-name">Instagram</div>
+                  <small style="color: var(--text-dim);">Bold & Energetic</small>
+                </div>
+              </div>
+              <div class="platform-card" id="platLinkedin" onclick="selectPlatform('linkedin')">
+                <span class="platform-icon">💼</span>
+                <div>
+                  <div class="platform-name">LinkedIn</div>
+                  <small style="color: var(--text-dim);">Insightful & Precise</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Document Upload Dropzone -->
+          <div class="form-group">
+            <label class="form-label">Source Document (PDF, PPTX, DOCX, TXT, MD)</label>
+            <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+              <div class="dropzone-icon">📄</div>
+              <div class="dropzone-text">Click or drag & drop document</div>
+              <div class="dropzone-subtext">Upload papers, decks, or write-ups up to 25MB</div>
+            </div>
+            <input type="file" id="fileInput" style="display: none;" accept=".pdf,.pptx,.txt,.md,.docx" onchange="handleFileSelect(event)">
+            <div id="fileInfo" class="file-info" style="display: none;">
+              <span id="fileName">document.pdf</span>
+              <span style="cursor: pointer;" onclick="clearFile(event)">✖</span>
+            </div>
+          </div>
+
+          <!-- Render Controls Row -->
+          <div class="render-controls-row">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Target Duration (s)</label>
+              <input type="number" id="targetDuration" class="input-control" value="60" min="15" max="90">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Format Preset</label>
+              <select id="formatPreset" class="select-control">
+                <option value="shorts">Shorts (9:16)</option>
+                <option value="reels">Reels (9:16)</option>
+                <option value="feed">Feed Carousel (4:5)</option>
+                <option value="landscape">Landscape (16:9)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Main Render Action Button -->
+          <button class="btn-kinetic" id="btnRenderKinetic" onclick="startKineticRender()">
+            Render Kinetic Video 🎬
+          </button>
+
+          <!-- Status Banner -->
+          <div class="status-banner" id="statusBanner" style="display: none;">
+            Rendering complete! Loading video playback...
+          </div>
+
+          <!-- Secondary Script Action -->
+          <div style="display: flex; gap: 12px; margin-top: 16px;">
+            <button class="btn btn-ghost" style="width: 100%;" onclick="generateScriptReview()">
+              📝 1. Review Script JSON
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Column: Interactive Workbench -->
+        <div class="panel">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <div class="panel-heading" style="margin-bottom: 0;">2. Generation Workbench</div>
+            <span class="status-badge status-queued" id="jobStatusBadge" style="display: none;">Queued</span>
+          </div>
+
+          <!-- Progress Bar Tracker -->
+          <div class="progress-container" id="progressBox" style="display: none; margin-bottom: 24px;">
+            <div class="progress-track">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-label" style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted); margin-top: 8px;">
+              <span id="stageLabel">Initializing pipeline...</span>
+              <span id="progressPercent">0%</span>
+            </div>
+          </div>
+
+          <!-- Editable Script Editor -->
+          <div class="form-group">
+            <label class="form-label" style="display: flex; justify-content: space-between;">
+              <span>Editable Script Contract (JSON)</span>
+              <small style="color: var(--accent-cyan);">Edit script before rendering</small>
+            </label>
+            <textarea class="script-editor" id="scriptEditor" placeholder="Extracted document script will appear here after clicking Review Script..."></textarea>
+          </div>
+
+          <!-- Render Output Preview Box -->
+          <div class="form-group">
+            <label class="form-label">Deliverable Render Preview</label>
+            <div class="media-preview-box" id="previewBox">
+              <div style="text-align: center; color: var(--text-dim); padding: 40px;">
+                <div style="font-size: 48px; margin-bottom: 16px;">🎨</div>
+                <p>Generated static post carousel or faceless video playback will appear here.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="studio-section" id="features" style="background: rgba(15, 23, 42, 0.4);">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Built for Modern Content Creators</h2>
+        <p class="section-subtitle">Engineered with structured document extraction, neural voice synthesis, and headless rendering.</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px;">
+        <div class="stat-card" style="text-align: left;">
+          <div style="font-size: 32px; margin-bottom: 12px;">📑</div>
+          <h3 style="font-size: 20px; margin-bottom: 8px;">Shared Ingestion IR</h3>
+          <p style="color: var(--text-muted); font-size: 14px;">Parses PDF, PPTX, DOCX, and Markdown into canonical DocIR with source locators (`page:4`, `slide:12`).</p>
+        </div>
+        <div class="stat-card" style="text-align: left;">
+          <div style="font-size: 32px; margin-bottom: 12px;">🎙️</div>
+          <h3 style="font-size: 20px; margin-bottom: 8px;">Karaoke Subtitles</h3>
+          <p style="color: var(--text-muted); font-size: 14px;">Captures word-level TTS timestamps for animated pop-in karaoke captions with active-word highlighting.</p>
+        </div>
+        <div class="stat-card" style="text-align: left;">
+          <div style="font-size: 32px; margin-bottom: 12px;">🖼️</div>
+          <h3 style="font-size: 20px; margin-bottom: 8px;">Playwright Carousels</h3>
+          <p style="color: var(--text-muted); font-size: 14px;">Renders 1080×1350 portrait carousel graphics via headless Chromium for LinkedIn and Instagram.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Auth Modal -->
+  <div class="modal-backdrop" id="authModal">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeAuthModal()">✖</button>
+      <h3 class="modal-title" id="modalTitle">Login to PostEazy</h3>
+      <p class="modal-sub" id="modalSub">Enter your credentials to manage your content engine.</p>
+
+      <form id="authForm" onsubmit="handleAuthSubmit(event)">
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input type="text" id="authUsername" class="input-control" required placeholder="creator">
+        </div>
+        <div class="form-group" id="emailGroup" style="display: none;">
+          <label class="form-label">Email</label>
+          <input type="email" id="authEmail" class="input-control" placeholder="creator@example.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="authPassword" class="input-control" required placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn btn-gradient" style="width: 100%; margin-top: 12px;" id="authSubmitBtn">
+          Sign In
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">Notification message</div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>© 2026 PostEazy Content Engine. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- App Script -->
+  <script src="js/app.js"></script>
+</body>
+</html>

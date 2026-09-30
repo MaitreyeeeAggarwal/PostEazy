@@ -35,16 +35,22 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
 # Static Files & UI Mounting
+frontend_dir = Path(__file__).parent.parent / "frontend"
 static_dir = Path(__file__).parent / "static"
-if static_dir.exists():
-    app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+
+ui_dir = frontend_dir if frontend_dir.exists() else static_dir
+
+if ui_dir.exists():
+    app.mount("/css", StaticFiles(directory=str(ui_dir / "css")), name="css") if (ui_dir / "css").exists() else None
+    app.mount("/js", StaticFiles(directory=str(ui_dir / "js")), name="js") if (ui_dir / "js").exists() else None
+    app.mount("/static", StaticFiles(directory=str(static_dir)), name="static") if static_dir.exists() else None
 
 @app.get("/", include_in_schema=False)
 async def read_index():
-    index_path = static_dir / "index.html"
+    index_path = ui_dir / "index.html"
     if index_path.exists():
         return FileResponse(str(index_path))
-    return {"message": "Content Engine API server running."}
+    return {"message": "PostEazy Content Engine API server running."}
 
 # Register Routers
 app.include_router(auth_router)
