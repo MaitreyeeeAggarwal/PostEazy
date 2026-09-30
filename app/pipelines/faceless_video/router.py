@@ -1,8 +1,11 @@
+import os
 import asyncio
+from pathlib import Path
 from typing import Optional
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, status, BackgroundTasks, Body
-from fastapi.responses import FileResponse, Response
+from fastapi.responses import FileResponse
 
+from app.config import settings
 from app.schemas import Platform, JobStatus, VideoScript, JobState
 from app.services.ingest import extract_document_text
 from app.jobs import job_store
@@ -10,15 +13,39 @@ from app.presets import get_preset
 
 router = APIRouter(prefix="/api/video", tags=["Pipeline B: Faceless Video"])
 
+async def render_master_short_mp4(job_id: str, duration: int, title: str) -> str:
+    """Generates a 1080x1920 portrait master_shorts.mp4 deliverable using ffmpeg."""
+    out_dir = Path(settings.WORK_DIR) / "jobs" / job_id
+    out_dir.mkdir(parents=True, exist_ok=True)
+    mp4_path = out_dir / "master_shorts.mp4"
+
+    cmd = [
+        "ffmpeg", "-y",
+        "-f", "lavfi",
+        "-i", f"color=c=0x090d16:s=1080x1920:d={duration}",
+        "-vf", (
+            "drawtext=text='POSTEAZY CONTENT ENGINE':fontcolor=0x38bdf8:fontsize=38:x=(w-text_w)/2:y=(h-text_h)/2-180,"
+            f"drawtext=text='{title[:30]}':fontcolor=white:fontsize=52:x=(w-text_w)/2:y=(h-text_h)/2-80,"
+            f"drawtext=text='Master Deliverable • Job {job_id[:8]}':fontcolor=0x818cf8:fontsize=32:x=(w-text_w)/2:y=(h-text_h)/2+40"
+        ),
+        "-c:v", "libx264",
+        "-pix_fmt", "yuv420p",
+        "-r", "30",
+        str(mp4_path)
+    ]
+    proc = await asyncio.create_subprocess_exec(*cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+    await proc.communicate()
+    return str(mp4_path)
+
 async def run_video_job_pipeline(job_id: str, text: str, platform: Platform, duration_seconds: int = 30):
     try:
         # Stage 1: Document & Script
         job_store.update_job(job_id, status=JobState.RUNNING, stage="writing_script", progress=25)
-        await asyncio.sleep(1.5)
+        await asyncio.sleep(1.0)
 
         preset = get_preset(platform)
         script_data = {
-            "title": "Generated Video Script",
+            "title": "Generated Faceless Video Script",
             "scenes": [
                 {
                     "narration": "Are you struggling to turn dense documents into engaging video content?",
@@ -42,11 +69,11 @@ async def run_video_job_pipeline(job_id: str, text: str, platform: Platform, dur
 
         # Stage 2: Voiceover & Assets
         job_store.update_job(job_id, stage="recording_voiceover", progress=55, script=script_data)
-        await asyncio.sleep(2.0)
+        await asyncio.sleep(1.5)
 
-        # Stage 3: Rendering Video Clips
+        # Stage 3: Rendering Video Clips (Generate master_shorts.mp4)
         job_store.update_job(job_id, stage="rendering_video", progress=85)
-        await asyncio.sleep(2.0)
+        await render_master_short_mp4(job_id, duration_seconds, "Faceless Kinetic Video")
 
         # Stage 4: Done
         output_urls = {
@@ -141,4 +168,10 @@ async def download_video_output(job_id: str):
     job = job_store.get_job(job_id)
     if not job or job.status != JobState.DONE:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Output not ready or job failed.")
-    return {"message": f"Deliverable ready for job {job_id}"}
+    
+    mp4_path = Path(settings.WORK_DIR) / "jobs" / job_id / "master_shorts.mp4"
+    if mp4_path.exists():
+        return FileResponse(path=str(mp4_path), media_type="video/mp4", filename=f"master_{job_id}.mp4")
+
+    # Fallback response if video is still generating
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Video deliverable master_shorts.mp4 not found on server.")
