@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PostEazy | AI Content Generation Studio</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body style="background-color: var(--bg-dark); min-height: 100vh;">
+
+  <!-- Glassmorphism Studio Navbar -->
+  <header class="navbar">
+    <div class="container nav-content">
+      <a href="index.html" class="brand">
+        <div class="brand-icon">⚡</div>
+        <span class="brand-name">PostEazy</span>
+        <span class="brand-tag">AI Studio</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">🏠 Home</a></li>
+        <li><a href="studio.html" class="nav-link active" style="color: var(--accent-cyan);">✨ AI Studio</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <span id="userGreeting" style="display: none; font-size: 14px; color: var(--accent-cyan); font-weight: 600;"></span>
+        <button class="btn btn-ghost" id="authBtn" onclick="openAuthModal('login')">Login</button>
+        <button class="btn btn-gradient" id="registerBtn" onclick="openAuthModal('register')">Get Started</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Studio Main Section -->
+  <main style="padding-top: 100px; padding-bottom: 60px;">
+    <section class="studio-section" id="studio">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Content Generation Studio</h2>
+          <p class="section-subtitle">Select an engine workflow to transform your documents into production-ready assets.</p>
+        </div>
+
+        <!-- Main 2 Artifact Choice Cards -->
+        <div class="studio-choice-grid" id="studioChoiceGrid">
+          
+          <!-- Card 1: Create a Video -->
+          <div class="studio-choice-card" onclick="openStudioMode('video')">
+            <div class="studio-choice-icon">🎬</div>
+            <span class="studio-choice-tag">Short & Long Form Video</span>
+            <h3 class="studio-choice-title">Create a Video</h3>
+            <p class="studio-choice-desc">Transform documents into AI faceless kinetic videos. Supports short-form (Reels/Shorts/TikTok) and long-form (YouTube) formats with custom typography & music.</p>
+            <button class="btn btn-gradient" style="width: 100%;">
+              Launch Video Generation Studio ➔
+            </button>
+          </div>
+
+          <!-- Card 2: Create a Post -->
+          <div class="studio-choice-card" onclick="openStudioMode('post')">
+            <div class="studio-choice-icon">🖼️</div>
+            <span class="studio-choice-tag">Carousel Decks & Image Posts</span>
+            <h3 class="studio-choice-title">Create a Post</h3>
+            <p class="studio-choice-desc">Distill long documents into multi-slide static carousel posts, infographic callouts, and key insight decks for LinkedIn & Instagram.</p>
+            <button class="btn btn-ghost" style="width: 100%;">
+              Launch Post Generation Studio ➔
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Dedicated Screen 1: "Video Generation Studio" -->
+        <div id="videoStudioContainer" style="display: none;">
+          
+          <!-- Top Navigation & Title Bar -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <button class="btn btn-ghost" onclick="backToStudioChoice()" style="padding: 8px 16px;">
+              ◄ Back to Studio Choice
+            </button>
+            <h3 style="font-size: 22px; font-weight: 800; color: var(--text-primary);">🎬 Video Generation Studio</h3>
+            <span class="brand-tag">Faceless Pipeline B</span>
+          </div>
+
+          <!-- Multi-Step Stepper Bar -->
+          <div class="stepper-bar">
+            <div class="stepper-item active" id="vStep1Indicator">
+              <div class="stepper-number">1</div>
+              <span>Upload & Type</span>
+            </div>
+            <span style="color: var(--text-dim);">➔</span>
+            <div class="stepper-item" id="vStep2Indicator">
+              <div class="stepper-number">2</div>
+              <span>Ingest & Script</span>
+            </div>
+            <span style="color: var(--text-dim);">➔</span>
+            <div class="stepper-item" id="vStep3Indicator">
+              <div class="stepper-number">3</div>
+              <span>Style & Music</span>
+            </div>
+            <span style="color: var(--text-dim);">➔</span>
+            <div class="stepper-item" id="vStep4Indicator">
+              <div class="stepper-number">4</div>
+              <span>Creating</span>
+            </div>
+            <span style="color: var(--text-dim);">➔</span>
+            <div class="stepper-item" id="vStep5Indicator">
+              <div class="stepper-number">5</div>
+              <span>Final Output</span>
+            </div>
+          </div>
+
+          <!-- Step 1 View: Upload & Type Selection -->
+          <div id="videoStep1View" class="panel">
+            <div class="panel-heading">Step 1: Upload Document & Select Video Type</div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+              <!-- Document Dropzone -->
+              <div class="form-group">
+                <label class="form-label">Source Document (.pdf, .pptx, .docx, .txt, .md)</label>
+                <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+                  <div class="dropzone-icon">📄</div>
+                  <div class="dropzone-text">Click or drag & drop document</div>
+                  <div class="dropzone-subtext">Upload papers, decks, or write-ups up to 25MB</div>
+                </div>
+                <input type="file" id="fileInput" style="display: none;" accept=".pdf,.pptx,.txt,.md,.docx" onchange="handleFileSelect(event)">
+                <div id="fileInfo" class="file-info" style="display: none;">
+                  <span id="fileName">document.pdf</span>
+                  <span style="cursor: pointer;" onclick="clearFile(event)">✖</span>
+                </div>
+              </div>
+
+              <!-- Video Type & Platform Selector -->
+              <div>
+                <div class="form-group">
+                  <label class="form-label">Platform Preset</label>
+                  <div class="platform-selector">
+                    <div class="platform-card selected" id="vPlatInstagram" onclick="selectVideoPlatform('instagram')">
+                      <span class="platform-icon">📸</span>
+                      <div>
+                        <div class="platform-name">Instagram / Reels</div>
+                        <small style="color: var(--text-dim);">High energy & bold</small>
+                      </div>
+                    </div>
+                    <div class="platform-card" id="vPlatYoutube" onclick="selectVideoPlatform('youtube')">
+                      <span class="platform-icon">▶️</span>
+                      <div>
+                        <div class="platform-name">YouTube</div>
+                        <small style="color: var(--text-dim);">Long or Short form</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Video Format Category</label>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="select-option-card selected" id="typeShortForm" onclick="selectVideoCategory('short')">
+                      <div class="option-card-title">📱 Short Form Content</div>
+                      <div class="option-card-desc">Reels, Shorts, TikTok (9:16 Vertical • 15s - 90s)</div>
+                    </div>
+                    <div class="select-option-card" id="typeLongForm" onclick="selectVideoCategory('long')">
+                      <div class="option-card-title">📺 Long Form Content</div>
+                      <div class="option-card-desc">YouTube Video (16:9 Landscape • 2m - 10m)</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button class="btn-kinetic" style="margin-top: 16px;" onclick="goToVideoStep2()">
+              Ingest Document & Analyze Script ➔
+            </button>
+          </div>
+
+          <!-- Step 2 View: Ingestion Screen & AI Suggested Duration & Editable Script -->
+          <div id="videoStep2View" class="panel" style="display: none;">
+            <div class="panel-heading">Step 2: AI Document Ingestion & Script Analysis</div>
+
+            <!-- Ingestion Loading Progress Banner -->
+            <div id="ingestLoadingBanner" class="status-banner" style="background: rgba(56, 189, 248, 0.1); border-color: var(--accent-cyan); margin-bottom: 24px;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 24px;">⚙️</span>
+                <div>
+                  <strong style="color: var(--accent-cyan);">Ingesting Document Text & Extracting High-Salience Claims...</strong>
+                  <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;" id="ingestStatText">Analyzing document structure & character counts...</p>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 320px 1fr; gap: 24px;">
+              <!-- Left: AI Suggested Video Duration Control -->
+              <div>
+                <div class="form-group">
+                  <label class="form-label">AI Suggested Video Duration (s)</label>
+                  <input type="number" id="videoDurationInput" class="input-control" value="60" min="15" max="300">
+                  <small style="display: block; margin-top: 6px; color: var(--text-muted); font-size: 12px;">
+                    💡 AI calculated <span id="aiDurationBadge" style="color: var(--accent-cyan); font-weight: 700;">60 seconds</span> as optimal based on document density. You can freely edit this duration.
+                  </small>
+                </div>
+
+                <div style="background: rgba(15, 23, 42, 0.6); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                  <div style="font-size: 12px; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; margin-bottom: 8px;">Analysis Metrics</div>
+                  <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+                    • Extracted Blocks: <strong id="metricBlocks">102</strong><br>
+                    • Salient Claims: <strong id="metricClaims">156</strong><br>
+                    • Script Beats: <strong id="metricBeats">17</strong>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right: Editable Script Area -->
+              <div>
+                <div class="form-group">
+                  <label class="form-label" style="display: flex; justify-content: space-between;">
+                    <span>Editable Video Script & Narration Beats</span>
+                    <small style="color: var(--accent-cyan);">Feel free to edit script text or narration</small>
+                  </label>
+                  <textarea class="script-editor" id="videoScriptEditor" style="height: 280px;" placeholder="Ingested script narration beats will appear here..."></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 16px; margin-top: 20px;">
+              <button class="btn btn-ghost" onclick="goToVideoStep(1)">◄ Back to Step 1</button>
+              <button class="btn-kinetic" style="flex: 1;" onclick="goToVideoStep3()">
+                Continue to Style & Music ➔
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 3 View: Typography & Song Options -->
+          <div id="videoStep3View" class="panel" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+              <div class="panel-heading" style="margin-bottom: 0;">Step 3: Customize Typography & Music</div>
+              <button class="btn btn-gradient" onclick="applyAIOptionPreset()" style="padding: 8px 16px; font-size: 13px;">
+                ⚡ Let the AI Choose for Me
+              </button>
+            </div>
+
+            <!-- 3 Typography Options -->
+            <div class="form-group">
+              <label class="form-label">Choose 1 of 3 Typography Styles</label>
+              <div class="options-grid-3">
+                <div class="select-option-card selected" id="typoOption1" onclick="selectTypography(1)">
+                  <div class="option-card-title">✨ 1. Kinetic Neon Bold</div>
+                  <div class="option-card-desc">High contrast cyan/pink neon titles with dynamic motion scaling. Best for Reels & Shorts.</div>
+                </div>
+                <div class="select-option-card" id="typoOption2" onclick="selectTypography(2)">
+                  <div class="option-card-title">📜 2. Clean Editorial Slate</div>
+                  <div class="option-card-desc">Elegant high-readability sans-serif typography. Perfect for executive summaries & LinkedIn.</div>
+                </div>
+                <div class="select-option-card" id="typoOption3" onclick="selectTypography(3)">
+                  <div class="option-card-title">⚡ 3. Minimalist Impact Pro</div>
+                  <div class="option-card-desc">Futuristic bold callout cards with dark glass overlays. Great for high-salience stats.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3 Song / Music Options -->
+            <div class="form-group" style="margin-top: 32px;">
+              <label class="form-label">Choose 1 of 3 Music / Song Tracks</label>
+              <div class="options-grid-3">
+                <div class="select-option-card selected" id="songOption1" onclick="selectSong(1)">
+                  <div class="option-card-title">🎵 1. Upbeat Lo-Fi Synth</div>
+                  <div class="option-card-desc">128 BPM energetic synth background track. Perfect for fast tech shorts & overview reels.</div>
+                </div>
+                <div class="select-option-card" id="songOption2" onclick="selectSong(2)">
+                  <div class="option-card-title">🎧 2. Cinematic Cyber Electronic</div>
+                  <div class="option-card-desc">Deep resonant electronic beats with subtle build-ups. Great for dramatic breakdowns.</div>
+                </div>
+                <div class="select-option-card" id="songOption3" onclick="selectSong(3)">
+                  <div class="option-card-title">🎸 3. Ambient Acoustic Chill</div>
+                  <div class="option-card-desc">Soft, unobtrusive background acoustic tones. Ideal for educational & long-form videos.</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 16px; margin-top: 24px;">
+              <button class="btn btn-ghost" onclick="goToVideoStep(2)">◄ Back to Script</button>
+              <button class="btn-kinetic" style="flex: 1;" onclick="startFinalVideoRender()">
+                Render Final Kinetic Video 🎬
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 4 View: Creating / Rendering Screen -->
+          <div id="videoStep4View" class="panel" style="display: none; text-align: center; padding: 60px 40px;">
+            <div style="font-size: 64px; margin-bottom: 20px; animation: pulse 1.5s infinite;">🎬</div>
+            <h3 style="font-size: 26px; font-weight: 800; color: var(--text-primary); margin-bottom: 12px;">Creating Your Kinetic Video...</h3>
+            <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 32px;" id="creatingSubtext">Processing 8-stage orchestrator pipeline. Please hold tight!</p>
+
+            <!-- Real-time Progress Bar -->
+            <div class="progress-container" style="max-width: 720px; margin: 0 auto 32px;">
+              <div class="progress-track" style="height: 12px;">
+                <div class="progress-fill" id="vProgressFill" style="width: 0%;"></div>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; color: var(--text-secondary); margin-top: 12px;">
+                <span id="vStageLabel">Initializing pipeline...</span>
+                <span id="vProgressPercent" style="color: var(--accent-cyan);">0%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 5 View: Final Output Video View -->
+          <div id="videoStep5View" class="panel" style="display: none;">
+            <div class="panel-heading">Step 5: Master Kinetic Video Output</div>
+
+            <div style="max-width: 860px; margin: 0 auto; text-align: center;">
+              <!-- HTML5 Video Player with Proper Play/Pause Controls -->
+              <div class="media-preview-box" style="margin-bottom: 24px; min-height: 480px;">
+                <video id="finalVideoPlayer" controls autoplay style="width: 100%; max-height: 520px; border-radius: var(--radius-lg); box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8);">
+                  <source id="finalVideoSource" src="" type="video/mp4">
+                  Your browser does not support HTML5 video playback.
+                </video>
+              </div>
+
+              <!-- Action Controls Row: Download MP4 & Restart -->
+              <div style="display: flex; gap: 16px; justify-content: center;">
+                <a id="downloadMp4Btn" href="#" download="master_video.mp4" class="btn btn-gradient" style="padding: 16px 36px; font-size: 16px;">
+                  ⬇️ Download MP4 Format Deliverable
+                </a>
+                <button class="btn btn-ghost" onclick="restartVideoWorkflow()" style="padding: 16px 28px;">
+                  🔄 Create Another Video
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Dedicated Workspace: Post Generation Studio (Pipeline A) -->
+        <div id="postStudioContainer" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <button class="btn btn-ghost" onclick="backToStudioChoice()" style="padding: 8px 16px;">
+              ◄ Back to Studio Choice
+            </button>
+            <h3 style="font-size: 22px; font-weight: 800; color: var(--text-primary);">🖼️ Post Generation Studio</h3>
+            <span class="brand-tag">Static Pipeline A</span>
+          </div>
+
+          <div class="studio-grid">
+            <!-- Left: Controls -->
+            <div class="panel">
+              <div class="panel-heading">1. Setup & Upload</div>
+
+              <div class="form-group">
+                <label class="form-label">Platform Style</label>
+                <div class="platform-selector">
+                  <div class="platform-card selected" id="pPlatLinkedin" onclick="selectPostPlatform('linkedin')">
+                    <span class="platform-icon">💼</span>
+                    <div>
+                      <div class="platform-name">LinkedIn Carousel</div>
+                      <small style="color: var(--text-dim);">Insightful deck</small>
+                    </div>
+                  </div>
+                  <div class="platform-card" id="pPlatInstagram" onclick="selectPostPlatform('instagram')">
+                    <span class="platform-icon">📸</span>
+                    <div>
+                      <div class="platform-name">Instagram Posts</div>
+                      <small style="color: var(--text-dim);">Square / 4:5 visual</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Source Document</label>
+                <div class="dropzone" id="postDropzone" onclick="document.getElementById('postFileInput').click()">
+                  <div class="dropzone-icon">📄</div>
+                  <div class="dropzone-text">Click or drag & drop document</div>
+                </div>
+                <input type="file" id="postFileInput" style="display: none;" accept=".pdf,.pptx,.txt,.md,.docx" onchange="handlePostFileSelect(event)">
+                <div id="postFileInfo" class="file-info" style="display: none;">
+                  <span id="postFileName">document.pdf</span>
+                </div>
+              </div>
+
+              <button class="btn-kinetic" onclick="startPostRender()">
+                Render Static Posts Carousel 🖼️
+              </button>
+            </div>
+
+            <!-- Right: Output Deck Preview -->
+            <div class="panel">
+              <div class="panel-heading">2. Carousel Deliverable</div>
+              <div class="media-preview-box" id="postPreviewBox">
+                <div style="text-align: center; color: var(--text-dim); padding: 40px;">
+                  <div style="font-size: 48px; margin-bottom: 16px;">🖼️</div>
+                  <p>Generated static post carousel will appear here after clicking Render.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- Auth Modal -->
+  <div class="modal-backdrop" id="authModal">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeAuthModal()">✖</button>
+      <h3 class="modal-title" id="modalTitle">Login to PostEazy</h3>
+      <p class="modal-sub" id="modalSub">Sign in to access your content generation engine.</p>
+      
+      <form onsubmit="handleAuthSubmit(event)">
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input type="text" id="authUsername" class="input-control" required placeholder="enter username">
+        </div>
+        
+        <div class="form-group" id="emailGroup" style="display: none;">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="authEmail" class="input-control" placeholder="user@example.com">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="authPassword" class="input-control" required placeholder="••••••••">
+        </div>
+
+        <button type="submit" class="btn btn-gradient" id="authSubmitBtn" style="width: 100%; margin-top: 12px;">
+          Sign In
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Scripts -->
+  <script src="js/app.js"></script>
+  <script>
+    // Auto-detect mode from URL query string parameter on load
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const mode = urlParams.get('mode');
+      if (mode === 'video' || mode === 'post') {
+        openStudioMode(mode);
+      }
+    });
+  </script>
+</body>
+</html>

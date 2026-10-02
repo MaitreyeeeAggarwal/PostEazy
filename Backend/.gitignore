@@ -1,0 +1,32 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.venv/
+env/
+venv/
+ENV/
+.env
+
+# Data & Runtime Storage
+data/
+storage/
+*.log
+*.sqlite
+*.db
+
+# Media & Temporary Renders
+*.mp4
+*.mp3
+*.wav
+*.png
+*.jpg
+*.jpeg
+work/
+
+# IDE / Editor files
+.vscode/
+.idea/
+.ds_store

@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  posteazy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: posteazy-app
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - HOST=0.0.0.0
+      - FRONTEND_DIR=/frontend
+      # Add API Keys here or load from .env file
+      # - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      # - PEXELS_API_KEY=${PEXELS_API_KEY}
+    env_file:
+      - ./Backend/.env
+    volumes:
+      - ./Backend/data:/app/data
+    restart: unless-stopped

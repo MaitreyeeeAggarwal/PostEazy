@@ -5,7 +5,7 @@ High-performance, modern single-page application (SPA) for **PostEazy Content En
 ## Architecture & File Structure
 
 ```
-c:\development\SiH\Backend\frontend/
+c:\development\SiH\PostEazy\frontend\
 ├── index.html        # Main landing page, Hero section, Studio Workbench, Auth Modal & Footer
 ├── css/
 │   └── styles.css    # Design system, dark glassmorphism, responsive grid, animations
@@ -38,7 +38,7 @@ Simply serve this directory with any web server (or open `index.html` directly i
 
 ```bash
 # Option 1: Live Server or python http.server
-cd c:\development\SiH\Backend\frontend
+cd c:\development\SiH\PostEazy\frontend
 python -m http.server 3000
 
 # Option 2: Access served directly by FastAPI at http://localhost:8000
