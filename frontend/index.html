@@ -395,75 +395,44 @@
 
 <!-- ================= MAIN CONTENT ================= -->
 <main class="w-full flex-1">
-<!-- ================= SEGMENT 1: SCROLL-BASED VIDEO SCRUBBER HERO ================= -->
-<div class="relative w-full" id="hero-runway" style="height: 450vh;">
-  <!-- Sticky Viewport -->
-  <section class="sticky top-0 w-full h-screen overflow-hidden flex flex-col justify-between select-none paper-noise border-b border-outline-variant/60" id="hero-sticky">
+<!-- ================= SEGMENT 1: CINEMATIC SCROLL HERO SEQUENCE ================= -->
+<div class="relative w-full" id="hero-runway" style="height: 420vh;">
+  <!-- Sticky Full-Bleed Viewport -->
+  <section class="sticky top-0 w-full h-screen overflow-hidden flex flex-col justify-between select-none" id="hero-sticky" style="background-color: #fff8f3;">
     
-    <!-- Top Bar Headline Overlay (Fades out as scroll starts 0%-15%) -->
-    <div class="relative z-30 pt-4 md:pt-6 px-4 text-center transition-all duration-300 pointer-events-auto" id="heroHeaderBlock">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-secondary-container/80 text-on-secondary-container text-xs font-bold uppercase tracking-wider mb-2 border border-secondary/20 shadow-sm" style="font-family: 'Patrick Hand', cursive;">
-        <span>🎬 Scroll-Driven Video Storyboard</span>
+    <!-- IMMERSIVE CANVAS / ARTWORK BACKDROP (NO BLACK BARS / NO PLAYER CONTROLS) -->
+    <div class="absolute inset-0 z-0 flex items-center justify-center overflow-hidden" id="heroCinematicViewport">
+      <!-- Full-bleed Canvas for 60fps WebP Frame Sequence & Lerped Video Scrubbing -->
+      <canvas id="cinematicHeroCanvas" class="w-full h-full object-cover transition-opacity duration-300 opacity-100"></canvas>
+      
+      <!-- Preloaded MP4 fallback -->
+      <video id="heroCinematicVideo" src="media/hero-story.mp4" preload="auto" muted playsinline class="hidden"></video>
+    </div>
+
+    <!-- INTEGRATED TYPOGRAPHY OVERLAY (Composed directly into scene) -->
+    <div class="relative z-20 pt-8 sm:pt-12 px-6 max-w-4xl mx-auto text-center pointer-events-none transition-all duration-300" id="heroCinematicTypography">
+      <div class="inline-block mb-3 px-4 py-1.5 rounded-full bg-[#fbf9f3]/85 backdrop-blur-md border border-[#322d29]/20 shadow-sm">
+        <span class="font-label-md text-label-md tracking-[0.25em] uppercase text-secondary font-bold" style="font-family: 'Gochi Hand', 'Patrick Hand', cursive; font-size: 1.15rem;">
+          Hakuna Makaka
+        </span>
       </div>
-      <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-on-surface uppercase font-headline-xl leading-tight" style="font-family: 'Gochi Hand', 'Patrick Hand', cursive;">
-        NEXT-GEN <span class="font-serif-display lowercase italic font-normal text-primary">content</span> ENGINE
+      
+      <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-on-surface uppercase font-headline-xl leading-[1.05]" style="font-family: 'Gochi Hand', 'Patrick Hand', cursive;">
+        NEXT-GEN<br class="sm:hidden"/>
+        <span class="font-serif-display lowercase italic font-normal text-primary pr-2">content</span>
+        <span class="font-bold tracking-tight text-on-surface">ENGINE</span>
       </h1>
-      <p class="font-handwriting text-tertiary text-lg sm:text-xl font-bold mt-1">
-        Scroll down to scrub the story video frame by frame. Scroll up to rewind.
+      
+      <p class="font-handwriting text-tertiary text-xl sm:text-2xl font-bold mt-2 opacity-90">
+        Transform long documents into high-converting videos & posts
       </p>
     </div>
 
-    <!-- MAIN MP4 VIDEO SCRUBBER CANVAS -->
-    <div class="relative w-full flex-1 flex items-center justify-center max-w-5xl mx-auto px-4 overflow-hidden" id="heroCanvasArea">
-      
-      <!-- Video Container Frame with Sketchbook Styling -->
-      <div class="relative w-full max-h-[72vh] aspect-video bg-black border-2 border-charcoal rounded-2xl overflow-hidden shadow-sketch-lg group">
-        <div class="washi-tape-top" style="width: 100px; z-index: 30;"></div>
-        
-        <!-- MP4 Video Scrubber -->
-        <video id="heroVideoScrubber" src="assets/hero-story.mp4" preload="auto" muted playsinline class="w-full h-full object-contain pointer-events-none"></video>
-
-        <!-- Live Playhead Time Badge -->
-        <div class="absolute top-4 left-4 z-20 px-3 py-1 bg-paper-card/90 backdrop-blur border border-charcoal rounded-full text-xs font-bold text-charcoal flex items-center gap-2 shadow-sm font-scrapbook">
-          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span id="videoScrubTimeLabel">0.0s / 0.0s</span>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- BOTTOM FLOATING PROGRESS BAR & CUE -->
-    <div class="relative z-30 pb-6 px-4 flex flex-col items-center gap-2 pointer-events-auto">
-      
-      <!-- Conversion CTA Badge (Fades in at 85%-100%) -->
-      <div class="transition-all duration-300 opacity-0 transform translate-y-2 pointer-events-auto" id="heroCtaBadge">
-        <a href="#workbench" class="btn-bounce inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary text-white font-bold text-base shadow-sketch border-2 border-charcoal hover:bg-moss-dark transition-all">
-          <span>Launch Content Studio Now</span>
-          <span class="text-xl">➔</span>
-        </a>
-      </div>
-
-      <!-- Beat Timeline Progress Dots -->
-      <div class="flex items-center gap-2.5 px-4 py-2 bg-paper-card/90 backdrop-blur-md rounded-full border-2 border-charcoal shadow-sketch-sm">
-        <button class="beat-dot-btn active" onclick="scrollToBeatProgress(0.05)" title="0% - Start"></button>
-        <button class="beat-dot-btn" onclick="scrollToBeatProgress(0.20)" title="20% - Beat 1"></button>
-        <button class="beat-dot-btn" onclick="scrollToBeatProgress(0.40)" title="40% - Beat 2"></button>
-        <button class="beat-dot-btn" onclick="scrollToBeatProgress(0.60)" title="60% - Beat 3"></button>
-        <button class="beat-dot-btn" onclick="scrollToBeatProgress(0.80)" title="80% - Beat 4"></button>
-        <button class="beat-dot-btn" onclick="scrollToBeatProgress(0.95)" title="100% - Finish"></button>
-      </div>
-
-      <!-- Scroll Prompt Banner -->
-      <div class="flex items-center gap-1.5 text-secondary text-xs font-bold uppercase tracking-wider animate-pulse" style="font-family: 'Patrick Hand', cursive;">
-        <span id="heroScrollCueText">Scroll down to scrub video frame-by-frame</span>
-        <span class="material-symbols-outlined text-sm">arrow_downward</span>
-      </div>
-
-    </div>
+    <!-- Pure immersive visual viewport without clutter or controls -->
+    <div class="relative z-10 pb-6 pointer-events-none"></div>
 
   </section>
 </div>
-
 
 
 

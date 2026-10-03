@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initScrollSpy();
   initArtifactCardInteractions();
   checkUrlParamsStudioMode();
-  initVideoScrollScrubber();
+  initCinematicHeroScroll();
 });
 
 // ScrollSpy for Top Navbar Link Underline Transition
@@ -800,111 +800,164 @@ function showToast(msg) {
   }
 }
 
-// ================= HERO SCROLL-DRIVEN VIDEO SCRUBBER ENGINE =================
-function initVideoScrollScrubber() {
+// ================= CINEMATIC SCROLL HERO SEQUENCE (NO DECORATIVE UI) =================
+const TOTAL_CINEMATIC_FRAMES = 145;
+const frameImages = [];
+let framesLoadedCount = 0;
+let isFrameSequenceReady = false;
+
+// Preload WebP frame sequence into memory for 0ms latency 60fps canvas scrubbing
+function preloadCinematicFrames() {
+  for (let i = 1; i <= TOTAL_CINEMATIC_FRAMES; i++) {
+    const img = new Image();
+    const frameNum = String(i).padStart(3, '0');
+    img.src = `media/frames/frame_${frameNum}.webp`;
+    img.onload = () => {
+      framesLoadedCount++;
+      if (framesLoadedCount >= 10) {
+        isFrameSequenceReady = true;
+      }
+    };
+    frameImages.push(img);
+  }
+}
+
+function initCinematicHeroScroll() {
+  preloadCinematicFrames();
+
   const runway = document.getElementById('hero-runway');
-  const video = document.getElementById('heroVideoScrubber');
-  if (!runway || !video) return;
+  const canvas = document.getElementById('cinematicHeroCanvas');
+  const video = document.getElementById('heroCinematicVideo');
+  const typography = document.getElementById('heroCinematicTypography');
 
-  const headerBlock = document.getElementById('heroHeaderBlock');
-  const timeLabel = document.getElementById('videoScrubTimeLabel');
-  const ctaBadge = document.getElementById('heroCtaBadge');
-  const scrollCueText = document.getElementById('heroScrollCueText');
-  const beatDots = document.querySelectorAll('.beat-dot-btn');
+  if (!runway || !canvas) return;
 
+  const ctx = canvas.getContext('2d');
+
+  let currentFrameFloat = 0;
+  let targetFrameFloat = 0;
+  let targetVideoTime = 0;
+  let currentVideoTime = 0;
+  let videoDuration = 6.04;
+  let isVideoMetadataLoaded = false;
   let animationFrameId = null;
 
-  // Pause video to manually control playhead via scroll
-  video.pause();
-
-  function syncVideoFrame() {
-    const rect = runway.getBoundingClientRect();
-    const runwayHeight = runway.offsetHeight - window.innerHeight;
-    if (runwayHeight <= 0) return;
-
-    // Scroll progress ratio from 0.0 to 1.0
-    let progress = -rect.top / runwayHeight;
-    progress = Math.max(0, Math.min(1, progress));
-
-    // Update MP4 playhead frame-by-frame
-    if (video.duration && !isNaN(video.duration)) {
-      const targetTime = progress * video.duration;
-      if (Math.abs(video.currentTime - targetTime) > 0.01) {
-        video.currentTime = targetTime;
-      }
-
-      if (timeLabel) {
-        timeLabel.innerText = `${targetTime.toFixed(1)}s / ${video.duration.toFixed(1)}s`;
-      }
-    }
-
-    // Active progress dots
-    let activeIndex = 0;
-    if (progress >= 0.90) activeIndex = 5;
-    else if (progress >= 0.75) activeIndex = 4;
-    else if (progress >= 0.60) activeIndex = 3;
-    else if (progress >= 0.40) activeIndex = 2;
-    else if (progress >= 0.20) activeIndex = 1;
-    else activeIndex = 0;
-
-    beatDots.forEach((dot, idx) => {
-      if (idx === activeIndex) dot.classList.add('active');
-      else dot.classList.remove('active');
+  if (video) {
+    video.addEventListener('loadedmetadata', () => {
+      videoDuration = video.duration || 6.04;
+      isVideoMetadataLoaded = true;
     });
+  }
 
-    // Fade out top title block on scroll start
-    if (headerBlock) {
-      const headerAlpha = Math.max(0, 1 - (progress / 0.15));
-      headerBlock.style.opacity = headerAlpha.toFixed(2);
-      headerBlock.style.transform = `translateY(${(-progress * 80).toFixed(1)}px)`;
+  // Handle High-DPI Canvas Resizing with Object-Fit Cover scaling (NO BLACK BARS!)
+  function resizeCanvas() {
+    const dpr = window.devicePixelRatio || 1;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+
+    ctx.scale(dpr, dpr);
+    renderCurrentFrame();
+  }
+
+  window.addEventListener('resize', resizeCanvas);
+
+  function drawImageObjectFitCover(imgSource) {
+    if (!imgSource) return;
+
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    const imgWidth = imgSource.videoWidth || imgSource.width || 752;
+    const imgHeight = imgSource.videoHeight || imgSource.height || 416;
+
+    if (!imgWidth || !imgHeight) return;
+
+    const imgAspect = imgWidth / imgHeight;
+    const canvasAspect = width / height;
+
+    let renderW, renderH, renderX, renderY;
+
+    if (canvasAspect > imgAspect) {
+      renderW = width;
+      renderH = width / imgAspect;
+      renderX = 0;
+      renderY = (height - renderH) / 2;
+    } else {
+      renderH = height;
+      renderW = height * imgAspect;
+      renderX = (width - renderW) / 2;
+      renderY = 0;
     }
 
-    // Show conversion CTA badge near the end of runway (>85%)
-    if (ctaBadge) {
-      if (progress >= 0.85) {
-        const ctaAlpha = Math.min(1, (progress - 0.85) / 0.1);
-        ctaBadge.style.opacity = ctaAlpha.toFixed(2);
-        ctaBadge.style.transform = `translateY(${((1 - ctaAlpha) * 10).toFixed(1)}px)`;
-      } else {
-        ctaBadge.style.opacity = '0';
-      }
-    }
+    ctx.clearRect(0, 0, width, height);
+    ctx.drawImage(imgSource, renderX, renderY, renderW, renderH);
+  }
 
-    if (scrollCueText) {
-      if (progress >= 0.92) {
-        scrollCueText.innerText = "Unpinning... Scroll down to explore studio";
-      } else {
-        scrollCueText.innerText = "Scroll down to scrub video frame-by-frame";
-      }
+  function renderCurrentFrame() {
+    const frameIndex = Math.min(
+      TOTAL_CINEMATIC_FRAMES - 1,
+      Math.max(0, Math.round(currentFrameFloat))
+    );
+
+    if (isFrameSequenceReady && frameImages[frameIndex] && frameImages[frameIndex].complete) {
+      drawImageObjectFitCover(frameImages[frameIndex]);
+    } else if (video && video.readyState >= 2) {
+      drawImageObjectFitCover(video);
     }
   }
 
-  window.addEventListener('scroll', () => {
-    if (!animationFrameId) {
-      animationFrameId = requestAnimationFrame(() => {
-        syncVideoFrame();
-        animationFrameId = null;
-      });
+  // Smooth lerp loop running via requestAnimationFrame
+  function animLoop() {
+    const runwayRect = runway.getBoundingClientRect();
+    const scrollDistance = runway.offsetHeight - window.innerHeight;
+
+    if (scrollDistance > 0) {
+      let progress = -runwayRect.top / scrollDistance;
+      progress = Math.max(0, Math.min(1, progress));
+
+      // Calculate Target Frame / Video Time
+      targetFrameFloat = progress * (TOTAL_CINEMATIC_FRAMES - 1);
+      targetVideoTime = progress * videoDuration;
+
+      // Smooth lerp interpolation for silky motion (forward AND rewind)
+      currentFrameFloat += (targetFrameFloat - currentFrameFloat) * 0.18;
+      currentVideoTime += (targetVideoTime - currentVideoTime) * 0.18;
+
+      // Video currentTime scrubbing fallback
+      if (video && isVideoMetadataLoaded && Math.abs(video.currentTime - currentVideoTime) > 0.04) {
+        try {
+          video.currentTime = currentVideoTime;
+        } catch (e) {}
+      }
+
+      // Render Frame to Canvas
+      renderCurrentFrame();
+
+      // Typography animation: subtly moves, scales down, and fades as scroll progresses
+      if (typography) {
+        if (progress <= 0.25) {
+          const fadeRatio = progress / 0.25;
+          const opacity = Math.max(0, 1 - fadeRatio);
+          const translateY = -progress * 140;
+          const scale = 1 - progress * 0.15;
+          typography.style.opacity = opacity.toFixed(3);
+          typography.style.transform = `translateY(${translateY.toFixed(1)}px) scale(${scale.toFixed(3)})`;
+        } else {
+          typography.style.opacity = '0';
+        }
+      }
     }
-  });
 
-  video.addEventListener('loadedmetadata', syncVideoFrame);
-  video.addEventListener('canplay', syncVideoFrame);
-  syncVideoFrame();
-}
+    animationFrameId = requestAnimationFrame(animLoop);
+  }
 
-function scrollToBeatProgress(progressFraction) {
-  const runway = document.getElementById('hero-runway');
-  if (!runway) return;
-
-  const runwayTop = runway.offsetTop;
-  const runwayHeight = runway.offsetHeight - window.innerHeight;
-  const targetScrollY = runwayTop + progressFraction * runwayHeight;
-
-  window.scrollTo({
-    top: targetScrollY,
-    behavior: 'smooth'
-  });
+  resizeCanvas();
+  animLoop();
 }
 
 
