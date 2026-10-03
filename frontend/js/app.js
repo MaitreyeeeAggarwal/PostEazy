@@ -798,3 +798,288 @@ function showToast(msg) {
     setTimeout(() => toast.classList.remove('show'), 3500);
   }
 }
+
+// ================= INTERACTIVE HERO COMIC ENGINE LOGIC =================
+let selectedHeroInputType = 'reports'; // 'reports', 'decks', 'strategy'
+let selectedHeroFormatType = 'instagram'; // 'instagram', 'youtube', 'linkedin', 'blog'
+let heroLikesCount = 1420;
+
+const HERO_PREVIEWS = {
+  reports: {
+    instagram: {
+      title: "5 Key Insights from Q3 Research Study",
+      snippet: "Our automated pipeline extracted critical market trends, executive metrics, and visual diagrams into a high-engagement social carousel.",
+      panelImg: "assets/panels/panel_3.jpg",
+      caption: "💡 Mascot created Instagram carousel post from Research Study!"
+    },
+    youtube: {
+      title: "60-Second Deep-Dive: Q3 Research Trends",
+      snippet: "Faceless video narration storyboard generated directly from PDF report findings with synchronized visual clips.",
+      panelImg: "assets/panels/panel_6.jpg",
+      caption: "💡 Mascot created YouTube Short video storyboard from PDF!"
+    },
+    linkedin: {
+      title: "Executive Briefing: Q3 Market Research",
+      snippet: "Structured document deck slide summarizing main methodology, growth drivers, and strategic advice.",
+      panelImg: "assets/panels/panel_3.jpg",
+      caption: "💡 Mascot created LinkedIn Slide Carousel from Research Paper!"
+    },
+    blog: {
+      title: "Comprehensive Research Takeaways",
+      snippet: "Clean executive summary article formatted for email newsletters and corporate blogs.",
+      panelImg: "assets/panels/panel_8.jpg",
+      caption: "💡 Mascot generated Executive Article summary!"
+    }
+  },
+  decks: {
+    instagram: {
+      title: "Pitch Deck Storyboard: Product Launch",
+      snippet: "Visual summary of value proposition, market size, and traction stats ready for Instagram Reels.",
+      panelImg: "assets/panels/panel_3.jpg",
+      caption: "💡 Mascot transformed Pitch Deck into Instagram Launch Post!"
+    },
+    youtube: {
+      title: "Startup Pitch Deck Explainer (Shorts)",
+      snippet: "Dynamic portrait video script highlighting problem, solution, and business model.",
+      panelImg: "assets/panels/panel_6.jpg",
+      caption: "💡 Mascot generated YouTube Short from Presentation Deck!"
+    },
+    linkedin: {
+      title: "Pitch Deck Slide Breakdown",
+      snippet: "Professional multi-slide PDF document tailored for B2B executives and investors on LinkedIn.",
+      panelImg: "assets/panels/panel_8.jpg",
+      caption: "💡 Mascot converted Pitch Deck to LinkedIn Slide Deck!"
+    },
+    blog: {
+      title: "Investor Memo & Pitch Summary",
+      snippet: "Key takeaways and core metrics organized into an executive reading document.",
+      panelImg: "assets/panels/panel_3.jpg",
+      caption: "💡 Mascot created Pitch Summary Memo!"
+    }
+  },
+  strategy: {
+    instagram: {
+      title: "2026 Strategy & Analytics Highlights",
+      snippet: "Infographic-style post showcasing key metrics, market share projections, and strategic goals.",
+      panelImg: "assets/panels/panel_8.jpg",
+      caption: "💡 Mascot generated Strategy Highlights Graphic!"
+    },
+    youtube: {
+      title: "Market Strategy Breakdown in 60s",
+      snippet: "Narrated video script breaking down complex financial forecasts and market share metrics.",
+      panelImg: "assets/panels/panel_6.jpg",
+      caption: "💡 Mascot generated Strategy Breakdown Video Storyboard!"
+    },
+    linkedin: {
+      title: "Strategic Advisory Briefing 2026",
+      snippet: "In-depth document post analyzing competitive landscape, risk matrix, and execution plan.",
+      panelImg: "assets/panels/panel_3.jpg",
+      caption: "💡 Mascot created LinkedIn Strategic Advisory Brief!"
+    },
+    blog: {
+      title: "Strategic Growth Forecast & Analysis",
+      snippet: "Full executive briefing document summarizing client strategy and analytics data.",
+      panelImg: "assets/panels/panel_8.jpg",
+      caption: "💡 Mascot created Strategy Briefing Article!"
+    }
+  }
+};
+
+function switchHeroMode(mode) {
+  const interactiveView = document.getElementById('heroInteractiveView');
+  const comicView = document.getElementById('heroComicView');
+  const tabInteractive = document.getElementById('tabInteractive');
+  const tabComic = document.getElementById('tabComic');
+
+  if (!interactiveView || !comicView) return;
+
+  if (mode === 'interactive') {
+    interactiveView.classList.remove('hidden');
+    comicView.classList.add('hidden');
+    tabInteractive.classList.add('active');
+    tabComic.classList.remove('active');
+  } else {
+    interactiveView.classList.add('hidden');
+    comicView.classList.remove('hidden');
+    tabInteractive.classList.remove('active');
+    tabComic.classList.add('active');
+  }
+}
+
+function selectHeroInput(inputType, btnEl) {
+  selectedHeroInputType = inputType;
+  
+  // Highlight active pill
+  document.querySelectorAll('#inputPillsContainer .doc-pill-btn').forEach(btn => {
+    btn.classList.remove('selected');
+    const icon = btn.querySelector('.material-symbols-outlined');
+    if (icon) {
+      icon.classList.remove('text-[#44643b]');
+      icon.classList.add('text-gray-300');
+    }
+  });
+
+  if (btnEl) {
+    btnEl.classList.add('selected');
+    const selIcon = btnEl.querySelector('.material-symbols-outlined');
+    if (selIcon) {
+      selIcon.classList.remove('text-gray-300');
+      selIcon.classList.add('text-[#44643b]');
+    }
+  }
+
+  // Update comic stage image to bunny arrival (Panel 1 or Panel 5)
+  const stageImg = document.getElementById('heroComicStageImg');
+  if (stageImg) {
+    if (inputType === 'strategy') {
+      stageImg.src = 'assets/panels/panel_5.jpg';
+      document.getElementById('heroStageCaption').innerText = '💡 Bunny helpers delivering Strategy & Market Analytics stack!';
+    } else {
+      stageImg.src = 'assets/panels/panel_1.jpg';
+      document.getElementById('heroStageCaption').innerText = '💡 Bunny helpers delivering Reports & Pitch Decks stack!';
+    }
+  }
+
+  hideGeneratedOverlay();
+}
+
+function selectHeroFormat(formatType, cardEl) {
+  selectedHeroFormatType = formatType;
+
+  // Highlight selected format box card
+  document.querySelectorAll('#formatCardsContainer .format-box-card').forEach(card => {
+    card.classList.remove('selected');
+  });
+  if (cardEl) {
+    cardEl.classList.add('selected');
+  }
+
+  // Highlight platform thought bubbles
+  const thoughtInsta = document.getElementById('thoughtInsta');
+  const thoughtYt = document.getElementById('thoughtYt');
+  const thoughtIn = document.getElementById('thoughtIn');
+
+  [thoughtInsta, thoughtYt, thoughtIn].forEach(b => {
+    if (b) b.classList.remove('scale-110', 'border-[#d96c4b]');
+  });
+
+  if (formatType === 'instagram' && thoughtInsta) {
+    thoughtInsta.classList.add('scale-110', 'border-[#d96c4b]');
+  } else if (formatType === 'youtube' && thoughtYt) {
+    thoughtYt.classList.add('scale-110', 'border-[#d96c4b]');
+  } else if (formatType === 'linkedin' && thoughtIn) {
+    thoughtIn.classList.add('scale-110', 'border-[#d96c4b]');
+  }
+
+  // Set stage back to planning mascot (Panel 2)
+  const stageImg = document.getElementById('heroComicStageImg');
+  if (stageImg) {
+    stageImg.src = 'assets/panels/panel_2.jpg';
+    document.getElementById('heroStageCaption').innerText = `💡 Mascot planning target format (${formatType.toUpperCase()})...`;
+  }
+
+  hideGeneratedOverlay();
+}
+
+function triggerHeroTransformation() {
+  const poofOverlay = document.getElementById('poofCloudOverlay');
+  const stageImg = document.getElementById('heroComicStageImg');
+
+  if (!poofOverlay || !stageImg) return;
+
+  // Step 1: Show AI POOF Cloud Explosion (Panel 4)
+  poofOverlay.classList.remove('hidden');
+  document.getElementById('heroStageCaption').innerText = '✨ AI Cloud Explosion! Distilling document into viral content...';
+  document.getElementById('heroStepNum').innerText = '2';
+
+  setTimeout(() => {
+    // Step 2: Swap backdrop stage image to transformation frame (Panel 3 / Panel 8)
+    poofOverlay.classList.add('hidden');
+    
+    const previewData = (HERO_PREVIEWS[selectedHeroInputType] && HERO_PREVIEWS[selectedHeroInputType][selectedHeroFormatType])
+      ? HERO_PREVIEWS[selectedHeroInputType][selectedHeroFormatType]
+      : HERO_PREVIEWS.reports.instagram;
+
+    stageImg.src = previewData.panelImg;
+
+    // Reveal generated card overlay
+    const overlay = document.getElementById('generatedCardOverlay');
+    document.getElementById('previewPostTitle').innerText = previewData.title;
+    document.getElementById('previewPostSnippet').innerText = previewData.snippet;
+    document.getElementById('previewFormatBadge').innerText = selectedHeroFormatType.toUpperCase();
+    document.getElementById('heroStageCaption').innerText = previewData.caption;
+    document.getElementById('heroStepNum').innerText = '3';
+
+    if (overlay) {
+      overlay.classList.remove('pointer-events-none', 'opacity-0', 'scale-95');
+      overlay.classList.add('opacity-100', 'scale-100');
+    }
+  }, 750);
+}
+
+function hideGeneratedOverlay() {
+  const overlay = document.getElementById('generatedCardOverlay');
+  if (overlay) {
+    overlay.classList.add('pointer-events-none', 'opacity-0', 'scale-95');
+    overlay.classList.remove('opacity-100', 'scale-100');
+  }
+  const stepNum = document.getElementById('heroStepNum');
+  if (stepNum) stepNum.innerText = '1';
+}
+
+function likeHeroPreviewCard(btn) {
+  heroLikesCount++;
+  const likeCountEl = document.getElementById('heroLikeCount');
+  if (likeCountEl) likeCountEl.innerText = heroLikesCount.toLocaleString();
+
+  // Trigger popping heart animation
+  const heart = document.createElement('span');
+  heart.innerText = '❤️';
+  heart.className = 'absolute text-2xl heart-pop-anim pointer-events-none';
+  heart.style.left = `${btn.offsetLeft + 10}px`;
+  heart.style.top = `${btn.offsetTop - 15}px`;
+  if (btn.parentElement) btn.parentElement.appendChild(heart);
+
+  setTimeout(() => heart.remove(), 900);
+}
+
+function launchHeroStudioPipeline() {
+  const pipeline = (selectedHeroFormatType === 'youtube') ? 'video' : 'posts';
+  if (typeof openStudioMode === 'function') {
+    openStudioMode(pipeline);
+  }
+  const workbench = document.getElementById('workbench');
+  if (workbench) {
+    workbench.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+const COMIC_PANEL_DETAILS = {
+  1: { title: "Panel 1: Heavy Document Arrival", desc: "Cute bunny helpers deliver stacks of Reports, Research Papers, Pitch Decks & Presentations to the ant mascot on the park bench.", img: "assets/panels/panel_1.jpg" },
+  2: { title: "Panel 2: Platform Planning", desc: "The ant mascot sitting on the park bench brainstorms target social media channels (Instagram, YouTube, LinkedIn).", img: "assets/panels/panel_2.jpg" },
+  3: { title: "Panel 3: First Transformation", desc: "PostEazy automatically distills text and renders a glowing, ready-to-publish social post card.", img: "assets/panels/panel_3.jpg" },
+  4: { title: "Panel 4: AI POOF Cloud", desc: "Magic cloud particle explosion! PostEazy's AI engine breaks down dense chapters into bite-sized visual slides.", img: "assets/panels/panel_4.jpg" },
+  5: { title: "Panel 5: Strategy & Analytics", desc: "The continuous pipeline ingests Strategy Decks, Client Reports, Market Research, and Analytics seamlessly.", img: "assets/panels/panel_5.jpg" },
+  6: { title: "Panel 6: Multi-Channel Distribution", desc: "Simultaneous multi-platform publishing produces customized content for Instagram, YouTube Shorts, and LinkedIn.", img: "assets/panels/panel_6.jpg" },
+  7: { title: "Panel 7: Format Selector Card", desc: "Select your desired medium: Image, Video, Text, or Graphic Design with a single tap.", img: "assets/panels/panel_7.jpg" },
+  8: { title: "Panel 8: Viral Engagement", desc: "Published social posts capture high audience engagement, hearts, and likes effortless!", img: "assets/panels/panel_8.jpg" },
+  9: { title: "Panel 9: Automated Loop", desc: "A continuous, effortless content flow for all your organization's documents and publications.", img: "assets/panels/panel_9.jpg" }
+};
+
+function openComicLightbox(panelNum) {
+  const modal = document.getElementById('comicLightboxModal');
+  if (!modal) return;
+  const details = COMIC_PANEL_DETAILS[panelNum] || COMIC_PANEL_DETAILS[1];
+
+  document.getElementById('lightboxTitle').innerText = details.title;
+  document.getElementById('lightboxDesc').innerText = details.desc;
+  document.getElementById('lightboxImg').src = details.img;
+
+  modal.classList.remove('hidden');
+}
+
+function closeComicLightbox() {
+  const modal = document.getElementById('comicLightboxModal');
+  if (modal) modal.classList.add('hidden');
+}
+
