@@ -6,12 +6,13 @@ from app.pipelines.faceless_video.core.llm import get_llm_client
 
 WPM = 152  # Faceless video speaking rate (words per minute)
 BANNED_HOOK_OPENINGS = [
-    "in this video", "let's talk about", "have you ever wondered",
-    "today we will", "welcome back", "in today's video"
+    "in this video", "let's talk about", "have you ever wondered", "have you ever",
+    "today we will", "today we'll", "welcome back", "in today's video", "let us look at"
 ]
 
+
 class BeatResponseItem(BaseModel):
-    role: Literal["hook", "context", "body", "turn", "payoff", "cta"]
+    role: Literal["hook", "context", "body", "turn", "payoff", "cta", "loop_closer"]
     claim_ids: list[int] = []
     narration: str
     narration_spoken: str = ""
@@ -49,40 +50,47 @@ def spell_out_digits(text: str) -> str:
 
 
 def plan_narrative_arc(claims: list[Claim], target_seconds: float = 60.0) -> list[Beat]:
-    """Stage 3: Select top claims, construct narrative arc (hook -> context -> body -> turn -> payoff -> cta)."""
+    """Stage 3: Select top claims by surprise_score, construct high-retention narrative arc."""
     budget_info = budget_time(target_seconds)
     n_scenes = budget_info["n_scenes"]
     llm = get_llm_client()
 
-    # Sort claims by salience
-    candidate_pool = sorted(claims, key=lambda c: c.salience, reverse=True)[:int(n_scenes * 1.5)]
-    claims_formatted = "\n".join([f"ID {c.id} [{c.kind}]: {c.text}" for c in candidate_pool])
+    # Sort claims by surprise_score descending, then salience
+    candidate_pool = sorted(claims, key=lambda c: (c.surprise_score, c.salience), reverse=True)[:int(n_scenes * 1.5)]
+    claims_formatted = "\n".join([f"ID {c.id} [Surprise: {c.surprise_score}/10, {c.kind}]: {c.text}" for c in candidate_pool])
 
     if llm.is_configured and candidate_pool:
         prompt = (
-            f"Build a tight {n_scenes}-scene narrative video arc ({target_seconds}s video budget).\n"
-            f"You MUST assign exactly one 'hook' at the start, 3-8 'body' beats, at most one 'turn', one 'payoff', and optional 'cta'.\n"
-            f"Rules:\n"
-            f"1. Each beat narration MUST be <= 14 words.\n"
-            f"2. Hook MUST NOT start with banned openers like 'In this video' or 'Let's talk about'.\n"
-            f"3. Each beat MUST cite the claim IDs it uses.\n\n"
+            f"Build a tight {n_scenes}-scene viral video narrative script ({target_seconds}s video budget).\n"
+            f"Structure:\n"
+            f"  - Beat 1 (HOOK): High-impact hook using the most surprising claim. Max 8 words. MUST be a number, a question, or a bold contradiction. NO INTRO OR SETUP.\n"
+            f"  - Beat 2 (OPEN LOOP / CONTEXT): Tease an upcoming twist (e.g., 'but the second stat changes everything').\n"
+            f"  - Beat 3..{n_scenes-2} (BODY): One punchy idea per scene. Max 14 words per beat. Use spoken contractions (it's, don't, we're).\n"
+            f"  - Beat {n_scenes-1} (PAYOFF): Deliver on the open-loop teaser.\n"
+            f"  - Beat {n_scenes} (LOOP CLOSER): Last line must seamlessly connect back to the hook for replayability.\n\n"
+            f"BANNED OPENERS: NEVER start beat 1 with 'In this video', 'Today we'll', 'Let's talk about', 'Have you ever'.\n\n"
             f"CLAIMS POOL:\n{claims_formatted}"
         )
         try:
             result = llm.complete_structured(
                 prompt=prompt,
                 response_schema=NarrativeArcOutput,
-                system_prompt="You are a master viral video scriptwriter.",
+                system_prompt="You are a top-tier TikTok/Reels viral scriptwriter focused on 90%+ retention.",
                 temperature=0.7
             )
             beats: list[Beat] = []
             for idx, item in enumerate(result.beats, start=1):
-                # Clean narration and check banned hooks
                 narration = item.narration.strip()
-                if item.role == "hook":
+                
+                # Enforce hook rules for beat 1
+                if idx == 1 or item.role == "hook":
                     for banned in BANNED_HOOK_OPENINGS:
                         if narration.lower().startswith(banned):
-                            narration = f"Here is what matters: {narration[len(banned):].lstrip(', ')}"
+                            narration = narration[len(banned):].strip(" ,:-")
+                    # Trim hook to max 8 words
+                    words = narration.split()
+                    if len(words) > 8:
+                        narration = " ".join(words[:8])
 
                 spoken = item.narration_spoken or spell_out_digits(narration)
                 beats.append(
@@ -103,12 +111,22 @@ def plan_narrative_arc(claims: list[Claim], target_seconds: float = 60.0) -> lis
     fallback_beats: list[Beat] = []
     selected_claims = candidate_pool[:n_scenes] if candidate_pool else claims[:n_scenes]
     
-    roles: list[Literal["hook", "context", "body", "turn", "payoff", "cta"]] = ["hook", "context"] + ["body"] * max(1, len(selected_claims)-3) + ["payoff"]
-
     for idx, c in enumerate(selected_claims, start=1):
-        role = roles[min(idx-1, len(roles)-1)]
-        words = c.text.split()[:12]
-        narration = " ".join(words)
+        if idx == 1:
+            role = "hook"
+            words = c.text.split()[:8]
+            narration = " ".join(words)
+        elif idx == 2:
+            role = "context"
+            narration = "But here is what most people miss."
+        elif idx == len(selected_claims):
+            role = "payoff"
+            narration = "And that is why this changes everything."
+        else:
+            role = "body"
+            words = c.text.split()[:12]
+            narration = " ".join(words)
+
         fallback_beats.append(
             Beat(
                 idx=idx,

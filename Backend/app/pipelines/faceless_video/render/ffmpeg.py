@@ -6,7 +6,16 @@ from app.core.ir import SceneSpec
 from app.pipelines.faceless_video.render.frames import render_frame
 
 
-def render_scene_typography_mov(scene: SceneSpec, fps: int = 30, work_dir: str = "work", width: int = 1080, height: int = 1920) -> str:
+def render_scene_typography_mov(
+    scene: SceneSpec,
+    fps: int = 30,
+    work_dir: str = "work",
+    width: int = 1080,
+    height: int = 1920,
+    theme: str = "neon",
+    brand_kit = None,
+    style_template = None
+) -> str:
     """Renders PIL RGBA frames and streams raw bytes directly into FFmpeg stdin for fast transparent .mov encoding."""
     scenes_dir = Path(work_dir) / "scenes"
     scenes_dir.mkdir(parents=True, exist_ok=True)
@@ -32,7 +41,7 @@ def render_scene_typography_mov(scene: SceneSpec, fps: int = 30, work_dir: str =
     try:
         for frame_idx in range(total_frames):
             t = frame_idx / float(fps)
-            img = render_frame(scene, t, width=width, height=height)
+            img = render_frame(scene, t, width=width, height=height, theme=theme, brand_kit=brand_kit, style_template=style_template)
             proc.stdin.write(img.tobytes())
         proc.stdin.close()
         proc.wait()

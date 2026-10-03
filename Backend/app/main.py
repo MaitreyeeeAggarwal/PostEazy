@@ -1,4 +1,12 @@
 import os
+import sys
+from pathlib import Path
+
+# Ensure Backend directory is in python path
+backend_dir = Path(__file__).resolve().parent.parent
+if str(backend_dir) not in sys.path:
+    sys.path.insert(0, str(backend_dir))
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -61,6 +69,7 @@ if frontend_dir.exists():
         app.mount("/js", StaticFiles(directory=str(frontend_dir / "js")), name="js")
 
 @app.get("/", include_in_schema=False)
+@app.get("/index.html", include_in_schema=False)
 async def read_index():
     index_path = frontend_dir / "index.html"
     if index_path.exists():
@@ -73,6 +82,13 @@ async def read_studio():
     studio_path = frontend_dir / "studio.html"
     if studio_path.exists():
         return FileResponse(str(studio_path))
+    return FileResponse(str(frontend_dir / "index.html"))
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    fav = frontend_dir / "favicon.ico"
+    if fav.exists():
+        return FileResponse(str(fav))
     return FileResponse(str(frontend_dir / "index.html"))
 
 # Register Routers

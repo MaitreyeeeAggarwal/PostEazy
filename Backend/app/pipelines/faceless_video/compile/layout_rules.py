@@ -21,12 +21,12 @@ def select_layout(fragment_words: list[str], beat_role: str, prev_layout: str = 
     else:
         chosen = "center_stack"
 
-    # 3. Prevent more than 2 consecutive identical layouts
-    if chosen == prev_layout and repeat_count >= 2:
+    # 3. Prevent back-to-back identical layouts
+    if chosen == prev_layout and repeat_count >= 1:
         alternates: list[LayoutType] = ["center_stack", "lower_third", "split_left", "stat_callout"]
         if chosen in alternates:
             alternates.remove(chosen)
-        chosen = alternates[0]
+        chosen = alternates[(repeat_count - 1) % len(alternates)]
 
     return chosen
 

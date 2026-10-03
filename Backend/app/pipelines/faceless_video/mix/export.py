@@ -96,7 +96,7 @@ def export_deliverable(
                 "-map", "[v_final]",
                 "-map", f"{audio_idx}:a:0",
                 "-c:v", "libx264", "-pix_fmt", "yuv420p", "-g", "30", "-crf", p_config["crf"], "-preset", "veryfast",
-                "-c:a", "aac", "-b:a", "192k",
+                "-c:a", "aac", "-ac", "2", "-ar", "44100", "-b:a", "192k",
                 "-shortest",
                 "-movflags", "+faststart",
                 str(out_path)
@@ -122,7 +122,7 @@ def export_deliverable(
             "-map", "0:v:0",
             "-map", "1:a:0",
             "-c:v", "libx264", "-pix_fmt", "yuv420p", "-g", "30", "-crf", p_config["crf"], "-preset", "veryfast",
-            "-c:a", "aac", "-b:a", "192k",
+            "-c:a", "aac", "-ac", "2", "-ar", "44100", "-b:a", "192k",
             "-shortest",
             "-movflags", "+faststart",
             str(out_path)

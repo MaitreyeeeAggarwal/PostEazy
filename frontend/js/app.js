@@ -41,54 +41,141 @@ document.addEventListener('DOMContentLoaded', () => {
   checkAuthUser();
   renderFloatingCards();
   initParallaxMouse();
+  initScrollSpy();
+  initArtifactCardInteractions();
+  checkUrlParamsStudioMode();
 });
+
+// ScrollSpy for Top Navbar Link Underline Transition
+function initScrollSpy() {
+  const navLinks = document.querySelectorAll('nav a[href^="#"]');
+  if (!navLinks.length) return;
+
+  const sections = Array.from(navLinks)
+    .map(link => {
+      const hash = link.getAttribute('href');
+      if (!hash || hash === '#') return null;
+      return document.querySelector(hash);
+    })
+    .filter(Boolean);
+
+  if (!sections.length) return;
+
+  function updateActiveLink() {
+    const scrollPosition = window.scrollY + 200; // Offset for sticky top bar
+
+    let currentSection = sections[0];
+    for (const section of sections) {
+      if (section.offsetTop <= scrollPosition) {
+        currentSection = section;
+      }
+    }
+
+    if (currentSection) {
+      const activeId = currentSection.getAttribute('id');
+      navLinks.forEach(link => {
+        const isMatch = link.getAttribute('href') === `#${activeId}`;
+        if (isMatch) {
+          link.className = 'nav-item text-primary dark:text-surface-bright font-bold border-b-2 border-primary dark:border-surface-bright pb-1 transition-colors';
+        } else {
+          link.className = 'nav-item text-secondary dark:text-outline-variant hover:text-primary dark:hover:text-surface-bright pb-1 transition-colors';
+        }
+      });
+    }
+  }
+
+  window.addEventListener('scroll', updateActiveLink);
+  updateActiveLink(); // Initial check
+}
+
+// 3D Tilt & Mouse Tracking Interaction for the 3 Feature Artifact Cards
+function initArtifactCardInteractions() {
+  const cards = document.querySelectorAll('.feature-artifact-card');
+  if (!cards.length) return;
+
+  cards.forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      
+      // Dynamic tilt angles (max ~6 degrees)
+      const rotateX = ((y - centerY) / centerY) * -6;
+      const rotateY = ((x - centerX) / centerX) * 6;
+      
+      card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-8px) scale(1.025)`;
+      card.style.setProperty('--mouse-x', `${((x / rect.width) * 100).toFixed(1)}%`);
+      card.style.setProperty('--mouse-y', `${((y / rect.height) * 100).toFixed(1)}%`);
+    });
+
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+      card.style.removeProperty('--mouse-x');
+      card.style.removeProperty('--mouse-y');
+    });
+  });
+}
 
 // Render 3D Floating Cards in Hero
 function renderFloatingCards() {
   const layer = document.getElementById('floatingCardsLayer');
   if (!layer) return;
 
-  layer.innerHTML = FORMATS.map(f => `
-    <div 
-      class="floating-card-item" 
-      id="card-${f.id}"
-      style="
-        left: calc(50% + ${f.x}px);
-        top: calc(50% + ${f.y}px);
-        z-index: ${f.z};
-        transform: translate(-50%, -50%) scale(${f.z < 15 ? 0.8 : 1.0});
-      "
-      onclick="focusFormatCard('${f.id}')"
-    >
-      <div style="background: linear-gradient(145deg, #111827, #070a12); width: 100%; height: 100%; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; border-radius: 12px;">
-        <div style="font-size: 32px;">${f.icon}</div>
-        <div class="card-content-box">
-          <div class="card-title-text">${f.title}</div>
-          <div class="card-desc-text">${f.desc}</div>
+  const extMap = {
+    linkedin: '.post',
+    twitter: '.tweet',
+    presentation: '.slide',
+    executive: '.brief',
+    advisory: '.report',
+    infographic: '.chart',
+    storyboard: '.story',
+    youtube: '.shorts',
+    instagram: '.reel',
+    email: '.mail',
+    press: '.press',
+    research: '.paper',
+    mobile: '.card',
+    blog: '.doc',
+    analytics: '.data'
+  };
+
+  layer.innerHTML = FORMATS.map((f, idx) => {
+    const ext = extMap[f.id] || '.doc';
+    const cardZ = Math.min(15, f.z); // Keep z-index <= 15 so all cards stay BEHIND heroCenterContent (z-40)
+
+    return `
+      <div 
+        class="floating-card-item" 
+        id="card-${f.id}"
+        style="
+          left: calc(50% + ${f.x}px);
+          top: calc(50% + ${f.y}px);
+          z-index: ${cardZ};
+          transform: translate(-50%, -50%) scale(${f.z < 15 ? 0.85 : 1.0});
+        "
+        onclick="focusFormatCard('${f.id}')"
+      >
+        <div class="scrapbook-card hand-drawn-pill">
+          <div style="width: 36px; height: 36px; border-radius: 10px; background: #F3EDE2; border: 1px solid #DDD5C5; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">${f.icon}</div>
+          <div class="card-content-box" style="min-width: 0; flex: 1;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px;">
+              <span class="card-title-text" style="font-family: 'Patrick Hand', 'Gochi Hand', cursive; font-size: 13px; font-weight: 700; color: #2C2924; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${f.title}</span>
+              <span style="font-family: 'Fira Code', monospace; font-size: 10px; font-weight: 700; background: #dce6d8; color: #335328; padding: 1px 5px; border-radius: 4px; border: 1px solid rgba(45,55,46,0.3); line-height: 1.2;">${ext}</span>
+            </div>
+            <div class="card-desc-text" style="font-family: 'Patrick Hand', cursive; font-size: 11px; color: #746E65; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px;">${f.desc}</div>
+          </div>
         </div>
       </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
-// Parallax Mouse Motion
+// Parallax Mouse Motion (Disabled per user request so tags remain static)
 function initParallaxMouse() {
-  window.addEventListener('mousemove', (e) => {
-    if (focusedFormatId) return; // Freeze parallax when focused
-    const mouseX = e.clientX - window.innerWidth / 2;
-    const mouseY = e.clientY - window.innerHeight / 2;
-
-    FORMATS.forEach(f => {
-      const card = document.getElementById(`card-${f.id}`);
-      if (card && !card.classList.contains('focused')) {
-        const factor = f.z * 0.03;
-        const offsetX = f.x + mouseX * factor;
-        const offsetY = f.y + mouseY * factor;
-        card.style.left = `calc(50% + ${offsetX}px)`;
-        card.style.top = `calc(50% + ${offsetY}px)`;
-      }
-    });
-  });
+  // Static layout - no cursor parallax tracking on floating cards
 }
 
 // Focus a Format Card & Show Transformation Overlay
@@ -138,7 +225,12 @@ function selectTone(btn, tone) {
 
 function scrollToStudio(mode = 'video') {
   closeTransformationModal();
-  window.location.href = `studio.html?mode=${mode}`;
+  const workbench = document.getElementById('workbench') || document.getElementById('studioChoiceGrid');
+  if (workbench) {
+    workbench.scrollIntoView({ behavior: 'smooth' });
+  } else {
+    window.location.href = `studio.html?mode=${mode}`;
+  }
 }
 
 // ==========================================================
@@ -146,25 +238,45 @@ function scrollToStudio(mode = 'video') {
 // ==========================================================
 function openStudioMode(mode) {
   currentPipeline = mode;
-  document.getElementById('studioChoiceGrid').style.display = 'none';
+
+  const videoContainer = document.getElementById('videoStudioContainer');
+  if (!videoContainer) {
+    // We are on landing page index.html: Navigate to the separate dedicated studio page
+    window.location.href = `studio.html?mode=${mode}`;
+    return;
+  }
+
+  // We are on dedicated studio.html: Toggle studio views
+  const choiceGrid = document.getElementById('studioChoiceGrid');
+  if (choiceGrid) choiceGrid.style.display = 'none';
 
   if (mode === 'video') {
-    document.getElementById('videoStudioContainer').style.display = 'block';
-    document.getElementById('postStudioContainer').style.display = 'none';
+    videoContainer.style.display = 'block';
+    const postContainer = document.getElementById('postStudioContainer');
+    if (postContainer) postContainer.style.display = 'none';
     goToVideoStep(1);
   } else {
-    document.getElementById('videoStudioContainer').style.display = 'none';
-    document.getElementById('postStudioContainer').style.display = 'block';
+    videoContainer.style.display = 'none';
+    const postContainer = document.getElementById('postStudioContainer');
+    if (postContainer) postContainer.style.display = 'block';
   }
 
   const studio = document.getElementById('studio');
   if (studio) studio.scrollIntoView({ behavior: 'smooth' });
 }
 
+function checkUrlParamsStudioMode() {
+  const videoContainer = document.getElementById('videoStudioContainer');
+  if (!videoContainer) return; // Not on studio.html page
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const mode = urlParams.get('mode') || 'video'; // Default to video studio step 1 directly!
+  
+  openStudioMode(mode);
+}
+
 function backToStudioChoice() {
-  document.getElementById('studioChoiceGrid').style.display = 'grid';
-  document.getElementById('videoStudioContainer').style.display = 'none';
-  document.getElementById('postStudioContainer').style.display = 'none';
+  window.location.href = 'index.html#workbench';
 }
 
 // ==========================================================
@@ -173,8 +285,25 @@ function backToStudioChoice() {
 
 function selectVideoPlatform(platform) {
   currentPlatform = platform;
-  document.getElementById('vPlatInstagram').classList.toggle('selected', platform === 'instagram');
-  document.getElementById('vPlatYoutube').classList.toggle('selected', platform === 'youtube');
+  const igBtn = document.getElementById('vPlatInstagram');
+  const ytBtn = document.getElementById('vPlatYoutube');
+
+  if (igBtn) {
+    if (platform === 'instagram') {
+      igBtn.className = 'px-3 py-1 rounded-full border-2 border-charcoal text-xs font-hand font-bold bg-moss-surface text-moss-dark shadow-sketch-sm';
+    } else {
+      igBtn.className = 'px-3 py-1 rounded-full border border-charcoal text-xs font-hand font-bold bg-white text-charcoal shadow-sketch-sm';
+    }
+  }
+
+  if (ytBtn) {
+    if (platform === 'youtube') {
+      ytBtn.className = 'px-3 py-1 rounded-full border-2 border-charcoal text-xs font-hand font-bold bg-moss-surface text-moss-dark shadow-sketch-sm';
+    } else {
+      ytBtn.className = 'px-3 py-1 rounded-full border border-charcoal text-xs font-hand font-bold bg-white text-charcoal shadow-sketch-sm';
+    }
+  }
+
   showToast(`Platform set: ${platform.toUpperCase()}`);
 }
 
@@ -186,9 +315,11 @@ function selectVideoCategory(category) {
   if (category === 'long') {
     document.getElementById('videoDurationInput').value = 180; // 3 minutes for long-form
     document.getElementById('aiDurationBadge').innerText = '180 seconds (3m)';
+    selectVideoPlatform('youtube');
   } else {
     document.getElementById('videoDurationInput').value = 60; // 60s for short-form
     document.getElementById('aiDurationBadge').innerText = '60 seconds';
+    selectVideoPlatform('instagram');
   }
   showToast(`Format category: ${category === 'short' ? 'Short Form Content (9:16)' : 'Long Form Content (16:9)'}`);
 }
@@ -198,8 +329,29 @@ function goToVideoStep(stepNum) {
   for (let i = 1; i <= 5; i++) {
     const indicator = document.getElementById(`vStep${i}Indicator`);
     if (indicator) {
-      indicator.classList.toggle('active', i === stepNum);
-      indicator.classList.toggle('completed', i < stepNum);
+      const badge = indicator.querySelector('span:first-child');
+      if (i === stepNum) {
+        // Active step
+        indicator.className = 'flex items-center gap-2 flex-shrink-0 px-3.5 py-1.5 rounded-xl bg-terracotta-soft text-terracotta border-2 border-charcoal font-hand font-bold text-base shadow-sketch-sm transition-all';
+        if (badge) {
+          badge.className = 'w-6 h-6 rounded-full bg-terracotta text-white font-sans text-xs font-bold flex items-center justify-center border border-charcoal';
+          badge.innerText = `${i}`;
+        }
+      } else if (i < stepNum) {
+        // Completed step
+        indicator.className = 'flex items-center gap-2 flex-shrink-0 px-3.5 py-1.5 rounded-xl bg-moss-surface text-moss-dark border border-moss/40 font-hand font-bold text-base transition-all';
+        if (badge) {
+          badge.className = 'w-6 h-6 rounded-full bg-moss text-white font-sans text-xs font-bold flex items-center justify-center border border-charcoal';
+          badge.innerText = '✓';
+        }
+      } else {
+        // Upcoming step
+        indicator.className = 'flex items-center gap-2 flex-shrink-0 px-3 py-1.5 rounded-xl font-hand font-bold text-base transition-all text-charcoal/60';
+        if (badge) {
+          badge.className = 'w-6 h-6 rounded-full bg-charcoal/10 text-charcoal/70 font-sans text-xs font-bold flex items-center justify-center';
+          badge.innerText = `${i}`;
+        }
+      }
     }
 
     const view = document.getElementById(`videoStep${i}View`);
@@ -207,6 +359,9 @@ function goToVideoStep(stepNum) {
       view.style.display = (i === stepNum) ? 'block' : 'none';
     }
   }
+
+  const studio = document.getElementById('studio');
+  if (studio) studio.scrollIntoView({ behavior: 'smooth' });
 }
 
 // Step 1 -> Step 2: Document Ingestion & AI Script Analysis
@@ -245,7 +400,7 @@ async function goToVideoStep2() {
     document.getElementById('videoScriptEditor').value = JSON.stringify(ingestedScriptData, null, 2);
     document.getElementById('ingestLoadingBanner').style.background = 'rgba(52, 211, 153, 0.1)';
     document.getElementById('ingestLoadingBanner').style.borderColor = 'var(--accent-green)';
-    document.getElementById('ingestStatText').innerText = `✅ Ingestion complete! ${numScenes} script beats distilled successfully.`;
+    document.getElementById('ingestStatText').innerText = `Ingestion complete! ${numScenes} script beats distilled successfully.`;
 
     showToast('✅ Document ingested! Review AI suggested duration & script.');
   } catch (error) {
@@ -381,6 +536,27 @@ function displayFinalVideoOutput(job) {
   const player = document.getElementById('finalVideoPlayer');
   const source = document.getElementById('finalVideoSource');
   const downloadBtn = document.getElementById('downloadMp4Btn');
+  const container = document.getElementById('finalPlayerContainer');
+  const formatSpec = document.getElementById('finalFormatSpec');
+
+  const isLongForm = selectedVideoCategory === 'long';
+
+  // Adapt player UI frame dynamically for 16:9 Widescreen vs 9:16 Vertical Reel
+  if (container) {
+    if (isLongForm) {
+      container.className = 'relative w-full max-w-[560px] bg-charcoal rounded-[1.5rem] p-3 border-2 border-charcoal shadow-sketch-lg transition-all';
+      if (player) player.className = 'w-full aspect-[16/9] rounded-[1rem] bg-black object-contain';
+    } else {
+      container.className = 'relative w-full max-w-[320px] bg-charcoal rounded-[2rem] p-3 border-2 border-charcoal shadow-sketch-lg transition-all';
+      if (player) player.className = 'w-full aspect-[9/16] rounded-[1.5rem] bg-black object-cover';
+    }
+  }
+
+  if (formatSpec) {
+    formatSpec.innerHTML = isLongForm
+      ? '• Format: <strong>1920 × 1080 (16:9 Widescreen Video)</strong>'
+      : '• Format: <strong>1080 × 1920 (9:16 Vertical Reel)</strong>';
+  }
 
   if (source) source.src = videoUrl;
   if (player) {
@@ -466,18 +642,42 @@ function handleFileSelect(event) {
 
 function setFile(file) {
   selectedFile = file;
-  document.getElementById('fileName').innerText = `${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
-  document.getElementById('fileInfo').style.display = 'flex';
-  document.getElementById('dropzone').style.borderColor = '#34d399';
+  const dropTitle = document.getElementById('dropTitle');
+  const dropSubtitle = document.getElementById('dropSubtitle');
+  if (dropTitle) {
+    dropTitle.innerText = `📄 ${file.name}`;
+  }
+  if (dropSubtitle) {
+    dropSubtitle.innerText = `${(file.size / 1024 / 1024).toFixed(2)} MB • Ready for Ingestion & Script Analysis`;
+  }
+  const dropzone = document.getElementById('dropzone');
+  if (dropzone) {
+    dropzone.style.borderColor = '#728c69';
+    dropzone.style.backgroundColor = '#eef4ec';
+  }
   showToast(`Loaded document: ${file.name}`);
 }
 
+function loadSampleDoc() {
+  const content = `# Local AI Desktop Browser - Architecture Whitepaper\n\nExecutive Briefing:\nMost local AI solutions fail to bridge the gap between heavy neural compute and intuitive desktop UI.\nPostEazy translates structured whitepapers, slides, and docs directly into 60 FPS kinetic watercolor video reels.\n\nKey Finding 01: 42% growth in content engagement when using kinetic typography.\nKey Finding 02: Faceless automated workflows cut production overhead by 90%.`;
+  const file = new File([content], "Sample_AI_Whitepaper.txt", { type: "text/plain" });
+  setFile(file);
+}
+
 function clearFile(event) {
-  event.stopPropagation();
+  if (event) event.stopPropagation();
   selectedFile = null;
-  document.getElementById('fileInput').value = '';
-  document.getElementById('fileInfo').style.display = 'none';
-  document.getElementById('dropzone').style.borderColor = 'rgba(255, 255, 255, 0.2)';
+  const fileInput = document.getElementById('fileInput');
+  if (fileInput) fileInput.value = '';
+  const dropTitle = document.getElementById('dropTitle');
+  const dropSubtitle = document.getElementById('dropSubtitle');
+  if (dropTitle) dropTitle.innerText = 'Click or drag & drop document';
+  if (dropSubtitle) dropSubtitle.innerText = 'Upload papers, decks, or write-ups up to 25MB for parsing';
+  const dropzone = document.getElementById('dropzone');
+  if (dropzone) {
+    dropzone.style.borderColor = '';
+    dropzone.style.backgroundColor = '';
+  }
 }
 
 // Drag & Drop

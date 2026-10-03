@@ -12,8 +12,106 @@ def ease_out_cubic(p: float) -> float:
     return 1.0 - (1.0 - p) ** 3
 
 
-def render_frame(scene: SceneSpec, t: float, width: int = 1080, height: int = 1920) -> Image.Image:
-    """Renders a single video frame at timestamp t as a transparent RGBA image."""
+STYLE_THEMES = {
+    "neon": {
+        "text": (255, 255, 255),
+        "highlight": (251, 191, 36),     # Gold / Amber
+        "badge_bg": (124, 58, 237),      # Purple
+        "badge_border": (251, 191, 36),  # Gold border
+        "number": (251, 191, 36),
+    },
+    "cyberpunk": {
+        "text": (255, 255, 255),
+        "highlight": (0, 242, 254),      # Electric Cyan
+        "badge_bg": (236, 72, 153),      # Pink/Magenta
+        "badge_border": (0, 255, 136),  # Neon Green
+        "number": (0, 242, 254),
+    },
+    "corporate": {
+        "text": (255, 255, 255),
+        "highlight": (52, 211, 153),     # Emerald
+        "badge_bg": (15, 23, 42),       # Dark Slate
+        "badge_border": (52, 211, 153), # Emerald Border
+        "number": (52, 211, 153),
+    },
+    "sunset": {
+        "text": (255, 255, 255),
+        "highlight": (255, 107, 107),    # Coral
+        "badge_bg": (217, 119, 6),      # Amber
+        "badge_border": (255, 215, 0),  # Bright Gold
+        "number": (255, 215, 0),
+    }
+}
+
+_SIZE_CACHE: dict[tuple[int, int, int], int] = {}
+
+
+def hex_to_rgb(hex_str: str) -> tuple[int, int, int]:
+    """Converts hex color string to RGB tuple."""
+    clean = hex_str.lstrip("#")
+    if len(clean) == 6:
+        return tuple(int(clean[i:i+2], 16) for i in (0, 2, 4))
+    return (255, 255, 255)
+
+
+def draw_logo_watermark(frame: Image.Image, logo_path: str, position: str = "top_right", opacity: float = 0.85, width: int = 1080, height: int = 1920):
+    """Pastes brand logo watermark onto frame at specified corner."""
+    if not logo_path or not Path(logo_path).exists():
+        return frame
+    try:
+        logo = Image.open(logo_path).convert("RGBA")
+        logo.thumbnail((160, 60), Image.Resampling.LANCZOS)
+        
+        if opacity < 1.0:
+            r, g, b, a = logo.split()
+            a = a.point(lambda p: int(p * opacity))
+            logo.putalpha(a)
+            
+        lw, lh = logo.size
+        if position == "top_left":
+            pos = (40, 40)
+        elif position == "bottom_left":
+            pos = (40, height - lh - 120)
+        else:  # top_right
+            pos = (width - lw - 40, 40)
+            
+        frame.paste(logo, pos, logo)
+    except Exception as e:
+        print(f"[Watermark Error]: {e}")
+    return frame
+
+
+def render_frame(
+    scene: SceneSpec,
+    t: float,
+    width: int = 1080,
+    height: int = 1920,
+    theme: str = "neon",
+    brand_kit = None,
+    style_template = None
+) -> Image.Image:
+    """Renders a single video frame at timestamp t as a transparent RGBA image with Brand Kit & Style Templates."""
+    # Resolve colors from style_template or theme palette
+    if style_template:
+        palette = {
+            "text": hex_to_rgb(style_template.text_color),
+            "highlight": hex_to_rgb(style_template.highlight_color),
+            "badge_bg": hex_to_rgb(style_template.badge_bg),
+            "badge_border": hex_to_rgb(style_template.badge_border),
+            "number": hex_to_rgb(style_template.number_color),
+        }
+    else:
+        palette = STYLE_THEMES.get(theme.lower(), STYLE_THEMES["neon"])
+
+    # Override palette colors with BrandKit if provided
+    if brand_kit:
+        if getattr(brand_kit, "primary_color", None):
+            palette["highlight"] = hex_to_rgb(brand_kit.primary_color)
+        if getattr(brand_kit, "secondary_color", None):
+            palette["number"] = hex_to_rgb(brand_kit.secondary_color)
+        if getattr(brand_kit, "badge_color", None):
+            palette["badge_bg"] = hex_to_rgb(brand_kit.badge_color)
+
     frame = Image.new("RGBA", (width, height), (0, 0, 0, 0))
     draw = ImageDraw.Draw(frame)
 
@@ -29,6 +127,79 @@ def render_frame(scene: SceneSpec, t: float, width: int = 1080, height: int = 19
             trans_x_offset = int(40 * (1.0 - enter_fade))
         elif t > scene.duration_s - 0.25:
             trans_x_offset = int(-40 * (1.0 - exit_fade))
+
+    # 0. Documentary Letterbox Mode
+    if style_template and getattr(style_template, "letterbox", False):
+        bar_h = int(height * 0.05)
+        draw.rectangle([0, 0, width, bar_h], fill=(0, 0, 0, 255))
+        draw.rectangle([0, height - bar_h, width, height], fill=(0, 0, 0, 255))
+
+    # 0. News Ticker Mode
+    if style_template and getattr(style_template, "news_ticker", False):
+        # Top Breaking News Banner
+        draw.rectangle([0, 25, 320, 75], fill=(220, 38, 38, int(230 * scene_fade)))
+        banner_font = load_font(28)
+        draw.text((30, 35), "BREAKING NEWS", font=banner_font, fill=(255, 255, 255, int(255 * scene_fade)))
+
+        # Bottom News Ticker Bar
+        ticker_y1 = height - 100
+        ticker_y2 = height - 50
+        draw.rectangle([0, ticker_y1, width, ticker_y2], fill=(15, 23, 42, int(220 * scene_fade)), outline=(220, 38, 38, int(255 * scene_fade)), width=2)
+        ticker_font = load_font(24)
+        ticker_text = f"LIVE REPORT • {scene.narration} • POSTEAZY CONTENT ENGINE"
+        ticker_offset = int((t * 120) % (width + 400))
+        draw.text((width - ticker_offset, ticker_y1 + 12), ticker_text, font=ticker_font, fill=(248, 250, 252, int(255 * scene_fade)))
+
+    # Draw Top Progress Bar
+    progress_ratio = max(0.0, min(1.0, t / max(0.1, scene.duration_s)))
+    bar_w = int(width * progress_ratio)
+    if bar_w > 0:
+        draw.rectangle([0, 10, bar_w, 18], fill=(*palette["highlight"], int(220 * scene_fade)))
+
+    # 0. End Card Layout (Outro Brand Card)
+    if scene.layout == "end_card":
+        card_x1 = int(width * 0.10)
+        card_x2 = int(width * 0.90)
+        card_y1 = int(height * 0.25)
+        card_y2 = int(height * 0.72)
+        
+        scrim = draw_gradient_scrim(width, height, (card_x1 - 20, card_y1 - 20, card_x2 + 20, card_y2 + 20), 0.85 * scene_fade)
+        frame = Image.alpha_composite(frame, scrim)
+        draw = ImageDraw.Draw(frame)
+
+        alpha = int(255 * scene_fade)
+        if alpha > 0:
+            # End card rounded background box
+            draw.rounded_rectangle((card_x1, card_y1, card_x2, card_y2), radius=24, fill=(*palette["badge_bg"], int(220 * scene_fade)), outline=(*palette["highlight"], alpha), width=3)
+            
+            # End Card Title & Tagline
+            title = getattr(brand_kit, "end_card_title", "PostEazy Content Engine") if brand_kit else "PostEazy Content Engine"
+            tagline = getattr(brand_kit, "end_card_tagline", "Transforming Documents into Viral Media") if brand_kit else "Transforming Documents into Viral Media"
+
+            title_font = load_font(44)
+            tag_font = load_font(28)
+            cta_font = load_font(32)
+
+            t_box = title_font.getbbox(title)
+            draw.text(( (width - (t_box[2] - t_box[0])) // 2, card_y1 + 80 ), title, font=title_font, fill=(*palette["highlight"], alpha))
+
+            tg_box = tag_font.getbbox(tagline)
+            draw.text(( (width - (tg_box[2] - tg_box[0])) // 2, card_y1 + 160 ), tagline, font=tag_font, fill=(248, 250, 252, alpha))
+
+            # CTA Button
+            cta_btn = "Follow For Daily Insights ➔"
+            c_box = cta_font.getbbox(cta_btn)
+            bx1 = (width - (c_box[2] - c_box[0])) // 2 - 30
+            bx2 = bx1 + (c_box[2] - c_box[0]) + 60
+            by1 = card_y2 - 120
+            by2 = by1 + 70
+            draw.rounded_rectangle((bx1, by1, bx2, by2), radius=16, fill=(*palette["highlight"], alpha), outline=(255, 255, 255, alpha), width=2)
+            draw.text((bx1 + 30, by1 + 16), cta_btn, font=cta_font, fill=(11, 15, 25, alpha))
+
+        if brand_kit and getattr(brand_kit, "logo_path", None):
+            frame = draw_logo_watermark(frame, brand_kit.logo_path, getattr(brand_kit, "watermark_position", "top_right"), getattr(brand_kit, "watermark_opacity", 0.85), width, height)
+
+        return frame
 
     # 1. Full Bleed Number Layout
     if scene.layout == "full_bleed_number":
@@ -46,7 +217,7 @@ def render_frame(scene: SceneSpec, t: float, width: int = 1080, height: int = 19
             bbox = num_font.getbbox(main_word)
             w = bbox[2] - bbox[0]
             x = (width - w) // 2 + trans_x_offset
-            y = int(height * 0.35) - y_offset
+            y = int(height * 0.32) - y_offset
             
             # Scrim
             scrim = draw_gradient_scrim(width, height, (x - 20, y - 20, x + w + 20, y + 250), 0.5 * scene_fade)
@@ -54,16 +225,16 @@ def render_frame(scene: SceneSpec, t: float, width: int = 1080, height: int = 19
             draw = ImageDraw.Draw(frame)
             
             # Accent color for big number
-            draw.text((x, y), main_word, font=num_font, fill=(251, 191, 36, alpha))
+            draw.text((x, y), main_word, font=num_font, fill=(*palette["number"], alpha))
 
         return frame
 
     # 2. Document Figure Layout (Embedded map, graph, diagram from document)
     if scene.layout == "document_figure":
         card_x1 = int(width * 0.08)
-        card_x2 = int(width * 0.92)
-        card_y1 = int(height * 0.16)
-        card_y2 = int(height * 0.56)
+        card_x2 = int(width * 0.88)
+        card_y1 = int(height * 0.14)
+        card_y2 = int(height * 0.52)
         card_w = card_x2 - card_x1
         card_h = card_y2 - card_y1
 
@@ -87,9 +258,9 @@ def render_frame(scene: SceneSpec, t: float, width: int = 1080, height: int = 19
                 img_x = card_x1 + (card_w - img_w) // 2 + trans_x_offset
                 img_y = card_y1 + (card_h - img_h) // 2
                 
-                # Gold accent border box around figure
+                # Border box around figure
                 border_rect = [img_x - 4, img_y - 4, img_x + img_w + 4, img_y + img_h + 4]
-                draw.rectangle(border_rect, outline=(251, 191, 36, int(220 * scene_fade)), width=3)
+                draw.rectangle(border_rect, outline=(*palette["highlight"], int(220 * scene_fade)), width=3)
                 
                 frame.paste(doc_img, (img_x, img_y), doc_img)
                 draw = ImageDraw.Draw(frame)
@@ -97,19 +268,30 @@ def render_frame(scene: SceneSpec, t: float, width: int = 1080, height: int = 19
                 print(f"[render_frame] Error rendering document image {scene.doc_image_path}: {e}")
 
         # Render narration text in lower third container below figure
-        box_y1 = int(height * 0.62)
-        box_y2 = int(height * 0.90)
+        box_y1 = int(height * 0.56)
+        box_y2 = int(height * 0.76)
         box_x1 = int(width * 0.08)
-        box_x2 = int(width * 0.92)
+        box_x2 = int(width * 0.88)
 
-    # 3. Stat Callout Layout (High-Impact Numerical Badge Card)
+    # 3. Stat Callout Layout (High-Impact Numerical Badge Card with Count-Up Animation)
     elif scene.layout == "stat_callout":
         import re
         full_text = " ".join([w for f in scene.fragments for w in f.words])
         stat_match = re.search(r"(\$|\b)[\d,]+(\.\d+)?\s*(percent|%|billion|million|k|M|B|x|\+)\b", full_text, re.IGNORECASE)
-        stat_val = stat_match.group(0) if stat_match else (scene.fragments[0].words[0] if scene.fragments and scene.fragments[0].words else "78%")
+        stat_raw = stat_match.group(0) if stat_match else (scene.fragments[0].words[0] if scene.fragments and scene.fragments[0].words else "78%")
 
-        badge_y = int(height * 0.22)
+        # Animate count-up for numbers
+        digits_match = re.search(r"\d+", stat_raw)
+        if digits_match:
+            target_num = int(digits_match.group(0))
+            w_start = scene.word_times[0][1] if scene.word_times else 0.1
+            progress = ease_out_cubic((t - w_start) / 0.40) if t >= w_start else 0.0
+            curr_num = int(target_num * progress)
+            stat_val = stat_raw.replace(digits_match.group(0), str(curr_num))
+        else:
+            stat_val = stat_raw
+
+        badge_y = int(height * 0.18)
         badge_font = load_font(int(height * 0.09))
         bbox = badge_font.getbbox(stat_val)
         bw = bbox[2] - bbox[0]
@@ -122,39 +304,45 @@ def render_frame(scene: SceneSpec, t: float, width: int = 1080, height: int = 19
         alpha = int(255 * scene_fade)
         if alpha > 0:
             # Draw Stat Pill Badge Box
-            draw.rounded_rectangle((bx - 25, badge_y - 10, bx + bw + 25, badge_y + 130), radius=18, fill=(124, 58, 237, int(190 * scene_fade)), outline=(251, 191, 36, alpha), width=3)
+            draw.rounded_rectangle((bx - 25, badge_y - 10, bx + bw + 25, badge_y + 130), radius=18, fill=(*palette["badge_bg"], int(190 * scene_fade)), outline=(*palette["badge_border"], alpha), width=3)
             draw.text((bx, badge_y + 10), stat_val, font=badge_font, fill=(255, 255, 255, alpha))
 
-        # Render accompanying fragments below stat card
-        box_y1 = int(height * 0.52)
-        box_y2 = int(height * 0.88)
+        # Render accompanying fragments below stat card (respecting 9:16 safe zones)
+        box_y1 = int(height * 0.48)
+        box_y2 = int(height * 0.76)
         box_x1 = int(width * 0.08)
-        box_x2 = int(width * 0.92)
+        box_x2 = int(width * 0.88)
 
-    # 4. Standard Stacked / Lower Third / Split Left Layouts
+    # 4. Standard Stacked / Lower Third / Split Left Layouts (Respecting 9:16 safe zones)
     else:
         if scene.layout == "lower_third":
-            box_y1 = int(height * 0.65)
-            box_y2 = int(height * 0.90)
+            box_y1 = int(height * 0.54)
+            box_y2 = int(height * 0.76)
             box_x1 = int(width * 0.08)
-            box_x2 = int(width * 0.92)
+            box_x2 = int(width * 0.88)
         elif scene.layout == "split_left":
-            box_y1 = int(height * 0.30)
-            box_y2 = int(height * 0.70)
+            box_y1 = int(height * 0.28)
+            box_y2 = int(height * 0.68)
             box_x1 = int(width * 0.08)
-            box_x2 = int(width * 0.52)
+            box_x2 = int(width * 0.54)
         else:  # center_stack
-            box_y1 = int(height * 0.35)
-            box_y2 = int(height * 0.65)
+            box_y1 = int(height * 0.30)
+            box_y2 = int(height * 0.72)
             box_x1 = int(width * 0.08)
-            box_x2 = int(width * 0.92)
+            box_x2 = int(width * 0.88)
 
     box_w = box_x2 - box_x1
     box_h = box_y2 - box_y1
 
-    # Fit font size based on longest fragment
-    longest_frag_text = max([" ".join(f.words) for f in scene.fragments], key=len, default="Sample")
-    font_size = fit_text_size(longest_frag_text, max_width=int(box_w * 0.88), max_height=int(box_h / max(1, len(scene.fragments))), min_size=36, max_size=120)
+    # Fit font size based on longest fragment (Cached per scene & box size)
+    cache_key = (scene.idx, box_w, box_h)
+    if cache_key in _SIZE_CACHE:
+        font_size = _SIZE_CACHE[cache_key]
+    else:
+        longest_frag_text = max([" ".join(f.words) for f in scene.fragments], key=len, default="Sample")
+        font_size = fit_text_size(longest_frag_text, max_width=int(box_w * 0.88), max_height=int(box_h / max(1, len(scene.fragments))), min_size=36, max_size=120)
+        _SIZE_CACHE[cache_key] = font_size
+
     font = load_font(font_size)
 
     # Draw Scrim layer with smooth scene fade
@@ -194,7 +382,7 @@ def render_frame(scene: SceneSpec, t: float, width: int = 1080, height: int = 19
 
             if alpha > 0:
                 is_emphasis = w_in_frag in frag.emphasis
-                text_color = (251, 191, 36, alpha) if is_emphasis else (255, 255, 255, alpha)
+                text_color = (*palette["highlight"], alpha) if is_emphasis else (*palette["text"], alpha)
 
                 # Outline for legibility insurance
                 draw.text((curr_x + 1, line_y - y_offset + 1), word_str, font=font, fill=(0, 0, 0, int(alpha * 0.4)))
@@ -202,5 +390,8 @@ def render_frame(scene: SceneSpec, t: float, width: int = 1080, height: int = 19
 
             curr_x += word_widths[w_in_frag] + space_w
             word_idx += 1
+
+    if brand_kit and getattr(brand_kit, "logo_path", None):
+        frame = draw_logo_watermark(frame, brand_kit.logo_path, getattr(brand_kit, "watermark_position", "top_right"), getattr(brand_kit, "watermark_opacity", 0.85), width, height)
 
     return frame

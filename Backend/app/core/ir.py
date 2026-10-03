@@ -29,6 +29,7 @@ class Claim(BaseModel):
     id: int = 0
     text: str  # one atomic assertion, <= 25 words
     salience: float = Field(default=0.5, ge=0.0, le=1.0)
+    surprise_score: int = Field(default=5, ge=1, le=10)  # 1-10 score: how counter-intuitive or shocking
     kind: Literal["stat", "contrast", "definition", "consequence", "step", "quote"] = "stat"
     source: SourceRef  # never optional - source traceability guard rail
     embedding_id: Optional[str] = None
@@ -38,7 +39,7 @@ class Claim(BaseModel):
 # ---- IR 3: The narrative arc ----
 class Beat(BaseModel):
     idx: int = 0
-    role: Literal["hook", "context", "body", "turn", "payoff", "cta"]
+    role: Literal["hook", "context", "body", "turn", "payoff", "cta", "loop_closer"]
     claim_ids: list[int] = []
     narration: str  # <= 14 words formatted for typography (with digits)
     narration_spoken: str = ""  # spelled out string for TTS ("forty percent" vs "40%")
@@ -55,12 +56,13 @@ class SceneSpec(BaseModel):
     idx: int
     narration: str
     fragments: list[Fragment]  # <= 3 fragments per scene
-    layout: Literal["center_stack", "lower_third", "split_left", "full_bleed_number", "document_figure", "stat_callout"] = "center_stack"
+    layout: Literal["center_stack", "lower_third", "split_left", "full_bleed_number", "document_figure", "stat_callout", "end_card"] = "center_stack"
     bg_query: str
     bg_asset_id: Optional[str] = None
     doc_image_path: Optional[str] = None
     music_section: Literal["intro", "build", "drop", "outro"] = "build"
     transition: Literal["cut", "dip", "push", "fade", "crossfade", "slide", "dissolve", "zoom"] = "fade"
     duration_s: float = 3.5  # provisional until aligned audio overwrites
+    max_scene_seconds: float = 4.0
     word_times: list[tuple[str, float, float]] = []  # [(token, start_s, end_s)]
     source: SourceRef

@@ -14,7 +14,7 @@ def composite_scene(bg_mp4: str, text_mov: str, scene_idx: int, work_dir: str = 
 
     filter_complex = (
         "[0:v]scale=1080:1920:force_original_aspect_ratio=increase,"
-        "crop=1080:1920,eq=saturation=0.75:brightness=-0.05,fps=30,settb=1/30000[bg];"
+        "crop=1080:1920,vignette=PI/4,eq=saturation=0.85:brightness=-0.04:contrast=1.05,fps=30,settb=1/30000[bg];"
         "[bg][1:v]overlay=0:0:format=auto,fps=30,settb=1/30000[v]"
     )
 

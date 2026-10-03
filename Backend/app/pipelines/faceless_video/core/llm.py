@@ -25,6 +25,8 @@ DEFAULT_MODEL = os.getenv("NVIDIA_MODEL", "meta/llama-3.2-11b-vision-instruct")
 FAST_MODEL = os.getenv("NVIDIA_FAST_MODEL", "meta/llama-3.2-11b-vision-instruct")
 
 class NVIDIAClient:
+    _globally_disabled: bool = False
+
     def __init__(self, api_key: Optional[str] = None, base_url: str = NVIDIA_BASE_URL, default_model: str = DEFAULT_MODEL):
         self.api_key = api_key or os.getenv("NVIDIA_API_KEY") or os.getenv("NVAPI_KEY")
         self.base_url = base_url.rstrip("/")
@@ -32,12 +34,12 @@ class NVIDIAClient:
 
     @property
     def is_configured(self) -> bool:
-        return bool(self.api_key and self.api_key.strip())
+        return bool(self.api_key and self.api_key.strip() and not NVIDIAClient._globally_disabled)
 
-    def complete(self, prompt: str, system_prompt: str = "", model: Optional[str] = None, temperature: float = 0.2, max_tokens: int = 2048, timeout: float = 120.0) -> str:
-        """Calls NVIDIA OpenAI-compatible chat completions endpoint with automatic retries for timeouts."""
+    def complete(self, prompt: str, system_prompt: str = "", model: Optional[str] = None, temperature: float = 0.2, max_tokens: int = 2048, timeout: float = 3.0) -> str:
+        """Calls NVIDIA OpenAI-compatible chat completions endpoint with fast failure to rule-based fallbacks."""
         if not self.is_configured:
-            raise ValueError("NVIDIA_API_KEY environment variable is not set.")
+            raise ValueError("NVIDIA_API_KEY environment variable is not set or API is disabled.")
 
         chosen_model = model or self.default_model
         headers = {
@@ -57,20 +59,15 @@ class NVIDIAClient:
             "max_tokens": max_tokens
         }
 
-        last_err = None
-        for attempt in range(3):
-            try:
-                resp = requests.post(f"{self.base_url}/chat/completions", headers=headers, json=payload, timeout=timeout)
-                resp.raise_for_status()
-                data = resp.json()
-                return data["choices"][0]["message"]["content"]
-            except (requests.exceptions.Timeout, requests.exceptions.HTTPError) as err:
-                last_err = err
-                print(f"[NVIDIA Client] API call attempt {attempt + 1}/3 failed ({err}). Retrying...")
-                import time
-                time.sleep(2 * (attempt + 1))
-        
-        raise last_err or RuntimeError("NVIDIA API call failed after retries.")
+        try:
+            resp = requests.post(f"{self.base_url}/chat/completions", headers=headers, json=payload, timeout=timeout)
+            resp.raise_for_status()
+            data = resp.json()
+            return data["choices"][0]["message"]["content"]
+        except Exception as err:
+            print(f"[NVIDIA Client] API call failed or timed out ({err}). Fast switching to rule-based fallback.")
+            NVIDIAClient._globally_disabled = True
+            raise err
 
     def complete_structured(
         self,

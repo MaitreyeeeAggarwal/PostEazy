@@ -27,8 +27,27 @@ def align_scene_audio(scene: SceneSpec, wav_path: str, tts_bounds: list[tuple[st
                 matched_times.append((w_clean, tts_bounds[idx][1], tts_bounds[idx][2]))
 
         if len(matched_times) == len(words):
-            scene.word_times = matched_times
-            scene.duration_s = round(max(audio_dur + 0.35, matched_times[-1][2] + 0.35), 2)
+            # Trim silent gaps > 0.25s and adjust word timestamps dynamically
+            trimmed_times = []
+            accumulated_shift = 0.0
+            prev_end = 0.0
+            
+            for word_info in matched_times:
+                w_str, w_start, w_end = word_info
+                if prev_end > 0:
+                    gap = w_start - prev_end
+                    if gap > 0.25:
+                        excess_gap = gap - 0.18  # Keep tight 0.18s max gap
+                        accumulated_shift += excess_gap
+                
+                adj_start = max(0.0, round(w_start - accumulated_shift, 3))
+                adj_end = max(adj_start + 0.08, round(w_end - accumulated_shift, 3))
+                trimmed_times.append((w_str, adj_start, adj_end))
+                prev_end = w_end
+
+            scene.word_times = trimmed_times
+            final_dur = max(audio_dur - accumulated_shift + 0.25, trimmed_times[-1][2] + 0.25)
+            scene.duration_s = round(min(scene.max_scene_seconds, final_dur), 2)
             return scene
 
     # Case 2: Proportional character-weighted alignment

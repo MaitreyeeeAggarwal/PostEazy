@@ -33,16 +33,19 @@ def run_quality_gates(doc: DocIR, scenes: list[SceneSpec]) -> QCCheckResult:
     if wpm < 120 or wpm > 180:
         warnings.append(f"Global pace is {wpm:.1f} WPM (target 140–165 WPM).")
 
-    # 4. Text Repetition Check (Soft)
-    for i in range(len(scenes) - 2):
-        w1 = set(scenes[i].narration.lower().split())
-        w2 = set(scenes[i+1].narration.lower().split())
-        w3 = set(scenes[i+2].narration.lower().split())
-        common = w1.intersection(w2).intersection(w3)
-        # Filter common stopwords
-        content_common = [w for w in common if len(w) > 4]
-        if content_common:
-            warnings.append(f"Word '{content_common[0]}' repeated across 3 consecutive scenes ({i+1}, {i+2}, {i+3}).")
+    # 5. Engagement Critic (Phase 8 High Retention Checks)
+    if scenes:
+        hook_words = len(scenes[0].narration.split())
+        if hook_words > 8:
+            warnings.append(f"Hook scene (Scene 1) has {hook_words} words (recommended <= 8 words for 90%+ retention).")
+        
+        for i in range(len(scenes) - 1):
+            if scenes[i].layout == scenes[i+1].layout and scenes[i].layout != "document_figure":
+                warnings.append(f"Layout repetition detected: Scene {scenes[i].idx} and Scene {scenes[i+1].idx} both use '{scenes[i].layout}'.")
+
+        for scene in scenes:
+            if scene.duration_s > 4.2:
+                warnings.append(f"Scene {scene.idx}: duration {scene.duration_s}s exceeds 4.0s max scene pacing cap.")
 
     passed = len(errors) == 0
     return QCCheckResult(passed=passed, errors=errors, warnings=warnings)

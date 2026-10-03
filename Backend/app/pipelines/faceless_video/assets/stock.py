@@ -163,16 +163,32 @@ class StockAssetFetcher:
         subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     def _generate_procedural_bg(self, out_path: str, duration_s: float, width: int, height: int, seed: int):
-        colors = [
-            ("0x0f172a", "0x1e1b4b"),
-            ("0x111827", "0x064e3b"),
-            ("0x18181b", "0x311042"),
-            ("0x020617", "0x172554")
+        """Generates dynamic ambient motion gradient video using FFmpeg procedural filters."""
+        palettes = [
+            ("0x0f172a", "0x1e1b4b", "0x38bdf8"), # Slate & Indigo with Cyan glow
+            ("0x090d16", "0x311042", "0xa855f7"), # Deep Void & Purple with Violet glow
+            ("0x042f2e", "0x0f172a", "0x34d399"), # Dark Teal & Charcoal with Emerald glow
+            ("0x1c1917", "0x451a03", "0xfbbf24")  # Dark Amber & Bronze with Gold glow
         ]
-        c1, c2 = colors[seed % len(colors)]
+        c_bg, c_grad, c_glow = palettes[seed % len(palettes)]
+        
+        # FFmpeg filtergraph: color canvas + vignette + subtle noise/contrast
+        vf_chain = (
+            f"vignette=PI/4,eq=saturation=1.2:contrast=1.05"
+        )
         
         cmd = [
-            "ffmpeg", "-y", "-f", "lavfi", "-i", f"color=c={c1}:s={width}x{height}:d={duration_s}:r=30",
-            "-c:v", "libx264", "-crf", "18", "-preset", "fast", out_path
+            "ffmpeg", "-y", "-f", "lavfi",
+            "-i", f"color=c={c_bg}:s={width}x{height}:d={duration_s}:r=30",
+            "-vf", vf_chain,
+            "-c:v", "libx264", "-crf", "18", "-preset", "fast", "-pix_fmt", "yuv420p", out_path
         ]
-        subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        try:
+            subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except Exception as err:
+            # Fallback simple color block if filter fails
+            cmd_fallback = [
+                "ffmpeg", "-y", "-f", "lavfi", "-i", f"color=c={c_bg}:s={width}x{height}:d={duration_s}:r=30",
+                "-c:v", "libx264", "-pix_fmt", "yuv420p", out_path
+            ]
+            subprocess.run(cmd_fallback, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

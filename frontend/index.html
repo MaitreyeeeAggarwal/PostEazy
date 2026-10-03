@@ -1,544 +1,633 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PostEazy | Crafting Next-Gen Content Engines</title>
-  
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
-  
-  <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css">
+<!DOCTYPE html><html lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>PostEazy — Content Generation Studio</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&amp;family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,300..800&amp;family=Nunito+Sans:ital,opsz,wght@0,6..12,300..800;1,6..12,300..800&amp;family=Quicksand:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link class="" href="https://fonts.googleapis.com/css2?family=Gochi+Hand&amp;family=Patrick+Hand&amp;family=Caveat:wght@600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "tertiary-fixed": "#ffdbce",
+            "on-tertiary-fixed": "#370e00",
+            "on-error-container": "#93000a",
+            "inverse-on-surface": "#f9efe5",
+            "on-primary": "#ffffff",
+            "on-secondary-fixed": "#111f0b",
+            "on-primary-container": "#17300e",
+            "secondary-fixed": "#d6e8c8",
+            "surface-dim": "#e2d9cf",
+            "surface-container-highest": "#eae1d7",
+            "on-tertiary": "#ffffff",
+            "error-container": "#ffdad6",
+            "on-secondary-fixed-variant": "#3c4b33",
+            "on-surface-variant": "#43483f",
+            "outline-variant": "#c3c8bc",
+            "on-primary-fixed": "#082102",
+            "secondary-container": "#d3e5c5",
+            "on-surface": "#1f1b15",
+            "on-primary-fixed-variant": "#334e28",
+            "secondary-fixed-dim": "#baccad",
+            "surface-container-lowest": "#ffffff",
+            "primary-fixed": "#cbecb9",
+            "surface-container-low": "#fcf2e8",
+            "outline": "#74796e",
+            "on-error": "#ffffff",
+            "primary": "#4a663e",
+            "secondary": "#536349",
+            "tertiary": "#904c30",
+            "primary-fixed-dim": "#b0d09f",
+            "inverse-surface": "#343029",
+            "surface-container": "#f6ece2",
+            "tertiary-container": "#cd7d5e",
+            "surface-tint": "#4a663e",
+            "on-secondary": "#ffffff",
+            "on-background": "#1f1b15",
+            "error": "#ba1a1a",
+            "background": "#fff8f3",
+            "surface-variant": "#eae1d7",
+            "surface-container-high": "#f0e7dc",
+            "primary-container": "#7c9a6d",
+            "on-tertiary-fixed-variant": "#73351b",
+            "tertiary-fixed-dim": "#ffb599",
+            "surface": "#fff8f3",
+            "on-tertiary-container": "#4e1a03",
+            "surface-bright": "#fff8f3",
+            "on-secondary-container": "#57674d",
+            "inverse-primary": "#b0d09f"
+          },
+          "borderRadius": {
+            "DEFAULT": "1rem",
+            "lg": "2rem",
+            "xl": "3rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-lg": "1.5rem",
+            "space-xs": "0.25rem",
+            "space-xl": "2.5rem",
+            "space-md": "1rem",
+            "gutter": "1.5rem",
+            "margin": "2.5rem",
+            "space-sm": "0.5rem",
+            "gutter-mobile": "1rem",
+            "margin-mobile": "1.25rem"
+          },
+          "fontFamily": {
+            "label-lg": ["Nunito Sans"],
+            "body-sm": ["Nunito Sans"],
+            "label-md": ["Nunito Sans"],
+            "headline-sm": ["Quicksand"],
+            "headline-xl": ["Quicksand"],
+            "body-lg": ["Nunito Sans"],
+            "body-md": ["Nunito Sans"],
+            "headline-md": ["Quicksand"],
+            "headline-xl-mobile": ["Quicksand"],
+            "headline-lg": ["Quicksand"],
+            "headline-lg-mobile": ["Quicksand"],
+            "handwriting": ["Caveat", "cursive"],
+            "scrapbook": ["Patrick Hand", "Gochi Hand", "Caveat", "cursive"],
+            "serif-display": ["Fraunces", "serif"]
+          },
+          "fontSize": {
+            "label-lg": ["0.875rem", { "lineHeight": "1.25rem", "letterSpacing": "0.02em", "fontWeight": "700" }],
+            "body-sm": ["0.875rem", { "lineHeight": "1.25rem", "fontWeight": "400" }],
+            "label-md": ["0.75rem", { "lineHeight": "1rem", "letterSpacing": "0.03em", "fontWeight": "700" }],
+            "headline-sm": ["1.25rem", { "lineHeight": "1.75rem", "fontWeight": "600" }],
+            "headline-xl": ["2.75rem", { "lineHeight": "3.25rem", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-lg": ["1.125rem", { "lineHeight": "1.75rem", "fontWeight": "400" }],
+            "body-md": ["1rem", { "lineHeight": "1.5rem", "fontWeight": "400" }],
+            "headline-md": ["1.5rem", { "lineHeight": "2rem", "fontWeight": "600" }],
+            "headline-xl-mobile": ["2rem", { "lineHeight": "2.5rem", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "headline-lg": ["2rem", { "lineHeight": "2.5rem", "fontWeight": "600" }],
+            "headline-lg-mobile": ["1.625rem", { "lineHeight": "2.125rem", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Handcrafted tactile papercraft styling */
+    .paper-noise {
+      background-color: #fff8f3;
+      background-image: radial-gradient(#d3c9be 0.75px, transparent 0.75px), radial-gradient(#e5dcd3 0.75px, #fff8f3 0.75px);
+      background-size: 30px 30px;
+      background-position: 0 0, 15px 15px;
+    }
+
+    .paper-shadow {
+      box-shadow: 2px 3px 0px rgba(63, 58, 51, 0.14);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .paper-shadow:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 4px 6px 0px rgba(63, 58, 51, 0.18);
+    }
+
+    .paper-shadow-soft {
+      box-shadow: 3px 4px 0px rgba(63, 58, 51, 0.12);
+    }
+
+    /* Constellation scrapbook tag card */
+    .scrapbook-card {
+      box-shadow: 2.5px 3.5px 0px #35382B;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .scrapbook-card:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 4px 6px 0px #2A2D22;
+      z-index: 45 !important;
+    }
+
+    /* Realistic parchment washi tape strip across top */
+    .washi-pin {
+      position: absolute;
+      width: 3.5rem;
+      height: 0.875rem;
+      top: -0.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(229, 222, 201, 0.85);
+      border-top: 1px solid rgba(210, 200, 175, 0.7);
+      border-bottom: 1px solid rgba(210, 200, 175, 0.7);
+      backdrop-filter: blur(1.5px);
+      border-radius: 2px;
+      z-index: 10;
+    }
+
+    .washi-tape-peach {
+      background: rgba(242, 200, 162, 0.75);
+      backdrop-filter: blur(1px);
+      clip-path: polygon(4% 0%, 96% 0%, 100% 50%, 97% 100%, 3% 100%, 0% 50%);
+    }
+
+    .washi-tape-sage {
+      background: rgba(181, 199, 168, 0.75);
+      backdrop-filter: blur(1px);
+      clip-path: polygon(3% 0%, 97% 0%, 99% 50%, 96% 100%, 4% 100%, 1% 50%);
+    }
+
+    .washi-tape-sky {
+      background: rgba(191, 217, 226, 0.75);
+      backdrop-filter: blur(1px);
+      clip-path: polygon(2% 0%, 98% 0%, 100% 50%, 97% 100%, 3% 100%, 0% 50%);
+    }
+
+    .watercolor-glow {
+      background: radial-gradient(circle at 50% 48%, rgba(242, 200, 162, 0.32) 0%, rgba(181, 199, 168, 0.22) 35%, rgba(255, 248, 243, 0) 70%);
+    }
+
+    .dashed-trail {
+      border-bottom: 2px dashed rgba(63, 58, 51, 0.18);
+    }
+
+    /* Reference crosshair registration marks */
+    .reg-mark {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      pointer-events: none;
+      opacity: 0.35;
+    }
+    .reg-mark::before, .reg-mark::after {
+      content: '';
+      position: absolute;
+      background: #74796e;
+    }
+    .reg-mark::before { top: 6px; left: 0; width: 14px; height: 1.5px; }
+    .reg-mark::after { top: 0; left: 6px; width: 1.5px; height: 14px; }
+
+    .corner-bracket {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      border-color: rgba(63, 58, 51, 0.25);
+      pointer-events: none;
+    }
+
+    /* Studio Afternoon Whimsical Clouds & Animations */
+    @keyframes drift-slow {
+      0% {
+        transform: translate(0px, 0px) rotate(0deg);
+      }
+      50% {
+        transform: translate(24px, -8px) rotate(0.8deg);
+      }
+      100% {
+        transform: translate(0px, 0px) rotate(0deg);
+      }
+    }
+
+    @keyframes drift-medium {
+      0% {
+        transform: translate(0px, 0px) rotate(0deg);
+      }
+      50% {
+        transform: translate(-20px, 7px) rotate(-1deg);
+      }
+      100% {
+        transform: translate(0px, 0px) rotate(0deg);
+      }
+    }
+
+    @keyframes drift-reverse {
+      0% {
+        transform: translate(0px, 0px) scale(1);
+      }
+      50% {
+        transform: translate(16px, 9px) scale(1.03);
+      }
+      100% {
+        transform: translate(0px, 0px) scale(1);
+      }
+    }
+
+    @keyframes float-bob {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-9px);
+      }
+    }
+
+    @keyframes sparkle-pulse {
+      0%, 100% {
+        opacity: 0.35;
+        transform: scale(0.9);
+      }
+      50% {
+        opacity: 0.85;
+        transform: scale(1.15) rotate(8deg);
+      }
+    }
+
+    .cloud-drift-slow {
+      animation: drift-slow 19s ease-in-out infinite;
+    }
+
+    .cloud-drift-medium {
+      animation: drift-medium 14s ease-in-out infinite;
+    }
+
+    .cloud-drift-reverse {
+      animation: drift-reverse 17s ease-in-out infinite;
+    }
+
+    .cloud-float-bob {
+      animation: float-bob 8s ease-in-out infinite;
+    }
+
+    .sparkle-anim {
+      animation: sparkle-pulse 4.5s ease-in-out infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .cloud-drift-slow,
+      .cloud-drift-medium,
+      .cloud-drift-reverse,
+      .cloud-float-bob,
+      .sparkle-anim {
+        animation: none !important;
+      }
+    }
+  </style>
+<style id="sketchbook-fonts">
+  .font-sketch, .font-scrapbook, [style*="Patrick Hand"], [style*="Gochi Hand"] {
+    font-family: 'Gochi Hand', 'Patrick Hand', 'Caveat', cursive !important;
+  }
+  .hero-eyebrow, .studio-heading, .note-title, .brand-font, .handwritten-badge, .nav-item {
+    font-family: 'Gochi Hand', 'Patrick Hand', 'Caveat', cursive !important;
+  }
+  button, .wobbly-btn {
+    font-family: 'Patrick Hand', 'Gochi Hand', 'Caveat', cursive !important;
+  }
+</style>
+<!-- Additional App Compatibility Styles -->
+<link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
+<body class="paper-noise text-on-surface antialiased selection:bg-secondary-container selection:text-on-secondary-container min-h-screen flex flex-col justify-between overflow-x-hidden font-body-md text-body-md relative">
 
-  <!-- Glassmorphism Navbar -->
-  <header class="navbar">
-    <div class="container nav-content">
-      <a href="#" class="brand">
-        <div class="brand-icon">⚡</div>
-        <span class="brand-name">PostEazy</span>
-        <span class="brand-tag">Content Engine</span>
-      </a>
-
-      <ul class="nav-links">
-        <li><a href="index.html" class="nav-link">Home</a></li>
-        <li><a href="studio.html" class="nav-link">Studio</a></li>
-        <li><a href="#features" class="nav-link">Features</a></li>
-      </ul>
-
-      <div class="nav-actions">
-        <span id="userGreeting" style="display: none; font-size: 14px; color: var(--accent-cyan); font-weight: 600;"></span>
-        <button class="btn btn-ghost" id="authBtn" onclick="openAuthModal('login')">Login</button>
-        <button class="btn btn-gradient" id="registerBtn" onclick="openAuthModal('register')">Get Started</button>
-      </div>
-    </div>
-  </header>
-
-  <!-- SIH-ThinkPost 3D Space Hero Section -->
-  <section class="space-hero-wrapper" id="hero">
-    <div class="volumetric-light absolute inset-0 pointer-events-none"></div>
-    <div class="stars-bg absolute inset-0 pointer-events-none"></div>
-
-    <!-- HUD Elements -->
-    <div class="hud-corner hud-tl"></div>
-    <div class="hud-corner hud-tr"></div>
-    <div class="hud-corner hud-bl"></div>
-    <div class="hud-corner hud-br"></div>
-
-    <!-- Crosshairs -->
-    <div class="crosshair" style="top: 22%; left: 18%;"></div>
-    <div class="crosshair" style="top: 75%; right: 22%;"></div>
-    <div class="crosshair" style="top: 18%; right: 14%;"></div>
-
-    <!-- 3D Floating Format Cards Layer -->
-    <div class="floating-cards-layer" id="floatingCardsLayer">
-      <!-- Cards rendered dynamically via JS -->
-    </div>
-
-    <!-- Central Hero Typography -->
-    <div class="hero-center-content" id="heroCenterContent">
-      <div class="hero-sys-tag">System Identity</div>
-      <h1 class="hero-sys-title">
-        Crafting Next-Gen<br>
-        <span class="hero-sys-gradient">Content Engines</span>
-      </h1>
-      <p class="hero-sys-sub">Transformation • Architecture • Generation</p>
-      <p class="hero-sys-pulse">Select a format to initialize</p>
-    </div>
-
-    <!-- Transformation Engine Modal Overlay (when a card is focused) -->
-    <div class="transformation-modal-overlay" id="transformModalOverlay" style="display: none;">
-      <div class="connection-line"></div>
-      <div class="connection-dot"></div>
-      <button class="modal-close" onclick="closeTransformationModal()">✖</button>
-
-      <div style="margin-bottom: 20px;">
-        <div style="font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim);">Configure Output</div>
-        <h3 style="font-size: 20px; font-weight: 800; color: var(--text-primary);" id="focusedFormatTitle">LinkedIn Post</h3>
-        <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;" id="focusedFormatDesc">Professional post preview layout</p>
-      </div>
-
-      <!-- Content Source Selector -->
-      <div class="form-group">
-        <label class="form-label">Target Audience</label>
-        <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="audiencePills">
-          <button class="audience-pill selected" onclick="selectAudience(this, 'General')">General</button>
-          <button class="audience-pill" onclick="selectAudience(this, 'Executives')">Executives</button>
-          <button class="audience-pill" onclick="selectAudience(this, 'Technical')">Technical</button>
-          <button class="audience-pill" onclick="selectAudience(this, 'Students')">Students</button>
-          <button class="audience-pill" onclick="selectAudience(this, 'Marketing')">Marketing</button>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Tone</label>
-        <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="tonePills">
-          <button class="tone-pill selected" onclick="selectTone(this, 'Professional')">Professional</button>
-          <button class="tone-pill" onclick="selectTone(this, 'Conversational')">Conversational</button>
-          <button class="tone-pill" onclick="selectTone(this, 'Informative')">Informative</button>
-          <button class="tone-pill" onclick="selectTone(this, 'Persuasive')">Persuasive</button>
-        </div>
-      </div>
-
-      <button class="btn btn-gradient" style="width: 100%; margin-top: 16px;" onclick="scrollToStudio()">
-        ✨ Launch Transformation in Studio ➔
-      </button>
-    </div>
-  </section>
-
-  <!-- Studio Workspace Section -->
-  <!-- Studio Workspace Section -->
-  <section class="studio-section" id="studio">
-    <div class="container">
-      <div class="section-header">
-        <h2 class="section-title">Content Generation Studio</h2>
-        <p class="section-subtitle">Select an engine workflow to transform your documents into production-ready assets.</p>
-      </div>
-
-      <!-- Main 2 Artifact Choice Cards -->
-      <div class="studio-choice-grid" id="studioChoiceGrid">
-        
-        <!-- Card 1: Create a Video -->
-        <div class="studio-choice-card" onclick="openStudioMode('video')">
-          <div class="studio-choice-icon">🎬</div>
-          <span class="studio-choice-tag">Short & Long Form Video</span>
-          <h3 class="studio-choice-title">Create a Video</h3>
-          <p class="studio-choice-desc">Transform documents into AI faceless kinetic videos. Supports short-form (Reels/Shorts/TikTok) and long-form (YouTube) formats with custom typography & music.</p>
-          <button class="btn btn-gradient" style="width: 100%;">
-            Launch Video Generation Studio ➔
-          </button>
-        </div>
-
-        <!-- Card 2: Create a Post -->
-        <div class="studio-choice-card" onclick="openStudioMode('post')">
-          <div class="studio-choice-icon">🖼️</div>
-          <span class="studio-choice-tag">Carousel Decks & Image Posts</span>
-          <h3 class="studio-choice-title">Create a Post</h3>
-          <p class="studio-choice-desc">Distill long documents into multi-slide static carousel posts, infographic callouts, and key insight decks for LinkedIn & Instagram.</p>
-          <button class="btn btn-ghost" style="width: 100%;">
-            Launch Post Generation Studio ➔
-          </button>
-        </div>
-
-      </div>
-
-      <!-- Dedicated Screen 1: "Video Generation Studio" -->
-      <div id="videoStudioContainer" style="display: none;">
-        
-        <!-- Top Navigation & Title Bar -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-          <button class="btn btn-ghost" onclick="backToStudioChoice()" style="padding: 8px 16px;">
-            ◄ Back to Studio Choice
-          </button>
-          <h3 style="font-size: 22px; font-weight: 800; color: var(--text-primary);">🎬 Video Generation Studio</h3>
-          <span class="brand-tag">Faceless Pipeline B</span>
-        </div>
-
-        <!-- Multi-Step Stepper Bar -->
-        <div class="stepper-bar">
-          <div class="stepper-item active" id="vStep1Indicator">
-            <div class="stepper-number">1</div>
-            <span>Upload & Type</span>
-          </div>
-          <span style="color: var(--text-dim);">➔</span>
-          <div class="stepper-item" id="vStep2Indicator">
-            <div class="stepper-number">2</div>
-            <span>Ingest & Script</span>
-          </div>
-          <span style="color: var(--text-dim);">➔</span>
-          <div class="stepper-item" id="vStep3Indicator">
-            <div class="stepper-number">3</div>
-            <span>Style & Music</span>
-          </div>
-          <span style="color: var(--text-dim);">➔</span>
-          <div class="stepper-item" id="vStep4Indicator">
-            <div class="stepper-number">4</div>
-            <span>Creating</span>
-          </div>
-          <span style="color: var(--text-dim);">➔</span>
-          <div class="stepper-item" id="vStep5Indicator">
-            <div class="stepper-number">5</div>
-            <span>Final Output</span>
-          </div>
-        </div>
-
-        <!-- Step 1 View: Upload & Type Selection -->
-        <div id="videoStep1View" class="panel">
-          <div class="panel-heading">Step 1: Upload Document & Select Video Type</div>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-            <!-- Document Dropzone -->
-            <div class="form-group">
-              <label class="form-label">Source Document (.pdf, .pptx, .docx, .txt, .md)</label>
-              <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
-                <div class="dropzone-icon">📄</div>
-                <div class="dropzone-text">Click or drag & drop document</div>
-                <div class="dropzone-subtext">Upload papers, decks, or write-ups up to 25MB</div>
-              </div>
-              <input type="file" id="fileInput" style="display: none;" accept=".pdf,.pptx,.txt,.md,.docx" onchange="handleFileSelect(event)">
-              <div id="fileInfo" class="file-info" style="display: none;">
-                <span id="fileName">document.pdf</span>
-                <span style="cursor: pointer;" onclick="clearFile(event)">✖</span>
-              </div>
-            </div>
-
-            <!-- Video Type & Platform Selector -->
-            <div>
-              <div class="form-group">
-                <label class="form-label">Platform Preset</label>
-                <div class="platform-selector">
-                  <div class="platform-card selected" id="vPlatInstagram" onclick="selectVideoPlatform('instagram')">
-                    <span class="platform-icon">📸</span>
-                    <div>
-                      <div class="platform-name">Instagram / Reels</div>
-                      <small style="color: var(--text-dim);">High energy & bold</small>
-                    </div>
-                  </div>
-                  <div class="platform-card" id="vPlatYoutube" onclick="selectVideoPlatform('youtube')">
-                    <span class="platform-icon">▶️</span>
-                    <div>
-                      <div class="platform-name">YouTube</div>
-                      <small style="color: var(--text-dim);">Long or Short form</small>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">Video Format Category</label>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                  <div class="select-option-card selected" id="typeShortForm" onclick="selectVideoCategory('short')">
-                    <div class="option-card-title">📱 Short Form Content</div>
-                    <div class="option-card-desc">Reels, Shorts, TikTok (9:16 Vertical • 15s - 90s)</div>
-                  </div>
-                  <div class="select-option-card" id="typeLongForm" onclick="selectVideoCategory('long')">
-                    <div class="option-card-title">📺 Long Form Content</div>
-                    <div class="option-card-desc">YouTube Video (16:9 Landscape • 2m - 10m)</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <button class="btn-kinetic" style="margin-top: 16px;" onclick="goToVideoStep2()">
-            Ingest Document & Analyze Script ➔
-          </button>
-        </div>
-
-        <!-- Step 2 View: Ingestion Screen & AI Suggested Duration & Editable Script -->
-        <div id="videoStep2View" class="panel" style="display: none;">
-          <div class="panel-heading">Step 2: AI Document Ingestion & Script Analysis</div>
-
-          <!-- Ingestion Loading Progress Banner -->
-          <div id="ingestLoadingBanner" class="status-banner" style="background: rgba(56, 189, 248, 0.1); border-color: var(--accent-cyan); margin-bottom: 24px;">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <span style="font-size: 24px;">⚙️</span>
-              <div>
-                <strong style="color: var(--accent-cyan);">Ingesting Document Text & Extracting High-Salience Claims...</strong>
-                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;" id="ingestStatText">Analyzing document structure & character counts...</p>
-              </div>
-            </div>
-          </div>
-
-          <div style="display: grid; grid-template-columns: 320px 1fr; gap: 24px;">
-            <!-- Left: AI Suggested Video Duration Control -->
-            <div>
-              <div class="form-group">
-                <label class="form-label">AI Suggested Video Duration (s)</label>
-                <input type="number" id="videoDurationInput" class="input-control" value="60" min="15" max="300">
-                <small style="display: block; margin-top: 6px; color: var(--text-muted); font-size: 12px;">
-                  💡 AI calculated <span id="aiDurationBadge" style="color: var(--accent-cyan); font-weight: 700;">60 seconds</span> as optimal based on document density. You can freely edit this duration.
-                </small>
-              </div>
-
-              <div style="background: rgba(15, 23, 42, 0.6); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-                <div style="font-size: 12px; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; margin-bottom: 8px;">Analysis Metrics</div>
-                <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
-                  • Extracted Blocks: <strong id="metricBlocks">102</strong><br>
-                  • Salient Claims: <strong id="metricClaims">156</strong><br>
-                  • Script Beats: <strong id="metricBeats">17</strong>
-                </div>
-              </div>
-            </div>
-
-            <!-- Right: Editable Script Area -->
-            <div>
-              <div class="form-group">
-                <label class="form-label" style="display: flex; justify-content: space-between;">
-                  <span>Editable Video Script & Narration Beats</span>
-                  <small style="color: var(--accent-cyan);">Feel free to edit script text or narration</small>
-                </label>
-                <textarea class="script-editor" id="videoScriptEditor" style="height: 280px;" placeholder="Ingested script narration beats will appear here..."></textarea>
-              </div>
-            </div>
-          </div>
-
-          <div style="display: flex; gap: 16px; margin-top: 20px;">
-            <button class="btn btn-ghost" onclick="goToVideoStep(1)">◄ Back to Step 1</button>
-            <button class="btn-kinetic" style="flex: 1;" onclick="goToVideoStep3()">
-              Continue to Style & Music ➔
-            </button>
-          </div>
-        </div>
-
-        <!-- Step 3 View: Typography & Song Options -->
-        <div id="videoStep3View" class="panel" style="display: none;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-            <div class="panel-heading" style="margin-bottom: 0;">Step 3: Customize Typography & Music</div>
-            <button class="btn btn-gradient" onclick="applyAIOptionPreset()" style="padding: 8px 16px; font-size: 13px;">
-              ⚡ Let the AI Choose for Me
-            </button>
-          </div>
-
-          <!-- 3 Typography Options -->
-          <div class="form-group">
-            <label class="form-label">Choose 1 of 3 Typography Styles</label>
-            <div class="options-grid-3">
-              <div class="select-option-card selected" id="typoOption1" onclick="selectTypography(1)">
-                <div class="option-card-title">✨ 1. Kinetic Neon Bold</div>
-                <div class="option-card-desc">High contrast cyan/pink neon titles with dynamic motion scaling. Best for Reels & Shorts.</div>
-              </div>
-              <div class="select-option-card" id="typoOption2" onclick="selectTypography(2)">
-                <div class="option-card-title">📜 2. Clean Editorial Slate</div>
-                <div class="option-card-desc">Elegant high-readability sans-serif typography. Perfect for executive summaries & LinkedIn.</div>
-              </div>
-              <div class="select-option-card" id="typoOption3" onclick="selectTypography(3)">
-                <div class="option-card-title">⚡ 3. Minimalist Impact Pro</div>
-                <div class="option-card-desc">Futuristic bold callout cards with dark glass overlays. Great for high-salience stats.</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 3 Song / Music Options -->
-          <div class="form-group" style="margin-top: 32px;">
-            <label class="form-label">Choose 1 of 3 Music / Song Tracks</label>
-            <div class="options-grid-3">
-              <div class="select-option-card selected" id="songOption1" onclick="selectSong(1)">
-                <div class="option-card-title">🎵 1. Upbeat Lo-Fi Synth</div>
-                <div class="option-card-desc">128 BPM energetic synth background track. Perfect for fast tech shorts & overview reels.</div>
-              </div>
-              <div class="select-option-card" id="songOption2" onclick="selectSong(2)">
-                <div class="option-card-title">🎧 2. Cinematic Cyber Electronic</div>
-                <div class="option-card-desc">Deep resonant electronic beats with subtle build-ups. Great for dramatic breakdowns.</div>
-              </div>
-              <div class="select-option-card" id="songOption3" onclick="selectSong(3)">
-                <div class="option-card-title">🎸 3. Ambient Acoustic Chill</div>
-                <div class="option-card-desc">Soft, unobtrusive background acoustic tones. Ideal for educational & long-form videos.</div>
-              </div>
-            </div>
-          </div>
-
-          <div style="display: flex; gap: 16px; margin-top: 24px;">
-            <button class="btn btn-ghost" onclick="goToVideoStep(2)">◄ Back to Script</button>
-            <button class="btn-kinetic" style="flex: 1;" onclick="startFinalVideoRender()">
-              Render Final Kinetic Video 🎬
-            </button>
-          </div>
-        </div>
-
-        <!-- Step 4 View: Creating / Rendering Screen -->
-        <div id="videoStep4View" class="panel" style="display: none; text-align: center; padding: 60px 40px;">
-          <div style="font-size: 64px; margin-bottom: 20px; animation: pulse 1.5s infinite;">🎬</div>
-          <h3 style="font-size: 26px; font-weight: 800; color: var(--text-primary); margin-bottom: 12px;">Creating Your Kinetic Video...</h3>
-          <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 32px;" id="creatingSubtext">Processing 8-stage orchestrator pipeline. Please hold tight!</p>
-
-          <!-- Real-time Progress Bar -->
-          <div class="progress-container" style="max-width: 720px; margin: 0 auto 32px;">
-            <div class="progress-track" style="height: 12px;">
-              <div class="progress-fill" id="vProgressFill" style="width: 0%;"></div>
-            </div>
-            <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; color: var(--text-secondary); margin-top: 12px;">
-              <span id="vStageLabel">Initializing pipeline...</span>
-              <span id="vProgressPercent" style="color: var(--accent-cyan);">0%</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Step 5 View: Final Output Video View -->
-        <div id="videoStep5View" class="panel" style="display: none;">
-          <div class="panel-heading">Step 5: Master Kinetic Video Output</div>
-
-          <div style="max-width: 860px; margin: 0 auto; text-align: center;">
-            <!-- HTML5 Video Player with Proper Play/Pause Controls -->
-            <div class="media-preview-box" style="margin-bottom: 24px; min-height: 480px;">
-              <video id="finalVideoPlayer" controls autoplay style="width: 100%; max-height: 520px; border-radius: var(--radius-lg); box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8);">
-                <source id="finalVideoSource" src="" type="video/mp4">
-                Your browser does not support HTML5 video playback.
-              </video>
-            </div>
-
-            <!-- Action Controls Row: Download MP4 & Restart -->
-            <div style="display: flex; gap: 16px; justify-content: center;">
-              <a id="downloadMp4Btn" href="#" download="master_video.mp4" class="btn btn-gradient" style="padding: 16px 36px; font-size: 16px;">
-                ⬇️ Download MP4 Format Deliverable
-              </a>
-              <button class="btn btn-ghost" onclick="restartVideoWorkflow()" style="padding: 16px 28px;">
-                🔄 Create Another Video
-              </button>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Dedicated Workspace: Post Generation Studio (Pipeline A) -->
-      <div id="postStudioContainer" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-          <button class="btn btn-ghost" onclick="backToStudioChoice()" style="padding: 8px 16px;">
-            ◄ Back to Studio Choice
-          </button>
-          <h3 style="font-size: 22px; font-weight: 800; color: var(--text-primary);">🖼️ Post Generation Studio</h3>
-          <span class="brand-tag">Static Pipeline A</span>
-        </div>
-
-        <div class="studio-grid">
-          <!-- Left: Controls -->
-          <div class="panel">
-            <div class="panel-heading">1. Setup & Upload</div>
-
-            <div class="form-group">
-              <label class="form-label">Platform Style</label>
-              <div class="platform-selector">
-                <div class="platform-card selected" id="pPlatLinkedin" onclick="selectPostPlatform('linkedin')">
-                  <span class="platform-icon">💼</span>
-                  <div>
-                    <div class="platform-name">LinkedIn Carousel</div>
-                    <small style="color: var(--text-dim);">Insightful deck</small>
-                  </div>
-                </div>
-                <div class="platform-card" id="pPlatInstagram" onclick="selectPostPlatform('instagram')">
-                  <span class="platform-icon">📸</span>
-                  <div>
-                    <div class="platform-name">Instagram Posts</div>
-                    <small style="color: var(--text-dim);">Square / 4:5 visual</small>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Source Document</label>
-              <div class="dropzone" id="postDropzone" onclick="document.getElementById('postFileInput').click()">
-                <div class="dropzone-icon">📄</div>
-                <div class="dropzone-text">Click or drag & drop document</div>
-              </div>
-              <input type="file" id="postFileInput" style="display: none;" accept=".pdf,.pptx,.txt,.md,.docx" onchange="handlePostFileSelect(event)">
-              <div id="postFileInfo" class="file-info" style="display: none;">
-                <span id="postFileName">document.pdf</span>
-              </div>
-            </div>
-
-            <button class="btn-kinetic" onclick="startPostRender()">
-              Render Static Posts Carousel 🖼️
-            </button>
-          </div>
-
-          <!-- Right: Output Deck Preview -->
-          <div class="panel">
-            <div class="panel-heading">2. Carousel Deliverable</div>
-            <div class="media-preview-box" id="postPreviewBox">
-              <div style="text-align: center; color: var(--text-dim); padding: 40px;">
-                <div style="font-size: 48px; margin-bottom: 16px;">🖼️</div>
-                <p>Generated static post carousel will appear here after clicking Render.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- Features Section -->
-  <section class="studio-section" id="features" style="background: rgba(15, 23, 42, 0.4);">
-    <div class="container">
-      <div class="section-header">
-        <h2 class="section-title">Built for Modern Content Creators</h2>
-        <p class="section-subtitle">Engineered with structured document extraction, neural voice synthesis, and headless rendering.</p>
-      </div>
-
-      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px;">
-        <div class="stat-card" style="text-align: left;">
-          <div style="font-size: 32px; margin-bottom: 12px;">📑</div>
-          <h3 style="font-size: 20px; margin-bottom: 8px;">Shared Ingestion IR</h3>
-          <p style="color: var(--text-muted); font-size: 14px;">Parses PDF, PPTX, DOCX, and Markdown into canonical DocIR with source locators (`page:4`, `slide:12`).</p>
-        </div>
-        <div class="stat-card" style="text-align: left;">
-          <div style="font-size: 32px; margin-bottom: 12px;">🎙️</div>
-          <h3 style="font-size: 20px; margin-bottom: 8px;">Karaoke Subtitles</h3>
-          <p style="color: var(--text-muted); font-size: 14px;">Captures word-level TTS timestamps for animated pop-in karaoke captions with active-word highlighting.</p>
-        </div>
-        <div class="stat-card" style="text-align: left;">
-          <div style="font-size: 32px; margin-bottom: 12px;">🖼️</div>
-          <h3 style="font-size: 20px; margin-bottom: 8px;">Playwright Carousels</h3>
-          <p style="color: var(--text-muted); font-size: 14px;">Renders 1080×1350 portrait carousel graphics via headless Chromium for LinkedIn and Instagram.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Auth Modal -->
-  <div class="modal-backdrop" id="authModal">
-    <div class="modal-card">
-      <button class="modal-close" onclick="closeAuthModal()">✖</button>
-      <h3 class="modal-title" id="modalTitle">Login to PostEazy</h3>
-      <p class="modal-sub" id="modalSub">Enter your credentials to manage your content engine.</p>
-
-      <form id="authForm" onsubmit="handleAuthSubmit(event)">
-        <div class="form-group">
-          <label class="form-label">Username</label>
-          <input type="text" id="authUsername" class="input-control" required placeholder="creator">
-        </div>
-        <div class="form-group" id="emailGroup" style="display: none;">
-          <label class="form-label">Email</label>
-          <input type="email" id="authEmail" class="input-control" placeholder="creator@example.com">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Password</label>
-          <input type="password" id="authPassword" class="input-control" required placeholder="••••••••">
-        </div>
-        <button type="submit" class="btn btn-gradient" style="width: 100%; margin-top: 12px;" id="authSubmitBtn">
-          Sign In
-        </button>
-      </form>
-    </div>
+<!-- Background Decorative Flying Doodle Clouds Layer -->
+<div class="fixed inset-0 pointer-events-none overflow-hidden z-0 select-none opacity-80" aria-hidden="true">
+  <!-- Cloud 1: Top-Left Hero -->
+  <div class="absolute -left-6 top-16 sm:left-4 sm:top-20 w-44 sm:w-56 text-[#586f50]/40 animate-cloud-1">
+    <svg viewBox="0 0 200 110" fill="none" class="w-full filter drop-shadow-[2px_2px_0px_rgba(50,45,41,0.08)]">
+      <path d="M38 78 C25 78 14 67 14 54 C14 42 23 32 35 30 C40 18 52 10 66 10 C76 10 85 14 91 21 C98 14 109 10 120 12 C134 14 146 25 148 40 C159 41 168 50 168 62 C168 74 159 84 147 84 Z" fill="#fffdf9" stroke="#322d29" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+      <path d="M68 52 C72 56 78 56 82 52" stroke="#322d29" stroke-width="2" stroke-linecap="round"></path>
+      <path d="M104 52 C108 56 114 56 118 52" stroke="#322d29" stroke-width="2" stroke-linecap="round"></path>
+      <path d="M92 63 C94 66 98 66 100 63" stroke="#d97d64" stroke-width="2" stroke-linecap="round"></path>
+    </svg>
   </div>
 
-  <!-- Toast Notification -->
-  <div class="toast" id="toast">Notification message</div>
+  <!-- Cloud 2: Top-Right Hero -->
+  <div class="absolute right-2 top-14 sm:right-8 sm:top-16 w-48 sm:w-60 text-charcoal/70 animate-cloud-2">
+    <svg viewBox="0 0 220 120" fill="none" class="w-full filter drop-shadow-[2px_3px_0px_rgba(50,45,41,0.07)]">
+      <path d="M48 85 C32 85 20 73 20 57 C20 44 30 33 43 31 C48 17 62 7 78 7 C91 7 102 13 108 23 C116 14 128 10 142 13 C158 17 170 30 172 46 C186 48 196 59 196 73 C196 87 184 98 170 98 L50 98" fill="#fefcf7" stroke="#322d29" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+    </svg>
+  </div>
 
-  <!-- Footer -->
-  <footer>
-    <div class="container">
-      <p>© 2026 PostEazy Content Engine. All rights reserved.</p>
+  <!-- Cloud 3: Mid-Left Studio area -->
+  <div class="absolute -left-8 top-[48%] w-40 sm:w-52 text-charcoal/70 animate-cloud-2">
+    <svg viewBox="0 0 220 120" fill="none" class="w-full filter drop-shadow-[2px_3px_0px_rgba(50,45,41,0.07)]">
+      <path d="M48 85 C32 85 20 73 20 57 C20 44 30 33 43 31 C48 17 62 7 78 7 C91 7 102 13 108 23 C116 14 128 10 142 13 C158 17 170 30 172 46 C186 48 196 59 196 73 C196 87 184 98 170 98 L50 98" fill="#fefcf7" stroke="#322d29" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+    </svg>
+  </div>
+
+  <!-- Cloud 4: Mid-Right Studio area -->
+  <div class="absolute right-4 top-[52%] w-44 sm:w-56 text-[#586f50]/40 animate-cloud-1">
+    <svg viewBox="0 0 200 110" fill="none" class="w-full filter drop-shadow-[2px_2px_0px_rgba(50,45,41,0.08)]">
+      <path d="M38 78 C25 78 14 67 14 54 C14 42 23 32 35 30 C40 18 52 10 66 10 C76 10 85 14 91 21 C98 14 109 10 120 12 C134 14 146 25 148 40 C159 41 168 50 168 62 C168 74 159 84 147 84 Z" fill="#fffdf9" stroke="#322d29" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+      <path d="M68 52 C72 56 78 56 82 52" stroke="#322d29" stroke-width="2" stroke-linecap="round"></path>
+      <path d="M104 52 C108 56 114 56 118 52" stroke="#322d29" stroke-width="2" stroke-linecap="round"></path>
+      <path d="M92 63 C94 66 98 66 100 63" stroke="#d97d64" stroke-width="2" stroke-linecap="round"></path>
+    </svg>
+  </div>
+
+  <!-- Cloud 5: Bottom Features area left -->
+  <div class="absolute left-6 top-[80%] w-36 sm:w-48 text-[#586f50]/40 animate-cloud-1">
+    <svg viewBox="0 0 200 110" fill="none" class="w-full filter drop-shadow-[2px_2px_0px_rgba(50,45,41,0.08)]">
+      <path d="M38 78 C25 78 14 67 14 54 C14 42 23 32 35 30 C40 18 52 10 66 10 C76 10 85 14 91 21 C98 14 109 10 120 12 C134 14 146 25 148 40 C159 41 168 50 168 62 C168 74 159 84 147 84 Z" fill="#fffdf9" stroke="#322d29" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+      <path d="M68 52 C72 56 78 56 82 52" stroke="#322d29" stroke-width="2" stroke-linecap="round"></path>
+      <path d="M104 52 C108 56 114 56 118 52" stroke="#322d29" stroke-width="2" stroke-linecap="round"></path>
+      <path d="M92 63 C94 66 98 66 100 63" stroke="#d97d64" stroke-width="2" stroke-linecap="round"></path>
+    </svg>
+  </div>
+
+  <!-- Cloud 6: Bottom Features area right -->
+  <div class="absolute -right-6 top-[85%] w-44 sm:w-56 text-charcoal/70 animate-cloud-2">
+    <svg viewBox="0 0 220 120" fill="none" class="w-full filter drop-shadow-[2px_3px_0px_rgba(50,45,41,0.07)]">
+      <path d="M48 85 C32 85 20 73 20 57 C20 44 30 33 43 31 C48 17 62 7 78 7 C91 7 102 13 108 23 C116 14 128 10 142 13 C158 17 170 30 172 46 C186 48 196 59 196 73 C196 87 184 98 170 98 L50 98" fill="#fefcf7" stroke="#322d29" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+    </svg>
+  </div>
+</div>
+
+<!-- ================= TOP APP BAR ================= -->
+<header class="w-full bg-background dark:bg-background border-outline-variant dark:border-outline z-50 sticky top-0">
+<div class="w-full px-margin-mobile md:px-margin flex justify-between items-center h-16 max-w-screen-2xl mx-auto">
+<!-- Brand Logo Anchor -->
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-surface shadow-sm">
+<span class="material-symbols-outlined text-base">local_florist</span>
+</div>
+<span class="text-headline-sm font-headline-sm tracking-widest uppercase text-primary dark:text-inverse-primary font-bold" style="font-family: &quot;Gochi Hand&quot;, &quot;Patrick Hand&quot;, cursive; letter-spacing: 0.08em;">
+          POSTEAZY
+        </span>
+</div>
+<!-- Navigation Links -->
+<nav class="hidden md:flex items-center space-x-8"><a class="nav-item text-primary dark:text-surface-bright font-bold border-b-2 border-primary dark:border-surface-bright pb-1 transition-colors" href="#hero">Home</a>
+<a class="nav-item text-secondary dark:text-outline-variant hover:text-primary dark:hover:text-surface-bright pb-1 transition-colors" href="#workbench">Studio</a>
+<a class="nav-item text-secondary dark:text-outline-variant hover:text-primary dark:hover:text-surface-bright pb-1 transition-colors" href="#ingest">Features</a></nav><!-- Trailing Action Cluster -->
+<div class="flex items-center gap-space-sm" style="font-family: &quot;Patrick Hand&quot;, &quot;Gochi Hand&quot;, cursive; font-size: 1.05rem;">
+<span id="userGreeting" style="display: none; font-size: 13px; color: var(--moss-green); font-weight: 700;"></span>
+<button id="authBtn" class="px-4 py-1.5 rounded-full border border-secondary text-secondary font-label-md text-label-md hover:bg-surface-container-high transition-colors" onclick="openAuthModal('login')">Login</button>
+<button id="registerBtn" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary-container text-on-primary font-label-md text-label-md shadow-sm hover:translate-y-[-1px] transition-all" onclick="openAuthModal('register')">Sign Up</button>
+</div>
+</div>
+<div class="w-full h-2 overflow-hidden absolute -bottom-1.5 left-0 right-0 pointer-events-none z-50"><svg class="w-full h-full text-outline-variant/70" fill="none" preserveAspectRatio="none" viewBox="0 0 1200 8"><path d="M0,4 Q30,1 60,4 T120,4 T180,3 T240,5 T300,3 T360,4 T420,2 T480,5 T540,3 T600,4 T660,5 T720,3 T780,4 T840,2 T900,5 T960,3 T1020,4 T1080,5 T1140,3 T1200,4" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"></path></svg></div></header>
+
+<!-- ================= MAIN CONTENT ================= -->
+<main class="w-full flex-1">
+<!-- ================= SEGMENT 1: ATMOSPHERIC HERO CANVAS ================= -->
+<section class="relative pt-6 pb-20 md:pt-10 md:pb-24 px-4 sm:px-6 md:px-margin max-w-screen-2xl mx-auto overflow-hidden" id="hero">
+<!-- Watercolor Atmosphere Backdrop -->
+<div class="watercolor-glow absolute inset-0 -z-10 pointer-events-none"></div>
+<!-- Background Floating Clouds -->
+<div aria-hidden="true" class="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+<div class="cloud-drift-slow absolute top-8 left-[3%] w-56 md:w-72 opacity-65 drop-shadow-sm">
+<svg class="w-full h-auto" fill="none" viewBox="0 0 220 90">
+<path d="M35 70 C18 70 8 58 12 44 C15 32 29 28 38 31 C44 18 62 10 78 16 C90 6 112 7 122 18 C135 12 152 16 158 28 C172 26 186 36 184 48 C196 53 197 68 184 72 C172 73 50 72 35 70 Z" fill="#FFFDF8" stroke="#74796e" stroke-dasharray="2 1" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.3"></path>
+<path d="M48 40 C60 26 80 25 94 34" fill="none" stroke="#d5ccbd" stroke-linecap="round" stroke-width="1.2"></path>
+<path d="M120 28 C136 22 150 29 156 38" fill="none" stroke="#d5ccbd" stroke-linecap="round" stroke-width="1.2"></path>
+<path d="M96 52 Q103 57 110 52" fill="none" stroke="#68655c" stroke-linecap="round" stroke-width="1.6"></path>
+<circle cx="89" cy="46" fill="#68655c" r="1.4"></circle>
+<circle cx="117" cy="46" fill="#68655c" r="1.4"></circle>
+<ellipse cx="84" cy="51" fill="#f4c0a5" opacity="0.65" rx="4.5" ry="2.5"></ellipse>
+<ellipse cx="122" cy="51" fill="#f4c0a5" opacity="0.65" rx="4.5" ry="2.5"></ellipse>
+</svg>
+<div class="absolute -right-7 bottom-3 w-7 h-4 opacity-70">
+<svg class="w-full h-full" fill="none" viewBox="0 0 30 18">
+<ellipse cx="14" cy="9" fill="#FFFDF8" rx="12" ry="7" stroke="#908d84" stroke-dasharray="2 1" stroke-width="1"></ellipse>
+</svg>
+</div>
+</div>
+<div class="cloud-drift-medium absolute top-6 right-[4%] w-60 md:w-80 opacity-60">
+<svg class="w-full h-auto" fill="none" viewBox="0 0 240 95">
+<path d="M40 75 C20 74 10 60 18 45 C24 33 42 32 50 38 C58 22 80 14 98 22 C112 10 138 12 150 25 C164 18 184 24 190 38 C206 38 218 52 212 67 C207 77 185 76 170 76 C130 76 60 76 40 75 Z" fill="#FFFDF8" stroke="#74796e" stroke-dasharray="2 1" stroke-linecap="round" stroke-width="1.3"></path>
+<path d="M68 44 C82 30 106 30 120 40" fill="none" stroke="#d5ccbd" stroke-linecap="round" stroke-width="1.2"></path>
+<path d="M142 34 C158 28 174 36 180 48" fill="none" stroke="#d5ccbd" stroke-linecap="round" stroke-width="1.2"></path>
+</svg>
+<div class="sparkle-anim absolute -top-2 left-6 text-tertiary select-none">
+<svg fill="#cd7d5e" height="18" viewBox="0 0 24 24" width="18">
+<path d="M12 0 L14.5 9.5 L24 12 L14.5 14.5 L12 24 L9.5 14.5 L0 12 L9.5 9.5 Z" opacity="0.75"></path>
+</svg>
+</div>
+</div>
+</div>
+
+<!-- Frame Corner Brackets & Crosshairs -->
+<div class="relative w-full max-w-[1400px] mx-auto min-h-[760px] lg:min-h-[820px] flex items-center justify-center">
+<div class="corner-bracket top-2 left-2 border-t-2 border-l-2 hidden md:block"></div>
+<div class="corner-bracket top-2 right-2 border-t-2 border-r-2 hidden md:block"></div>
+<div class="corner-bracket bottom-2 left-2 border-b-2 border-l-2 hidden md:block"></div>
+<div class="corner-bracket bottom-2 right-2 border-b-2 border-r-2 hidden md:block"></div>
+<div class="reg-mark top-16 left-[22%] hidden lg:block"></div>
+<div class="reg-mark top-24 right-[16%] hidden lg:block"></div>
+<div class="reg-mark bottom-28 left-[18%] hidden lg:block"></div>
+
+<!-- Floating Format Cards Layer for app.js -->
+<div class="floating-cards-layer" id="floatingCardsLayer"></div>
+
+<!-- CENTER HEADLINE CORE BLOCK -->
+<div class="relative z-40 text-center max-w-3xl mx-auto px-4 pointer-events-auto py-12 md:py-0" id="heroCenterContent">
+<div class="mb-3">
+<span class="font-label-md text-label-md tracking-[0.28em] uppercase text-secondary font-bold" style="font-family: &quot;Gochi Hand&quot;, &quot;Patrick Hand&quot;, cursive; letter-spacing: 0.22em; font-size: 1.15rem;">Hakuna Makaka</span>
+</div>
+<h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-[4.25rem] font-bold tracking-tight text-on-surface leading-[1.08] uppercase font-headline-xl" style="font-family: &quot;Gochi Hand&quot;, &quot;Patrick Hand&quot;, cursive; letter-spacing: 0.04em;">NEXT-GEN<br class="">
+<span class="font-serif-display lowercase italic font-normal text-primary text-[1.04em] tracking-normal inline-block pr-1">content</span>
+<span class="font-bold tracking-tight text-on-surface">ENGINE</span></h1>
+<p class="font-body-md text-body-md text-secondary mt-2 font-bold tracking-wider uppercase" style="font-size: 0.95rem;">TRANSFORMATION · ARCHITECTURE · GENERATION</p>
+<p class="font-handwriting text-tertiary text-xl font-bold mt-2">✨ Select a format card or choose a studio workflow below</p>
+</div>
+
+<!-- Exact Floating Format Cards Constellation from Stitch -->
+<a class="scrapbook-card hand-drawn-pill absolute z-10 hidden lg:flex items-center gap-2.5 w-64 top-4 left-[38%] bg-[#FBF8F1] px-3.5 py-2.5 -rotate-[1deg]" href="#workbench" style="border: 2px solid rgb(45, 55, 46); border-radius: 255px 18px 225px / 18px 225px 18px 255px; box-shadow: rgb(45, 55, 46) 3px 4px 0px;"><div class="washi-torn washi-torn-peach"></div><div class="w-9 h-9 rounded-xl flex items-center justify-center bg-[#F3EDE2] border border-[#DDD5C5] shrink-0 text-base text-tertiary"><span class="material-symbols-outlined text-lg">movie</span></div><div class="flex flex-col min-w-0 flex-1"><div class="flex items-center justify-between gap-1"><span class="font-scrapbook font-bold text-xs tracking-wide text-[#2C2924] uppercase truncate" style="font-family: 'Patrick Hand', cursive;">VIDEO STORYBOARD</span><span class="px-1.5 py-0.2 rounded bg-[#edd9bf] text-[#694228] text-[10px] font-mono font-bold leading-tight border border-[#2d372e]/30">.story</span></div><p class="font-scrapbook text-[#746E65] text-[11px] leading-tight truncate mt-0.5" style="font-family: 'Patrick Hand', cursive;">Scene thumbnail + narration script</p></div></a>
+
+<a class="scrapbook-card hand-drawn-pill absolute z-10 hidden lg:flex items-center gap-2.5 w-64 top-[24%] right-4 xl:right-10 bg-[#FBF8F1] px-3.5 py-2.5 -rotate-[1.2deg]" href="#workbench" style="border: 2px solid rgb(45, 55, 46); border-radius: 240px 20px 220px 22px / 20px 220px 22px 240px; box-shadow: rgb(45, 55, 46) 3px 4px 0px;"><div class="washi-torn washi-torn-peach"></div><div class="w-9 h-9 rounded-xl flex items-center justify-center bg-[#F3EDE2] border border-[#DDD5C5] shrink-0 text-base text-on-tertiary-fixed"><span class="material-symbols-outlined text-lg text-[#904c30]">play_circle</span></div><div class="flex flex-col min-w-0 flex-1"><div class="flex items-center justify-between gap-1"><span class="font-scrapbook font-bold text-xs tracking-wide text-[#2C2924] uppercase truncate" style="font-family: 'Patrick Hand', cursive;">YOUTUBE SHORTS</span><span class="px-1.5 py-0.2 rounded bg-[#edd9bf] text-[#694228] text-[10px] font-mono font-bold leading-tight border border-[#2d372e]/30">.shorts</span></div><p class="font-scrapbook text-[#746E65] text-[11px] leading-tight truncate mt-0.5" style="font-family: 'Patrick Hand', cursive;">Portrait video, title &amp; captions</p></div></a>
+
+<a class="scrapbook-card hand-drawn-pill absolute z-10 hidden lg:flex items-center gap-2.5 w-64 top-[34%] left-2 xl:left-8 bg-[#FBF8F1] px-3.5 py-2.5 -rotate-[1.5deg]" href="#workbench" style="border: 2px solid rgb(45, 55, 46); border-radius: 20px 245px 22px 225px / 245px 22px 225px 20px; box-shadow: rgb(45, 55, 46) 3px 4px 0px;"><div class="washi-torn washi-torn-sage"></div><div class="w-9 h-9 rounded-xl flex items-center justify-center bg-[#F3EDE2] border border-[#DDD5C5] shrink-0 text-base text-primary"><span class="material-symbols-outlined text-lg text-primary">photo_camera</span></div><div class="flex flex-col min-w-0 flex-1"><div class="flex items-center justify-between gap-1"><span class="font-scrapbook font-bold text-xs tracking-wide text-[#2C2924] uppercase truncate" style="font-family: 'Patrick Hand', cursive;">INSTAGRAM REELS</span><span class="px-1.5 py-0.2 rounded bg-[#dce6d8] text-[#335328] text-[10px] font-mono font-bold leading-tight border border-[#2d372e]/30">.reel</span></div><p class="font-scrapbook text-[#746E65] text-[11px] leading-tight truncate mt-0.5" style="font-family: 'Patrick Hand', cursive;">High-energy kinetic captions &amp; clips</p></div></a>
+
+<a class="scrapbook-card hand-drawn-pill absolute z-10 hidden lg:flex items-center gap-2.5 w-64 top-[26%] left-[15%] xl:left-[17%] bg-[#FBF8F1] px-3.5 py-2.5 rotate-[0.75deg]" href="#workbench" style="border: 2px solid rgb(45, 55, 46); border-radius: 250px 18px 230px 16px / 18px 230px 16px 250px; box-shadow: rgb(45, 55, 46) 3px 4px 0px;"><div class="washi-torn washi-torn-peach"></div><div class="w-9 h-9 rounded-xl flex items-center justify-center bg-[#F3EDE2] border border-[#DDD5C5] shrink-0 text-base text-secondary"><span class="material-symbols-outlined text-lg text-secondary">work</span></div><div class="flex flex-col min-w-0 flex-1"><div class="flex items-center justify-between gap-1"><span class="font-scrapbook font-bold text-xs tracking-wide text-[#2C2924] uppercase truncate" style="font-family: 'Patrick Hand', cursive;">LINKEDIN POST</span><span class="px-1.5 py-0.2 rounded bg-[#edd9bf] text-[#694228] text-[10px] font-mono font-bold leading-tight border border-[#2d372e]/30">.post</span></div><p class="font-scrapbook text-[#746E65] text-[11px] leading-tight truncate mt-0.5" style="font-family: 'Patrick Hand', cursive;">Professional carousel &amp; document</p></div></a>
+
+</div>
+
+<!-- Transformation Engine Modal Overlay -->
+<div class="transformation-modal-overlay" id="transformModalOverlay" style="display: none;">
+  <button class="modal-close" onclick="closeTransformationModal()">✖</button>
+  <div style="margin-bottom: 16px;">
+    <div style="font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--terracotta); font-weight: 700;">Configure Output</div>
+    <h3 style="font-size: 22px; font-weight: 800; color: var(--ink-primary); font-family: 'Space Grotesk', sans-serif;" id="focusedFormatTitle">LinkedIn Post</h3>
+    <p style="font-size: 13px; color: var(--ink-muted); margin-top: 4px;" id="focusedFormatDesc">Professional post preview layout</p>
+  </div>
+  <button class="btn btn-kinetic" style="width: 100%; margin-top: 16px;" onclick="scrollToStudio('video')">
+    Launch Transformation in Studio ➔
+  </button>
+</div>
+</section>
+
+
+<!-- ================= SEGMENT 2: CONTENT GENERATION STUDIO ================= -->
+<section class="py-20 px-margin-mobile md:px-margin max-w-6xl mx-auto relative overflow-hidden md:overflow-visible" id="workbench">
+<!-- Left Flying Doodle Cloud - Full Section Outer Bound -->
+<div class="absolute left-0 lg:-left-12 top-10 md:top-8 w-32 sm:w-44 md:w-52 text-[#586f50]/40 animate-cloud-1 pointer-events-none select-none z-10">
+  <svg viewBox="0 0 200 110" fill="none" class="w-full filter drop-shadow-[2px_2px_0px_rgba(50,45,41,0.08)]">
+    <path d="M38 78 C25 78 14 67 14 54 C14 42 23 32 35 30 C40 18 52 10 66 10 C76 10 85 14 91 21 C98 14 109 10 120 12 C134 14 146 25 148 40 C159 41 168 50 168 62 C168 74 159 84 147 84 Z" fill="#fffdf9" stroke="#322d29" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+    <path d="M68 52 C72 56 78 56 82 52" stroke="#322d29" stroke-width="2" stroke-linecap="round"></path>
+    <path d="M104 52 C108 56 114 56 118 52" stroke="#322d29" stroke-width="2" stroke-linecap="round"></path>
+    <path d="M92 63 C94 66 98 66 100 63" stroke="#d97d64" stroke-width="2" stroke-linecap="round"></path>
+  </svg>
+</div>
+
+<!-- Right Flying Doodle Cloud - Full Section Outer Bound -->
+<div class="absolute right-0 lg:-right-12 top-8 md:top-6 w-36 sm:w-48 md:w-60 text-charcoal/70 animate-cloud-2 pointer-events-none select-none z-10">
+  <svg viewBox="0 0 220 120" fill="none" class="w-full filter drop-shadow-[2px_3px_0px_rgba(50,45,41,0.07)]">
+    <path d="M48 85 C32 85 20 73 20 57 C20 44 30 33 43 31 C48 17 62 7 78 7 C91 7 102 13 108 23 C116 14 128 10 142 13 C158 17 170 30 172 46 C186 48 196 59 196 73 C196 87 184 98 170 98 L50 98" fill="#fefcf7" stroke="#322d29" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+  </svg>
+</div>
+
+<!-- Header Title Banner -->
+<div class="relative text-center mb-12 max-w-2xl mx-auto z-20">
+  <h2 class="font-sketch text-4xl sm:text-5xl text-charcoal tracking-wide font-bold mb-2">
+    Content Generation Studio
+  </h2>
+  <p class="font-hand text-lg sm:text-xl text-charcoal/75 max-w-2xl mx-auto">
+    Select an engine workflow to transform your documents into production-ready assets.
+  </p>
+</div>
+
+<!-- MAIN CHOICE GRID: Create a Video vs Create a Post -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto w-full mb-10" id="studioChoiceGrid">
+  
+  <!-- Option 1: Create a Video -->
+  <div class="relative bg-paper-card border-doodle-card p-6 sm:p-8 shadow-sketch-lg hover:shadow-sketch-active transition-all cursor-pointer group flex flex-col justify-between" onclick="openStudioMode('video')">
+    <div class="washi-tape-top"></div>
+    <div class="pt-2">
+      <span class="px-2.5 py-0.5 bg-moss-surface text-moss-dark font-hand text-xs font-bold rounded-md border border-moss/30 uppercase tracking-wider">Short &amp; Long Form Video</span>
+      <h3 class="font-sketch text-3xl font-bold text-charcoal mt-2 mb-2">Create a Video</h3>
+      <p class="font-hand text-base text-charcoal/80 leading-relaxed mb-6">
+        Transform documents into AI faceless kinetic videos. Supports short-form (Reels / Shorts / TikTok) and long-form (YouTube) formats with custom typography &amp; music.
+      </p>
     </div>
-  </footer>
+    <button class="btn-bounce w-full py-3.5 text-white font-sketch text-xl font-bold rounded-xl border-2 border-charcoal shadow-sketch flex items-center justify-center gap-2" style="background: linear-gradient(135deg, #728c69 0%, #64845b 50%, #d97d64 100%); border: 2px solid #322d29; color: #ffffff !important;" onclick="openStudioMode('video')">
+      <span>Launch Video Studio</span>
+      <span class="text-2xl">➔</span>
+    </button>
+  </div>
 
-  <!-- App Script -->
-  <script src="js/app.js"></script>
-</body>
-</html>
+  <!-- Option 2: Create a Post -->
+  <div class="relative bg-paper-card border-doodle-card p-6 sm:p-8 shadow-sketch-lg hover:shadow-sketch transition-all cursor-pointer group flex flex-col justify-between" onclick="openStudioMode('post')">
+    <div class="washi-tape-right"></div>
+    <div class="pt-2">
+      <span class="px-2.5 py-0.5 bg-paper-tint text-charcoal/80 font-hand text-xs font-bold rounded-md border border-charcoal/30 uppercase tracking-wider">Carousel Decks &amp; Image Posts</span>
+      <h3 class="font-sketch text-3xl font-bold text-charcoal mt-2 mb-2">Create a Post</h3>
+      <p class="font-hand text-base text-charcoal/80 leading-relaxed mb-6">
+        Distill long documents into multi-slide static carousel posts, infographic callouts, and key insight decks for LinkedIn &amp; Instagram.
+      </p>
+    </div>
+    <button class="btn-bounce w-full py-3.5 text-charcoal font-sketch text-xl font-bold rounded-xl border-2 border-charcoal shadow-sketch flex items-center justify-center gap-2 hover:bg-paper-tint" style="background: #ffffff; border: 2px solid #322d29; color: #322d29 !important;" onclick="openStudioMode('post')">
+      <span>Launch Post Studio</span>
+      <span class="text-2xl">➔</span>
+    </button>
+  </div>
+
+</div>
+</section>
+
+<!-- ================= SEGMENT 3: FEATURES SECTION ================= -->
+<section class="py-20 px-margin-mobile md:px-margin max-w-6xl mx-auto relative" id="ingest">
+<div class="text-center max-w-2xl mx-auto mb-16">
+<h2 class="text-headline-lg-mobile md:text-headline-lg font-headline-lg text-on-surface flex items-center justify-center gap-2.5 flex-wrap" style="font-family: &quot;Gochi Hand&quot;, &quot;Patrick Hand&quot;, cursive; font-size: 2.6rem;">Built for Modern Content Creators</h2>
+<p class="font-body-md text-body-md text-secondary mt-2">Engineered with structured document extraction, neural voice synthesis, and headless rendering.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch" style="font-family: &quot;Patrick Hand&quot;, &quot;Gochi Hand&quot;, cursive;">
+<!-- Card 1: Shared Ingestion IR -->
+<div class="feature-artifact-card relative bg-surface-container-low p-7 rounded-DEFAULT border border-outline-variant/80 flex flex-col justify-between group overflow-hidden" style="border: 2px solid rgb(45, 55, 46); border-radius: 255px 20px 225px / 20px 225px 20px 255px;" onclick="scrollToStudio('video')">
+  <div class="washi-tape-peach absolute -top-3 left-6 w-20 h-5 rotate-[-2deg] opacity-80 group-hover:rotate-[2deg] group-hover:scale-105 transition-transform duration-300"></div>
+  <div class="card-spotlight pointer-events-none absolute -inset-px opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" style="background: radial-gradient(350px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(229, 115, 82, 0.18), transparent 80%);"></div>
+  
+  <div class="pt-2">
+    <h3 class="text-headline-md font-bold mb-2 text-on-surface group-hover:text-primary transition-colors" style="font-size: 1.65rem;">Shared Ingestion IR</h3>
+    <p class="text-secondary text-sm font-light leading-relaxed">Parses PDF, PPTX, DOCX, and Markdown into canonical DocIR with source locators (page: 4, slide: 12).</p>
+  </div>
+</div>
+
+<!-- Card 2: Karaoke Subtitles -->
+<div class="feature-artifact-card relative bg-surface-container-lowest p-7 rounded-DEFAULT border border-outline-variant/80 flex flex-col justify-between group overflow-hidden" style="border: 2px solid rgb(45, 55, 46); border-radius: 20px 255px 20px 225px / 225px 20px 255px;" onclick="scrollToStudio('video')">
+  <div class="washi-tape-sage absolute -top-3 right-8 w-20 h-5 rotate-[3deg] opacity-80 group-hover:rotate-[-2deg] group-hover:scale-105 transition-transform duration-300"></div>
+  <div class="card-spotlight pointer-events-none absolute -inset-px opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" style="background: radial-gradient(350px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(181, 199, 168, 0.28), transparent 80%);"></div>
+
+  <div class="pt-2">
+    <h3 class="text-headline-md font-bold mb-2 text-on-surface group-hover:text-tertiary transition-colors" style="font-size: 1.65rem;">Karaoke Subtitles</h3>
+    <p class="text-secondary text-sm font-light leading-relaxed">Captures word-level TTS timestamps for animated pop-in karaoke captions with active-word highlighting.</p>
+  </div>
+</div>
+
+<!-- Card 3: Playwright Carousels -->
+<div class="feature-artifact-card relative bg-surface-container-low p-7 rounded-DEFAULT border border-outline-variant/80 flex flex-col justify-between group overflow-hidden" style="border: 2px solid rgb(45, 55, 46); border-radius: 245px 22px 235px 18px / 18px 235px 22px 245px;" onclick="scrollToStudio('post')">
+  <div class="washi-tape-sky absolute -top-3 left-8 w-20 h-5 rotate-[-1deg] opacity-80 group-hover:rotate-[3deg] group-hover:scale-105 transition-transform duration-300"></div>
+  <div class="card-spotlight pointer-events-none absolute -inset-px opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" style="background: radial-gradient(350px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(191, 217, 226, 0.35), transparent 80%);"></div>
+
+  <div class="pt-2">
+    <h3 class="text-headline-md font-bold mb-2 text-on-surface group-hover:text-primary transition-colors" style="font-size: 1.65rem;">Playwright Carousels</h3>
+    <p class="text-secondary text-sm font-light leading-relaxed">Renders 1080×1350 portrait carousel graphics via headless Chromium for LinkedIn and Instagram.</p>
+  </div>
+</div>
+</div>
+</section>
+</main>
+
+<!-- Auth Modal -->
+<div class="modal-backdrop" id="authModal">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeAuthModal()">✖</button>
+    <h3 class="modal-title" id="modalTitle">Login to PostEazy</h3>
+    <p class="modal-sub" id="modalSub">Enter your credentials to manage your content engine.</p>
+    <form id="authForm" onsubmit="handleAuthSubmit(event)">
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input type="text" id="authUsername" class="input-control" required placeholder="creator">
+      </div>
+      <div class="form-group" id="emailGroup" style="display: none;">
+        <label class="form-label">Email</label>
+        <input type="email" id="authEmail" class="input-control" placeholder="creator@example.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" id="authPassword" class="input-control" required placeholder="••••••••">
+      </div>
+      <button type="submit" class="btn btn-gradient" style="width: 100%; margin-top: 12px;" id="authSubmitBtn">
+        Sign In
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">Notification message</div>
+
+<!-- Footer -->
+<footer class="w-full bg-surface-container-low border-t border-outline-variant py-6 text-center text-sm text-secondary">
+  <div class="container">
+    <p>© 2026 PostEazy Content Engine. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="js/app.js"></script>
+</body></html>

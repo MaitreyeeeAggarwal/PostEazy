@@ -1,6 +1,7 @@
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 from app.core.ir import Beat, Fragment, SceneSpec, SourceRef, Claim
+from app.core.brand import BrandKit
 from app.pipelines.faceless_video.core.llm import get_llm_client
 from app.pipelines.faceless_video.compile.layout_rules import select_layout, generate_mood_query
 
@@ -23,16 +24,20 @@ class SceneCompilerOutput(BaseModel):
 
 
 def split_narration_into_fragments(narration: str) -> list[Fragment]:
-    """Splits narration string into fragments of <=4 words each, preserving all words."""
+    """Splits narration string into kinetic 2-3 word chunks for high-retention readability."""
     words = narration.split()
     fragments: list[Fragment] = []
 
-    for i in range(0, len(words), 4):
-        frag_words = words[i:i+4]
+    i = 0
+    while i < len(words):
+        # Alternate 2 and 3 word chunks for punchy rhythm
+        chunk_size = 2 if (len(fragments) % 2 == 0) else 3
+        frag_words = words[i:i+chunk_size]
         if frag_words:
-            # Highlight first important looking word
-            emphasis = [0] if len(frag_words) > 0 and len(frag_words[0]) > 4 else []
-            fragments.append(Fragment(words=frag_words, emphasis=emphasis))
+            # Highlight keyword/longest word
+            max_w_idx = max(range(len(frag_words)), key=lambda k: len(frag_words[k]))
+            fragments.append(Fragment(words=frag_words, emphasis=[max_w_idx]))
+        i += chunk_size
 
     if not fragments:
         fragments = [Fragment(words=["Video"], emphasis=[0])]
@@ -40,7 +45,7 @@ def split_narration_into_fragments(narration: str) -> list[Fragment]:
     return fragments
 
 
-def compile_scenes(beats: list[Beat], claims: list[Claim]) -> list[SceneSpec]:
+def compile_scenes(beats: list[Beat], claims: list[Claim], brand_kit: Optional[BrandKit] = None) -> list[SceneSpec]:
     """Stage 4: Convert Beat[] script into SceneSpec[] shot list with typography constraints."""
     llm = get_llm_client()
     scenes: list[SceneSpec] = []
@@ -89,6 +94,14 @@ def compile_scenes(beats: list[Beat], claims: list[Claim]) -> list[SceneSpec]:
         else:
             transition_type = "fade"
 
+        # Vary pacing: hook/punchy scenes shorter (2.0-2.5s), body alternating (2.2-3.8s)
+        if beat.role in ("hook", "cta"):
+            dur_budget = min(2.5, max(1.8, beat.budget_s))
+        elif idx % 2 == 0:
+            dur_budget = min(2.4, max(1.8, beat.budget_s * 0.8))
+        else:
+            dur_budget = min(3.8, max(2.5, beat.budget_s * 1.1))
+
         scenes.append(
             SceneSpec(
                 idx=idx,
@@ -100,9 +113,31 @@ def compile_scenes(beats: list[Beat], claims: list[Claim]) -> list[SceneSpec]:
                 doc_image_path=doc_image_path,
                 music_section="intro" if idx == 1 else ("drop" if beat.role == "payoff" else "build"),
                 transition=transition_type,
-                duration_s=beat.budget_s,
+                duration_s=round(dur_budget, 2),
+                max_scene_seconds=4.0,
                 word_times=[],
                 source=source_ref
+            )
+        )
+
+    if brand_kit and brand_kit.show_end_card:
+        end_text = brand_kit.tagline or brand_kit.company_name or "Thank You"
+        end_frags = split_narration_into_fragments(end_text)
+        scenes.append(
+            SceneSpec(
+                idx=len(scenes) + 1,
+                narration=end_text,
+                fragments=end_frags,
+                layout="end_card",
+                bg_query="abstract dark clean background",
+                bg_asset_id=None,
+                doc_image_path=None,
+                music_section="outro",
+                transition="fade",
+                duration_s=2.5,
+                max_scene_seconds=4.0,
+                word_times=[],
+                source=SourceRef(file="brand_kit", locator="end_card")
             )
         )
 

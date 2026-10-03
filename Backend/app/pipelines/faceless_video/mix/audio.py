@@ -42,14 +42,15 @@ def mix_master_audio(
             filter_complex = (
                 f"{voice_stage}"
                 f"[voice_raw]asplit=2[v_sc][v_mix];"
-                f"[{n_voice}:a]volume=0.15[music_quiet];"
-                f"[music_quiet][v_sc]sidechaincompress=threshold=0.05:ratio=8:attack=25:release=280[ducked_music];"
-                f"[v_mix][ducked_music]amix=inputs=2:duration=first[raw_mix];"
+                f"[{n_voice}:a]volume=0.08[music_quiet];"
+                f"[music_quiet][v_sc]sidechaincompress=threshold=0.08:ratio=6:attack=15:release=200[ducked_music];"
+                f"[v_mix][ducked_music]amix=inputs=2:weights=3 1:dropout_transition=0:normalize=0[raw_mix];"
                 f"[raw_mix]loudnorm=I=-14:TP=-1.0:LRA=11[master_a]"
             )
             cmd = ["ffmpeg", "-y"] + inputs + [
                 "-filter_complex", filter_complex,
                 "-map", "[master_a]",
+                "-ac", "2", "-ar", "44100",
                 "-c:a", "pcm_s16le",
                 str(out_path)
             ]
@@ -62,6 +63,7 @@ def mix_master_audio(
             cmd = ["ffmpeg", "-y"] + inputs + [
                 "-filter_complex", filter_complex,
                 "-map", "[master_a]",
+                "-ac", "2", "-ar", "44100",
                 "-c:a", "pcm_s16le",
                 str(out_path)
             ]

@@ -4,447 +4,872 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PostEazy | AI Content Generation Studio</title>
-  
-  <!-- Google Fonts -->
+
+  <!-- Tailwind CSS v3 with Plugins -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+  <!-- Google Fonts: Patrick Hand, Gochi Hand, Quicksand, Fraunces, Space Grotesk -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
-  
-  <!-- Custom Styles -->
+  <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Patrick+Hand&family=Quicksand:wght@500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,600..900;1,9..144,600..900&family=Space+Grotesk:wght@600;700;800&family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            paper: '#faf5ee',
+            'paper-card': '#fffdf9',
+            'paper-tint': '#f4ece1',
+            charcoal: '#322d29',
+            moss: {
+              DEFAULT: '#728c69',
+              dark: '#586f50',
+              light: '#8fae84',
+              surface: '#eef4ec'
+            },
+            terracotta: {
+              DEFAULT: '#d97d64',
+              soft: '#f8ece8',
+              hover: '#c76b53'
+            },
+            washi: {
+              peach: 'rgba(238, 172, 147, 0.75)',
+              green: 'rgba(179, 203, 173, 0.75)',
+              yellow: 'rgba(244, 219, 155, 0.8)'
+            }
+          },
+          fontFamily: {
+            hand: ['"Patrick Hand"', 'cursive'],
+            sketch: ['"Gochi Hand"', 'cursive'],
+            sans: ['"Quicksand"', 'sans-serif'],
+            display: ['"Fraunces"', 'serif'],
+            code: ['"Fira Code"', 'monospace']
+          },
+          boxShadow: {
+            sketch: '3px 4px 0px 0px rgba(50, 45, 41, 0.85)',
+            'sketch-lg': '5px 6px 0px 0px rgba(50, 45, 41, 0.85)',
+            'sketch-sm': '2px 2px 0px 0px rgba(50, 45, 41, 0.85)',
+            'sketch-hover': '1px 1px 0px 0px rgba(50, 45, 41, 0.85)',
+            'sketch-active': '4px 5px 0px 0px #728c69'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style data-purpose="sketch-borders">
+    /* Organic Hand-Drawn Borders & Washi Tape Accents */
+    .border-doodle {
+      border: 2px solid #322d29;
+      border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+    }
+    
+    .border-doodle-card {
+      border: 2px solid #322d29;
+      border-radius: 18px 24px 20px 22px;
+    }
+
+    .border-dashed-doodle {
+      border: 2.5px dashed #6f6861;
+      border-radius: 20px 14px 22px 16px;
+    }
+
+    .washi-tape-top {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-1.5deg);
+      width: 110px;
+      height: 26px;
+      background: rgba(244, 219, 155, 0.85);
+      clip-path: polygon(4% 0%, 96% 2%, 100% 95%, 95% 100%, 5% 97%, 0% 8%);
+      pointer-events: none;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+      z-index: 10;
+    }
+
+    .washi-tape-left {
+      position: absolute;
+      top: -8px;
+      left: 20px;
+      transform: rotate(-3deg);
+      width: 90px;
+      height: 22px;
+      background: rgba(179, 203, 173, 0.85);
+      clip-path: polygon(5% 0%, 95% 4%, 100% 92%, 93% 100%, 3% 94%, 0% 6%);
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .washi-tape-right {
+      position: absolute;
+      top: -8px;
+      right: 20px;
+      transform: rotate(2deg);
+      width: 95px;
+      height: 22px;
+      background: rgba(238, 172, 147, 0.85);
+      clip-path: polygon(3% 2%, 96% 0%, 100% 96%, 94% 100%, 6% 95%, 0% 90%);
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* Paper Grain Texture Simulation */
+    body {
+      background-color: #faf5ee;
+      background-image: radial-gradient(#dfd4c5 0.75px, transparent 0.75px);
+      background-size: 16px 16px;
+    }
+
+    .card-selectable {
+      transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .card-selectable:hover {
+      transform: translateY(-2px);
+      box-shadow: 4px 5px 0px 0px rgba(50, 45, 41, 0.85);
+    }
+    .card-selectable.selected {
+      background-color: #eef4ec !important;
+      border-color: #322d29 !important;
+      box-shadow: 4px 5px 0px 0px #728c69 !important;
+    }
+    
+    .btn-bounce {
+      transition: all 0.15s ease-out;
+    }
+    .btn-bounce:hover {
+      transform: translate(-1px, -2px);
+      box-shadow: 4px 5px 0px 0px rgba(50, 45, 41, 0.85);
+    }
+    .btn-bounce:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0px 0px rgba(50, 45, 41, 0.85);
+    }
+  </style>
+
+  <style data-purpose="doodle-clouds-animation">
+    @keyframes doodleCloudFloat1 {
+      0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg); }
+      50% { transform: translateY(-14px) translateX(10px) rotate(1.5deg); }
+    }
+    @keyframes doodleCloudFloat2 {
+      0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg); }
+      50% { transform: translateY(-10px) translateX(-12px) rotate(-1.5deg); }
+    }
+    @keyframes doodleCloudFloat3 {
+      0%, 100% { transform: translateY(0px) translateX(0px) scale(1); }
+      50% { transform: translateY(-16px) translateX(6px) scale(1.03); }
+    }
+    @keyframes doodleBob {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+    .animate-cloud-1 { animation: doodleCloudFloat1 8s ease-in-out infinite; }
+    .animate-cloud-2 { animation: doodleCloudFloat2 10s ease-in-out infinite; }
+    .animate-cloud-3 { animation: doodleCloudFloat3 12s ease-in-out infinite; }
+    .animate-bob { animation: doodleBob 3s ease-in-out infinite; }
+  </style>
+
+  <!-- Legacy CSS file for auth modals & general toast compatibility -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body style="background-color: var(--bg-dark); min-height: 100vh;">
+<body class="text-charcoal font-sans min-h-screen flex flex-col justify-between selection:bg-terracotta selection:text-white relative overflow-x-hidden">
 
-  <!-- Glassmorphism Studio Navbar -->
-  <header class="navbar">
-    <div class="container nav-content">
-      <a href="index.html" class="brand">
-        <div class="brand-icon">⚡</div>
-        <span class="brand-name">PostEazy</span>
-        <span class="brand-tag">AI Studio</span>
-      </a>
+  <!-- Background Decorative Doodle Clouds -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0 select-none opacity-85" aria-hidden="true">
+    <!-- Cloud 1 -->
+    <div class="absolute -left-6 top-20 sm:left-4 sm:top-24 w-44 sm:w-56 text-[#586f50]/40 animate-cloud-1">
+      <svg viewBox="0 0 200 110" fill="none" class="w-full filter drop-shadow-[2px_2px_0px_rgba(50,45,41,0.08)]">
+        <path d="M38 78 C25 78 14 67 14 54 C14 42 23 32 35 30 C40 18 52 10 66 10 C76 10 85 14 91 21 C98 14 109 10 120 12 C134 14 146 25 148 40 C159 41 168 50 168 62 C168 74 159 84 147 84 Z" fill="#fffdf9" stroke="#322d29" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M68 52 C72 56 78 56 82 52" stroke="#322d29" stroke-width="2" stroke-linecap="round"></path>
+        <path d="M104 52 C108 56 114 56 118 52" stroke="#322d29" stroke-width="2" stroke-linecap="round"></path>
+        <path d="M92 63 C94 66 98 66 100 63" stroke="#d97d64" stroke-width="2" stroke-linecap="round"></path>
+      </svg>
+    </div>
+    <!-- Cloud 2 -->
+    <div class="absolute right-2 top-16 sm:right-10 sm:top-20 w-48 sm:w-60 text-charcoal/70 animate-cloud-2">
+      <svg viewBox="0 0 220 120" fill="none" class="w-full filter drop-shadow-[2px_3px_0px_rgba(50,45,41,0.07)]">
+        <path d="M48 85 C32 85 20 73 20 57 C20 44 30 33 43 31 C48 17 62 7 78 7 C91 7 102 13 108 23 C116 14 128 10 142 13 C158 17 170 30 172 46 C186 48 196 59 196 73 C196 87 184 98 170 98 L50 98" fill="#fefcf7" stroke="#322d29" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </div>
+  </div>
 
-      <ul class="nav-links">
-        <li><a href="index.html" class="nav-link">🏠 Home</a></li>
-        <li><a href="studio.html" class="nav-link active" style="color: var(--accent-cyan);">✨ AI Studio</a></li>
-      </ul>
-
-      <div class="nav-actions">
-        <span id="userGreeting" style="display: none; font-size: 14px; color: var(--accent-cyan); font-weight: 600;"></span>
-        <button class="btn btn-ghost" id="authBtn" onclick="openAuthModal('login')">Login</button>
-        <button class="btn btn-gradient" id="registerBtn" onclick="openAuthModal('register')">Get Started</button>
+  <!-- BEGIN: Top Navigation Bar -->
+  <header class="w-full relative bg-[#faf5ee]" style="z-index: 10;">
+    <div class="max-w-7xl mx-auto px-6 sm:px-8 py-4 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3 cursor-pointer group">
+        <div class="w-9 h-9 rounded-full bg-[#5b7a4d] flex items-center justify-center shadow-sm border border-charcoal group-hover:scale-105 transition-transform">
+          <span class="text-white text-lg">🌿</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-sketch text-2xl font-bold tracking-wider text-[#48633c]">POSTEAZY</span>
+        </div>
+      <nav class="hidden md:flex items-center gap-8 text-charcoal/80">
+        <a href="index.html" class="nav-item hover:text-[#48633c] transition-colors">Home</a>
+        <a href="studio.html" class="nav-item relative text-[#3b5330] font-bold pb-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[#48633c] after:rounded-full">Studio</a>
+      </nav>
+      <div class="flex items-center gap-3">
+        <span id="userGreeting" style="display: none;" class="font-hand text-sm font-bold text-moss-dark"></span>
+        <button class="px-5 py-1.5 rounded-full border-2 border-[#48633c] text-[#48633c] font-hand text-sm font-bold hover:bg-[#eef4ec] transition-colors" id="authBtn" onclick="openAuthModal('login')">Login</button>
+        <button class="px-5 py-1.5 rounded-full bg-[#5b7a4d] text-white font-hand text-sm font-bold border-2 border-charcoal shadow-sketch-sm hover:brightness-105 transition-all" id="registerBtn" onclick="openAuthModal('register')">Sign Up</button>
       </div>
     </div>
+    <!-- Wavy divider line -->
+    <div class="w-full overflow-hidden leading-none opacity-40">
+      <svg class="w-full h-3 text-[#586f50]" viewBox="0 0 1200 12" fill="none" preserveAspectRatio="none">
+        <path d="M0,6 C150,11 300,1 450,6 C600,11 750,1 900,6 C1050,11 1150,2 1200,6" stroke="currentColor" stroke-width="1.8" fill="none"></path>
+      </svg>
+    </div>
   </header>
+  <!-- END: Top Navigation Bar -->
 
-  <!-- Studio Main Section -->
-  <main style="padding-top: 100px; padding-bottom: 60px;">
-    <section class="studio-section" id="studio">
-      <div class="container">
-        <div class="section-header">
-          <h2 class="section-title">Content Generation Studio</h2>
-          <p class="section-subtitle">Select an engine workflow to transform your documents into production-ready assets.</p>
+  <!-- BEGIN: Main Content Area -->
+  <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 flex-1 flex flex-col relative z-10" id="studio">
+    
+    <!-- Header Title Banner -->
+    <div class="text-center mb-6">
+      <h1 class="font-sketch text-3xl sm:text-4xl text-charcoal tracking-wide font-bold">
+        Content Generation Studio
+      </h1>
+      <p class="font-hand text-lg text-charcoal/75 max-w-2xl mx-auto">
+        Select an engine workflow to transform your documents into production-ready assets.
+      </p>
+    </div>
+
+    <!-- MAIN CHOICE GRID: Create a Video vs Create a Post -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto w-full mb-10" id="studioChoiceGrid">
+      
+      <!-- Option 1: Create a Video -->
+      <div class="relative bg-paper-card border-doodle-card p-6 sm:p-8 shadow-sketch-lg hover:shadow-sketch-active transition-all cursor-pointer group flex flex-col justify-between" onclick="openStudioMode('video')">
+        <div class="washi-tape-top"></div>
+        <div class="pt-2">
+          <span class="px-2.5 py-0.5 bg-moss-surface text-moss-dark font-hand text-xs font-bold rounded-md border border-moss/30 uppercase tracking-wider">Short &amp; Long Form Video</span>
+          <h3 class="font-sketch text-3xl font-bold text-charcoal mt-2 mb-2">Create a Video</h3>
+          <p class="font-hand text-base text-charcoal/80 leading-relaxed mb-6">
+            Transform documents into AI faceless kinetic videos. Supports short-form (Reels / Shorts / TikTok) and long-form (YouTube) formats with custom typography &amp; music.
+          </p>
         </div>
+        <button class="btn-bounce w-full py-3.5 text-white font-sketch text-xl font-bold rounded-xl border-2 border-charcoal shadow-sketch flex items-center justify-center gap-2" style="background: linear-gradient(135deg, #728c69 0%, #64845b 50%, #d97d64 100%); border: 2px solid #322d29; color: #ffffff !important;">
+          <span>Launch Video Studio</span>
+          <span class="text-2xl">➔</span>
+        </button>
+      </div>
 
-        <!-- Main 2 Artifact Choice Cards -->
-        <div class="studio-choice-grid" id="studioChoiceGrid">
-          
-          <!-- Card 1: Create a Video -->
-          <div class="studio-choice-card" onclick="openStudioMode('video')">
-            <div class="studio-choice-icon">🎬</div>
-            <span class="studio-choice-tag">Short & Long Form Video</span>
-            <h3 class="studio-choice-title">Create a Video</h3>
-            <p class="studio-choice-desc">Transform documents into AI faceless kinetic videos. Supports short-form (Reels/Shorts/TikTok) and long-form (YouTube) formats with custom typography & music.</p>
-            <button class="btn btn-gradient" style="width: 100%;">
-              Launch Video Generation Studio ➔
-            </button>
-          </div>
-
-          <!-- Card 2: Create a Post -->
-          <div class="studio-choice-card" onclick="openStudioMode('post')">
-            <div class="studio-choice-icon">🖼️</div>
-            <span class="studio-choice-tag">Carousel Decks & Image Posts</span>
-            <h3 class="studio-choice-title">Create a Post</h3>
-            <p class="studio-choice-desc">Distill long documents into multi-slide static carousel posts, infographic callouts, and key insight decks for LinkedIn & Instagram.</p>
-            <button class="btn btn-ghost" style="width: 100%;">
-              Launch Post Generation Studio ➔
-            </button>
-          </div>
-
+      <!-- Option 2: Create a Post -->
+      <div class="relative bg-paper-card border-doodle-card p-6 sm:p-8 shadow-sketch-lg hover:shadow-sketch transition-all cursor-pointer group flex flex-col justify-between" onclick="openStudioMode('post')">
+        <div class="washi-tape-right"></div>
+        <div class="pt-2">
+          <span class="px-2.5 py-0.5 bg-paper-tint text-charcoal/80 font-hand text-xs font-bold rounded-md border border-charcoal/30 uppercase tracking-wider">Carousel Decks &amp; Image Posts</span>
+          <h3 class="font-sketch text-3xl font-bold text-charcoal mt-2 mb-2">Create a Post</h3>
+          <p class="font-hand text-base text-charcoal/80 leading-relaxed mb-6">
+            Distill long documents into multi-slide static carousel posts, infographic callouts, and key insight decks for LinkedIn &amp; Instagram.
+          </p>
         </div>
+        <button class="btn-bounce w-full py-3.5 text-charcoal font-sketch text-xl font-bold rounded-xl border-2 border-charcoal shadow-sketch flex items-center justify-center gap-2 hover:bg-paper-tint" style="background: #ffffff; border: 2px solid #322d29; color: #322d29 !important;">
+          <span>Launch Post Studio</span>
+          <span class="text-2xl">➔</span>
+        </button>
+      </div>
 
-        <!-- Dedicated Screen 1: "Video Generation Studio" -->
-        <div id="videoStudioContainer" style="display: none;">
-          
-          <!-- Top Navigation & Title Bar -->
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-            <button class="btn btn-ghost" onclick="backToStudioChoice()" style="padding: 8px 16px;">
-              ◄ Back to Studio Choice
-            </button>
-            <h3 style="font-size: 22px; font-weight: 800; color: var(--text-primary);">🎬 Video Generation Studio</h3>
-            <span class="brand-tag">Faceless Pipeline B</span>
+    </div>
+
+    <!-- DEDICATED VIDEO GENERATION STUDIO CONTAINER -->
+    <div id="videoStudioContainer" style="display: none;" class="w-full">
+      
+      <!-- Top Action Sub-bar -->
+      <div class="flex items-center justify-between mb-6 flex-wrap gap-3 max-w-5xl mx-auto w-full">
+        <button class="px-4 py-1.5 rounded-full border-2 border-charcoal bg-white font-sketch text-base font-bold shadow-sketch-sm hover:bg-paper-tint transition-all flex items-center gap-2" onclick="backToStudioChoice()">
+          <span>◀</span>
+          <span>Back to Home</span>
+        </button>
+        <div class="px-4 py-1 rounded-full border-2 border-charcoal bg-white shadow-sketch-sm">
+          <span class="font-sketch text-lg font-bold text-charcoal">Video Generation Studio</span>
+        </div>
+      </div>
+
+      <!-- 5-STEP WORKFLOW STEPPER BAR -->
+      <nav aria-label="Workflow Steps" class="max-w-5xl mx-auto w-full mb-8">
+        <div class="bg-paper-card border-2 border-charcoal rounded-2xl p-3 px-4 shadow-sketch-sm flex items-center justify-between overflow-x-auto gap-2 text-sm">
+          <!-- Step 1 Indicator -->
+          <div class="flex items-center gap-2 flex-shrink-0 px-3 py-1.5 rounded-xl border border-charcoal font-hand font-bold text-base transition-all" id="vStep1Indicator">
+            <span class="w-6 h-6 rounded-full bg-white text-charcoal font-sans text-xs font-bold flex items-center justify-center border border-charcoal">1</span>
+            <span>Upload & Type</span>
+          </div>
+          <span class="text-charcoal/40 font-sketch text-lg font-bold select-none">➔</span>
+
+          <!-- Step 2 Indicator -->
+          <div class="flex items-center gap-2 flex-shrink-0 px-3 py-1.5 rounded-xl font-hand font-bold text-base transition-all text-charcoal/60" id="vStep2Indicator">
+            <span class="w-6 h-6 rounded-full bg-charcoal/10 text-charcoal/70 font-sans text-xs font-bold flex items-center justify-center">2</span>
+            <span>Ingest & Script</span>
+          </div>
+          <span class="text-charcoal/40 font-sketch text-lg font-bold select-none">➔</span>
+
+          <!-- Step 3 Indicator -->
+          <div class="flex items-center gap-2 flex-shrink-0 px-3 py-1.5 rounded-xl font-hand font-bold text-base transition-all text-charcoal/60" id="vStep3Indicator">
+            <span class="w-6 h-6 rounded-full bg-charcoal/10 text-charcoal/70 font-sans text-xs font-bold flex items-center justify-center">3</span>
+            <span>Style & Music</span>
+          </div>
+          <span class="text-charcoal/40 font-sketch text-lg font-bold select-none">➔</span>
+
+          <!-- Step 4 Indicator -->
+          <div class="flex items-center gap-2 flex-shrink-0 px-3 py-1.5 rounded-xl font-hand font-bold text-base transition-all text-charcoal/60" id="vStep4Indicator">
+            <span class="w-6 h-6 rounded-full bg-charcoal/10 text-charcoal/70 font-sans text-xs font-bold flex items-center justify-center">4</span>
+            <span>Creating</span>
+          </div>
+          <span class="text-charcoal/40 font-sketch text-lg font-bold select-none">➔</span>
+
+          <!-- Step 5 Indicator -->
+          <div class="flex items-center gap-2 flex-shrink-0 px-3 py-1.5 rounded-xl font-hand font-bold text-base transition-all text-charcoal/60" id="vStep5Indicator">
+            <span class="w-6 h-6 rounded-full bg-charcoal/10 text-charcoal/70 font-sans text-xs font-bold flex items-center justify-center">5</span>
+            <span>Final Output</span>
+          </div>
+        </div>
+      </nav>
+
+      <!-- ======================================================= -->
+      <!-- STEP 1 VIEW: UPLOAD DOCUMENT & SELECT FORMAT -->
+      <!-- ======================================================= -->
+      <div id="videoStep1View" class="w-full">
+        <div class="relative bg-paper-card border-doodle-card p-6 sm:p-8 shadow-sketch-lg max-w-5xl mx-auto w-full">
+          <div class="washi-tape-left"></div>
+          <div class="washi-tape-right"></div>
+          <div class="washi-tape-top"></div>
+
+          <div class="flex items-center justify-between border-b-2 border-charcoal/15 pb-4 mb-6">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-sketch text-xs uppercase tracking-widest text-terracotta font-bold">Step 01 of 05</span>
+              </div>
+              <h2 class="font-sketch text-2xl sm:text-3xl text-charcoal mt-0.5 font-bold">
+                Step 1: Upload Document & Select Video Format
+              </h2>
+            </div>
           </div>
 
-          <!-- Multi-Step Stepper Bar -->
-          <div class="stepper-bar">
-            <div class="stepper-item active" id="vStep1Indicator">
-              <div class="stepper-number">1</div>
-              <span>Upload & Type</span>
-            </div>
-            <span style="color: var(--text-dim);">➔</span>
-            <div class="stepper-item" id="vStep2Indicator">
-              <div class="stepper-number">2</div>
-              <span>Ingest & Script</span>
-            </div>
-            <span style="color: var(--text-dim);">➔</span>
-            <div class="stepper-item" id="vStep3Indicator">
-              <div class="stepper-number">3</div>
-              <span>Style & Music</span>
-            </div>
-            <span style="color: var(--text-dim);">➔</span>
-            <div class="stepper-item" id="vStep4Indicator">
-              <div class="stepper-number">4</div>
-              <span>Creating</span>
-            </div>
-            <span style="color: var(--text-dim);">➔</span>
-            <div class="stepper-item" id="vStep5Indicator">
-              <div class="stepper-number">5</div>
-              <span>Final Output</span>
-            </div>
-          </div>
-
-          <!-- Step 1 View: Upload & Type Selection -->
-          <div id="videoStep1View" class="panel">
-            <div class="panel-heading">Step 1: Upload Document & Select Video Type</div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-              <!-- Document Dropzone -->
-              <div class="form-group">
-                <label class="form-label">Source Document (.pdf, .pptx, .docx, .txt, .md)</label>
-                <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
-                  <div class="dropzone-icon">📄</div>
-                  <div class="dropzone-text">Click or drag & drop document</div>
-                  <div class="dropzone-subtext">Upload papers, decks, or write-ups up to 25MB</div>
-                </div>
-                <input type="file" id="fileInput" style="display: none;" accept=".pdf,.pptx,.txt,.md,.docx" onchange="handleFileSelect(event)">
-                <div id="fileInfo" class="file-info" style="display: none;">
-                  <span id="fileName">document.pdf</span>
-                  <span style="cursor: pointer;" onclick="clearFile(event)">✖</span>
-                </div>
-              </div>
-
-              <!-- Video Type & Platform Selector -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+            
+            <!-- Left Column: Dropzone -->
+            <div class="lg:col-span-6 flex flex-col justify-between">
               <div>
-                <div class="form-group">
-                  <label class="form-label">Platform Preset</label>
-                  <div class="platform-selector">
-                    <div class="platform-card selected" id="vPlatInstagram" onclick="selectVideoPlatform('instagram')">
-                      <span class="platform-icon">📸</span>
-                      <div>
-                        <div class="platform-name">Instagram / Reels</div>
-                        <small style="color: var(--text-dim);">High energy & bold</small>
-                      </div>
-                    </div>
-                    <div class="platform-card" id="vPlatYoutube" onclick="selectVideoPlatform('youtube')">
-                      <span class="platform-icon">▶️</span>
-                      <div>
-                        <div class="platform-name">YouTube</div>
-                        <small style="color: var(--text-dim);">Long or Short form</small>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Video Format Category</label>
-                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                    <div class="select-option-card selected" id="typeShortForm" onclick="selectVideoCategory('short')">
-                      <div class="option-card-title">📱 Short Form Content</div>
-                      <div class="option-card-desc">Reels, Shorts, TikTok (9:16 Vertical • 15s - 90s)</div>
-                    </div>
-                    <div class="select-option-card" id="typeLongForm" onclick="selectVideoCategory('long')">
-                      <div class="option-card-title">📺 Long Form Content</div>
-                      <div class="option-card-desc">YouTube Video (16:9 Landscape • 2m - 10m)</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <button class="btn-kinetic" style="margin-top: 16px;" onclick="goToVideoStep2()">
-              Ingest Document & Analyze Script ➔
-            </button>
-          </div>
-
-          <!-- Step 2 View: Ingestion Screen & AI Suggested Duration & Editable Script -->
-          <div id="videoStep2View" class="panel" style="display: none;">
-            <div class="panel-heading">Step 2: AI Document Ingestion & Script Analysis</div>
-
-            <!-- Ingestion Loading Progress Banner -->
-            <div id="ingestLoadingBanner" class="status-banner" style="background: rgba(56, 189, 248, 0.1); border-color: var(--accent-cyan); margin-bottom: 24px;">
-              <div style="display: flex; align-items: center; gap: 12px;">
-                <span style="font-size: 24px;">⚙️</span>
-                <div>
-                  <strong style="color: var(--accent-cyan);">Ingesting Document Text & Extracting High-Salience Claims...</strong>
-                  <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;" id="ingestStatText">Analyzing document structure & character counts...</p>
-                </div>
-              </div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 320px 1fr; gap: 24px;">
-              <!-- Left: AI Suggested Video Duration Control -->
-              <div>
-                <div class="form-group">
-                  <label class="form-label">AI Suggested Video Duration (s)</label>
-                  <input type="number" id="videoDurationInput" class="input-control" value="60" min="15" max="300">
-                  <small style="display: block; margin-top: 6px; color: var(--text-muted); font-size: 12px;">
-                    💡 AI calculated <span id="aiDurationBadge" style="color: var(--accent-cyan); font-weight: 700;">60 seconds</span> as optimal based on document density. You can freely edit this duration.
-                  </small>
-                </div>
-
-                <div style="background: rgba(15, 23, 42, 0.6); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-                  <div style="font-size: 12px; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; margin-bottom: 8px;">Analysis Metrics</div>
-                  <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
-                    • Extracted Blocks: <strong id="metricBlocks">102</strong><br>
-                    • Salient Claims: <strong id="metricClaims">156</strong><br>
-                    • Script Beats: <strong id="metricBeats">17</strong>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Right: Editable Script Area -->
-              <div>
-                <div class="form-group">
-                  <label class="form-label" style="display: flex; justify-content: space-between;">
-                    <span>Editable Video Script & Narration Beats</span>
-                    <small style="color: var(--accent-cyan);">Feel free to edit script text or narration</small>
+                <div class="flex items-center justify-between mb-2">
+                  <label class="font-hand font-bold text-sm tracking-wider uppercase text-charcoal/80 flex items-center gap-1.5">
+                    SOURCE DOCUMENT (.PDF, .PPTX, .DOCX, .TXT, .MD)
                   </label>
-                  <textarea class="script-editor" id="videoScriptEditor" style="height: 280px;" placeholder="Ingested script narration beats will appear here..."></textarea>
+                  <span class="font-hand text-xs text-moss-dark font-semibold">Max 25MB</span>
+                </div>
+
+                <div class="relative border-dashed-doodle bg-paper-tint/50 hover:bg-paper-tint/90 transition-colors p-8 py-12 flex flex-col items-center justify-center text-center cursor-pointer group min-h-[300px]" id="dropzone" onclick="document.getElementById('fileInput').click()">
+                  <input type="file" id="fileInput" accept=".pdf,.pptx,.docx,.txt,.md" style="display: none;" onchange="handleFileSelect(event)">
+                  
+                  <div class="w-16 h-20 mb-4 bg-white border-2 border-charcoal rounded-md shadow-sketch-sm flex flex-col items-center justify-center relative group-hover:rotate-2 transition-transform">
+                    <div class="absolute top-0 right-0 w-4 h-4 bg-paper-tint border-b-2 border-l-2 border-charcoal"></div>
+                    <div class="w-8 h-1 bg-charcoal/20 rounded mb-1.5 mt-2"></div>
+                    <div class="w-10 h-1 bg-charcoal/20 rounded mb-1.5"></div>
+                    <div class="w-7 h-1 bg-charcoal/20 rounded mb-2"></div>
+                    <span class="text-terracotta font-sketch text-xs font-bold">DOC/PDF</span>
+                  </div>
+
+                  <h3 class="font-sketch text-2xl text-charcoal font-bold mb-1" id="dropTitle">
+                    Click or drag & drop document
+                  </h3>
+                  <p class="font-hand text-base text-charcoal/70 mb-4 max-w-xs" id="dropSubtitle">
+                    Upload papers, decks, or write-ups up to 25MB for parsing
+                  </p>
+                  <div class="px-4 py-1.5 bg-white border-2 border-charcoal rounded-xl shadow-sketch-sm text-xs font-hand font-bold text-charcoal group-hover:bg-paper">
+                    📎 Browse Local Files
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3 flex items-center justify-between text-xs font-hand text-charcoal/60 px-1">
+                <span>Supports research papers, slides & outlines</span>
+                <span class="text-moss-dark font-bold underline cursor-pointer" onclick="loadSampleDoc()">Sample Document</span>
+              </div>
+            </div>
+
+            <!-- Right Column: Format Selectors -->
+            <div class="lg:col-span-6 flex flex-col justify-between gap-6">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <label class="font-hand font-bold text-sm tracking-wider uppercase text-charcoal/80 flex items-center gap-1.5">
+                    TARGET PLATFORM & FORMAT
+                  </label>
+                  <span class="font-hand text-xs text-moss-dark font-semibold">Select 1 option</span>
+                </div>
+
+                <div class="space-y-2.5">
+                  <!-- Option A: Short-Form (9:16 Vertical) -->
+                  <div class="card-selectable selected relative border-2 border-charcoal rounded-2xl p-3.5 shadow-sketch cursor-pointer group" id="typeShortForm" onclick="selectVideoCategory('short')">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-xl bg-white border-2 border-charcoal flex items-center justify-center flex-shrink-0 shadow-sketch-sm">
+                        <span class="material-symbols-outlined text-xl text-charcoal">smartphone</span>
+                      </div>
+                      <div class="flex-1 flex items-center justify-between gap-2">
+                        <div>
+                          <h4 class="font-sketch text-lg font-bold text-charcoal leading-tight">Short-Form Video (Reels / Shorts / TikTok)</h4>
+                          <p class="font-hand text-xs text-charcoal/75 mt-0.5">9:16 Vertical • High-energy kinetic captions & fast beats</p>
+                        </div>
+                        <span class="font-hand text-xs font-bold text-moss-dark bg-moss/20 px-2 py-0.5 rounded-md border border-moss/40 flex-shrink-0">9:16 Vertical</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Option B: Long-Form (16:9 Landscape) -->
+                  <div class="card-selectable relative bg-paper-card border-2 border-charcoal/50 hover:border-charcoal rounded-2xl p-3.5 shadow-sketch-sm cursor-pointer" id="typeLongForm" onclick="selectVideoCategory('long')">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-xl bg-paper-tint border-2 border-charcoal/60 flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-xl text-charcoal">tv</span>
+                      </div>
+                      <div class="flex-1 flex items-center justify-between gap-2">
+                        <div>
+                          <h4 class="font-sketch text-lg font-bold text-charcoal/85 leading-tight">Long-Form Video (YouTube)</h4>
+                          <p class="font-hand text-xs text-charcoal/60 mt-0.5">16:9 Landscape • Deep-dive structured documentary style</p>
+                        </div>
+                        <span class="font-hand text-xs font-semibold text-charcoal/60 bg-paper-tint px-2 py-0.5 rounded-md border border-charcoal/20 flex-shrink-0">16:9 Landscape</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Secondary Platform Chips -->
+                <div class="mt-4 pt-3 border-t border-charcoal/15">
+                  <span class="font-hand text-xs font-bold text-charcoal/70 uppercase">Platform Target:</span>
+                  <div class="flex items-center gap-2 mt-2">
+                    <button type="button" class="px-3 py-1 rounded-full border border-charcoal text-xs font-hand font-bold bg-moss-surface text-moss-dark shadow-sketch-sm" id="vPlatInstagram" onclick="selectVideoPlatform('instagram')">Instagram / Reels</button>
+                    <button type="button" class="px-3 py-1 rounded-full border border-charcoal text-xs font-hand font-bold bg-white text-charcoal shadow-sketch-sm" id="vPlatYoutube" onclick="selectVideoPlatform('youtube')">YouTube</button>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div style="display: flex; gap: 16px; margin-top: 20px;">
-              <button class="btn btn-ghost" onclick="goToVideoStep(1)">◄ Back to Step 1</button>
-              <button class="btn-kinetic" style="flex: 1;" onclick="goToVideoStep3()">
-                Continue to Style & Music ➔
-              </button>
+          </div>
+
+          <!-- Bottom Action Bar -->
+          <div class="mt-8 pt-5 border-t-2 border-charcoal/15 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2 font-hand text-sm text-charcoal/70">
+              <span class="text-moss font-bold text-base">●</span>
+              <span>Engine ready: <strong>Watercolor Kinetic Engine v3.2</strong></span>
+            </div>
+            <button class="btn-bounce w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-moss via-[#64845b] to-terracotta text-white font-sketch text-xl font-bold rounded-2xl border-2 border-charcoal shadow-sketch flex items-center justify-center gap-3 group" onclick="goToVideoStep2()">
+              <span>Ingest Document & Analyze Script</span>
+              <span class="text-2xl transition-transform group-hover:translate-x-1">➔</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ======================================================= -->
+      <!-- STEP 2 VIEW: SCRIPT ANALYSIS & EDITOR -->
+      <!-- ======================================================= -->
+      <div id="videoStep2View" class="w-full" style="display: none;">
+        <div class="relative bg-paper-card border-doodle-card p-6 sm:p-8 shadow-sketch-lg max-w-5xl mx-auto w-full">
+          <div class="washi-tape-top"></div>
+
+          <div class="flex items-center justify-between border-b-2 border-charcoal/15 pb-4 mb-4">
+            <div>
+              <span class="font-sketch text-xs uppercase tracking-widest text-terracotta font-bold">Step 02 of 05</span>
+              <h2 class="font-sketch text-2xl sm:text-3xl text-charcoal mt-0.5 font-bold">
+                Step 2: AI Document Ingestion & Script Analysis
+              </h2>
+            </div>
+            <span class="font-hand text-sm text-terracotta -rotate-2 hidden sm:inline-block">Draft auto-saved</span>
+          </div>
+
+          <!-- Extraction Status Alert -->
+          <div class="mb-6 p-3.5 bg-moss-surface border-2 border-moss rounded-xl flex items-start gap-3 shadow-sketch-sm" id="ingestLoadingBanner">
+            <div class="flex-1">
+              <h3 class="font-sketch text-base font-bold text-moss-dark">Ingesting Document Text & Extracting Claims...</h3>
+              <p class="font-hand text-sm text-moss-dark font-semibold mt-0.5" id="ingestStatText">
+                Ingestion complete! Script beats distilled successfully from outline.
+              </p>
             </div>
           </div>
 
-          <!-- Step 3 View: Typography & Song Options -->
-          <div id="videoStep3View" class="panel" style="display: none;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-              <div class="panel-heading" style="margin-bottom: 0;">Step 3: Customize Typography & Music</div>
-              <button class="btn btn-gradient" onclick="applyAIOptionPreset()" style="padding: 8px 16px; font-size: 13px;">
-                ⚡ Let the AI Choose for Me
-              </button>
-            </div>
+          <!-- Grid: Metrics & JSON Script Editor -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            <!-- Left Metrics Column -->
+            <div class="lg:col-span-4 space-y-4">
+              <!-- Duration input -->
+              <div class="bg-paper-tint/60 p-4 rounded-2xl border-2 border-charcoal shadow-sketch">
+                <label class="block font-hand font-bold text-xs uppercase tracking-wider text-charcoal mb-1" for="videoDurationInput">
+                  AI Suggested Video Duration
+                </label>
+                <div class="relative">
+                  <input class="w-full bg-white border-2 border-charcoal rounded-xl py-2 px-3 font-sketch text-3xl font-bold text-charcoal text-center focus:outline-none" id="videoDurationInput" type="number" value="60">
+                  <span class="absolute right-3 top-3.5 font-hand text-xs font-bold text-charcoal/60">SEC</span>
+                </div>
+                <p class="font-hand text-xs text-charcoal/70 mt-2">
+                  Optimal calculated: <strong id="aiDurationBadge">60 seconds</strong>. You can adjust this duration freely.
+                </p>
+              </div>
 
-            <!-- 3 Typography Options -->
-            <div class="form-group">
-              <label class="form-label">Choose 1 of 3 Typography Styles</label>
-              <div class="options-grid-3">
-                <div class="select-option-card selected" id="typoOption1" onclick="selectTypography(1)">
-                  <div class="option-card-title">✨ 1. Kinetic Neon Bold</div>
-                  <div class="option-card-desc">High contrast cyan/pink neon titles with dynamic motion scaling. Best for Reels & Shorts.</div>
-                </div>
-                <div class="select-option-card" id="typoOption2" onclick="selectTypography(2)">
-                  <div class="option-card-title">📜 2. Clean Editorial Slate</div>
-                  <div class="option-card-desc">Elegant high-readability sans-serif typography. Perfect for executive summaries & LinkedIn.</div>
-                </div>
-                <div class="select-option-card" id="typoOption3" onclick="selectTypography(3)">
-                  <div class="option-card-title">⚡ 3. Minimalist Impact Pro</div>
-                  <div class="option-card-desc">Futuristic bold callout cards with dark glass overlays. Great for high-salience stats.</div>
-                </div>
+              <!-- Metrics slip -->
+              <div class="bg-[#FFF9E6] p-4 rounded-xl border-2 border-charcoal shadow-sketch relative">
+                <h4 class="font-sketch text-base font-bold text-charcoal border-b border-dashed border-charcoal/30 pb-1 mb-2 text-center">
+                  Analysis Metrics
+                </h4>
+                <ul class="space-y-1.5 font-hand text-sm text-charcoal">
+                  <li class="flex justify-between border-b border-charcoal/10 pb-1">
+                    <span>• Extracted Blocks:</span>
+                    <strong id="metricBlocks" class="font-code text-xs bg-paper-tint px-1.5 py-0.5 rounded">108</strong>
+                  </li>
+                  <li class="flex justify-between border-b border-charcoal/10 pb-1">
+                    <span>• Salient Claims:</span>
+                    <strong id="metricClaims" class="font-code text-xs bg-paper-tint px-1.5 py-0.5 rounded">144</strong>
+                  </li>
+                  <li class="flex justify-between">
+                    <span>• Script Beats:</span>
+                    <strong id="metricBeats" class="font-code text-xs text-moss-dark bg-moss-surface px-1.5 py-0.5 rounded">18</strong>
+                  </li>
+                </ul>
               </div>
             </div>
 
-            <!-- 3 Song / Music Options -->
-            <div class="form-group" style="margin-top: 32px;">
-              <label class="form-label">Choose 1 of 3 Music / Song Tracks</label>
-              <div class="options-grid-3">
-                <div class="select-option-card selected" id="songOption1" onclick="selectSong(1)">
-                  <div class="option-card-title">🎵 1. Upbeat Lo-Fi Synth</div>
-                  <div class="option-card-desc">128 BPM energetic synth background track. Perfect for fast tech shorts & overview reels.</div>
+            <!-- Right Script Editor Column -->
+            <div class="lg:col-span-8">
+              <div class="flex items-center justify-between mb-2">
+                <label class="font-hand font-bold text-sm tracking-wider uppercase text-charcoal">
+                  Editable Video Script & Narration Beats
+                </label>
+                <span class="font-hand text-xs font-bold text-moss-dark bg-moss-surface px-2 py-0.5 rounded border border-moss/30">
+                  Feel Free to Edit Script JSON Below
+                </span>
+              </div>
+
+              <div class="rounded-2xl border-2 border-charcoal bg-[#0F141C] text-stone-200 shadow-sketch overflow-hidden">
+                <div class="bg-[#181F2B] px-4 py-2 border-b border-slate-800 flex items-center justify-between">
+                  <span class="font-code text-xs text-slate-400">script_manifest.json</span>
+                  <span class="font-code text-xs text-cyan-400">JSON Schema</span>
                 </div>
-                <div class="select-option-card" id="songOption2" onclick="selectSong(2)">
-                  <div class="option-card-title">🎧 2. Cinematic Cyber Electronic</div>
-                  <div class="option-card-desc">Deep resonant electronic beats with subtle build-ups. Great for dramatic breakdowns.</div>
-                </div>
-                <div class="select-option-card" id="songOption3" onclick="selectSong(3)">
-                  <div class="option-card-title">🎸 3. Ambient Acoustic Chill</div>
-                  <div class="option-card-desc">Soft, unobtrusive background acoustic tones. Ideal for educational & long-form videos.</div>
-                </div>
+                <textarea id="videoScriptEditor" class="w-full h-[320px] bg-[#0F141C] text-emerald-300 font-code text-xs sm:text-sm p-4 focus:outline-none resize-none leading-relaxed border-none"></textarea>
               </div>
             </div>
 
-            <div style="display: flex; gap: 16px; margin-top: 24px;">
-              <button class="btn btn-ghost" onclick="goToVideoStep(2)">◄ Back to Script</button>
-              <button class="btn-kinetic" style="flex: 1;" onclick="startFinalVideoRender()">
-                Render Final Kinetic Video 🎬
-              </button>
+          </div>
+
+          <!-- Bottom Nav Actions -->
+          <div class="mt-8 pt-4 border-t-2 border-dashed border-charcoal/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <button class="w-full sm:w-auto px-6 py-2.5 bg-white border-2 border-charcoal rounded-full font-sketch text-base font-bold text-charcoal shadow-sketch hover:bg-paper-tint" onclick="goToVideoStep(1)">
+              ← Back to Step 1
+            </button>
+            <button class="btn-bounce w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-moss via-[#64845b] to-terracotta text-white font-sketch text-xl font-bold rounded-full border-2 border-charcoal shadow-sketch flex items-center justify-center gap-2" onclick="goToVideoStep3()">
+              <span>Continue to Style & Music</span>
+              <span class="text-2xl">➔</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ======================================================= -->
+      <!-- STEP 3 VIEW: TYPOGRAPHY & MUSIC STYLE CUSTOMIZATION -->
+      <!-- ======================================================= -->
+      <div id="videoStep3View" class="w-full" style="display: none;">
+        <div class="relative bg-paper-card border-doodle-card p-6 sm:p-8 shadow-sketch-lg max-w-5xl mx-auto w-full">
+          <div class="washi-tape-top"></div>
+
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b-2 border-dashed border-charcoal/20 mb-6">
+            <div>
+              <span class="font-sketch text-xs uppercase tracking-widest text-terracotta font-bold">Step 03 of 05</span>
+              <h2 class="font-sketch text-2xl sm:text-3xl font-bold text-charcoal mt-0.5">
+                Step 3: Customize Typography & Music
+              </h2>
+              <p class="font-hand text-base text-charcoal/70">
+                Fine-tune audio stems and kinetic typographic motion before rendering.
+              </p>
+            </div>
+            <button class="px-4 py-2 rounded-full border-2 border-charcoal bg-gradient-to-r from-amber-100 via-rose-100 to-amber-100 text-charcoal font-sketch text-base font-bold shadow-sketch-sm hover:scale-105 transition-all flex items-center gap-2" onclick="applyAIOptionPreset()">
+              <span>⚡ Let AI Choose Preset</span>
+            </button>
+          </div>
+
+          <!-- Section 1: Typography Options -->
+          <div class="mb-8">
+            <h3 class="font-sketch text-xl font-bold text-charcoal mb-3">Choose 1 of 3 Typography Styles</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- Card 1 -->
+              <div class="card-selectable selected relative bg-white border-2 border-charcoal rounded-2xl p-4 shadow-sketch cursor-pointer group flex flex-col justify-between" id="typoOption1" onclick="selectTypography(1)">
+                <div>
+                  <div class="flex items-center justify-between">
+                    <h4 class="font-sketch text-lg font-bold text-charcoal">1. Kinetic Neon Bold</h4>
+                    <span class="px-2 py-0.5 rounded bg-moss/20 text-moss-dark font-hand text-xs font-bold border border-moss/30">Reels & Shorts</span>
+                  </div>
+                  
+                  <!-- Sample Typography Preview Box -->
+                  <div class="my-3 p-3.5 rounded-xl bg-[#0d131d] border-2 border-charcoal flex flex-col items-center justify-center text-center overflow-hidden relative shadow-inner">
+                    <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#00f2fe_1px,transparent_1px)] [background-size:8px_8px]"></div>
+                    <span class="relative font-black text-lg tracking-wider uppercase text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-400 to-amber-300 drop-shadow-[0_2px_8px_rgba(0,242,254,0.5)]" style="font-family: 'Space Grotesk', sans-serif;">
+                      KINETIC NEON
+                    </span>
+                    <span class="relative text-[10px] font-mono tracking-widest text-cyan-300/80 uppercase mt-0.5">
+                      Sample Motion Title • 9:16
+                    </span>
+                  </div>
+
+                  <p class="font-hand text-xs text-charcoal/80 leading-snug">High contrast cyan/pink neon titles with dynamic motion scaling. Best for Reels & Shorts.</p>
+                </div>
+              </div>
+
+              <!-- Card 2 -->
+              <div class="card-selectable relative bg-paper-card border-2 border-charcoal/60 hover:border-charcoal rounded-2xl p-4 shadow-sketch-sm cursor-pointer group flex flex-col justify-between" id="typoOption2" onclick="selectTypography(2)">
+                <div>
+                  <div class="flex items-center justify-between">
+                    <h4 class="font-sketch text-lg font-bold text-charcoal">2. Clean Editorial Slate</h4>
+                    <span class="px-2 py-0.5 rounded bg-paper-tint text-charcoal/80 font-hand text-xs font-bold border border-charcoal/20">Executive</span>
+                  </div>
+
+                  <!-- Sample Typography Preview Box -->
+                  <div class="my-3 p-3.5 rounded-xl bg-[#FAF8F5] border-2 border-charcoal/40 flex flex-col items-center justify-center text-center overflow-hidden relative shadow-inner">
+                    <span class="font-serif italic text-lg font-semibold text-charcoal tracking-normal" style="font-family: 'Fraunces', serif;">
+                      Editorial Slate
+                    </span>
+                    <span class="text-[10px] font-hand font-bold tracking-widest text-charcoal/60 uppercase mt-0.5">
+                      Classic Serif & Refined Layout
+                    </span>
+                  </div>
+
+                  <p class="font-hand text-xs text-charcoal/80 leading-snug">Elegant high-readability sans-serif typography. Perfect for executive summaries.</p>
+                </div>
+              </div>
+
+              <!-- Card 3 -->
+              <div class="card-selectable relative bg-paper-card border-2 border-charcoal/60 hover:border-charcoal rounded-2xl p-4 shadow-sketch-sm cursor-pointer group flex flex-col justify-between" id="typoOption3" onclick="selectTypography(3)">
+                <div>
+                  <div class="flex items-center justify-between">
+                    <h4 class="font-sketch text-lg font-bold text-charcoal">3. Minimalist Impact Pro</h4>
+                    <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-900 font-hand text-xs font-bold border border-amber-300">Insights</span>
+                  </div>
+
+                  <!-- Sample Typography Preview Box -->
+                  <div class="my-3 p-3.5 rounded-xl bg-[#1A1F2C] border-2 border-charcoal flex flex-col items-center justify-center text-center overflow-hidden relative shadow-inner">
+                    <span class="font-black text-lg tracking-widest uppercase text-white font-sans" style="font-family: 'Space Grotesk', sans-serif; text-shadow: 0 1px 3px rgba(0,0,0,0.8);">
+                      IMPACT PRO
+                    </span>
+                    <span class="text-[10px] font-mono tracking-wider text-terracotta bg-terracotta/20 px-1.5 py-0.2 rounded uppercase mt-0.5 border border-terracotta/30">
+                      Bold Data Callouts
+                    </span>
+                  </div>
+
+                  <p class="font-hand text-xs text-charcoal/80 leading-snug">Futuristic bold callout cards with dark glass overlays. Great for stats & insights.</p>
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- Step 4 View: Creating / Rendering Screen -->
-          <div id="videoStep4View" class="panel" style="display: none; text-align: center; padding: 60px 40px;">
-            <div style="font-size: 64px; margin-bottom: 20px; animation: pulse 1.5s infinite;">🎬</div>
-            <h3 style="font-size: 26px; font-weight: 800; color: var(--text-primary); margin-bottom: 12px;">Creating Your Kinetic Video...</h3>
-            <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 32px;" id="creatingSubtext">Processing 8-stage orchestrator pipeline. Please hold tight!</p>
-
-            <!-- Real-time Progress Bar -->
-            <div class="progress-container" style="max-width: 720px; margin: 0 auto 32px;">
-              <div class="progress-track" style="height: 12px;">
-                <div class="progress-fill" id="vProgressFill" style="width: 0%;"></div>
+          <!-- Section 2: Music Track Options -->
+          <div class="mb-8">
+            <h3 class="font-sketch text-xl font-bold text-charcoal mb-3">Choose 1 of 3 Music / Song Tracks</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- Card 1 -->
+              <div class="card-selectable selected relative bg-white border-2 border-charcoal rounded-2xl p-4 shadow-sketch cursor-pointer" id="songOption1" onclick="selectSong(1)">
+                <h4 class="font-sketch text-lg font-bold text-charcoal">1. Upbeat Lo-Fi Synth</h4>
+                <p class="font-hand text-sm text-charcoal/80 mt-1">128 BPM energetic synth background track. Perfect for fast tech shorts & overview reels.</p>
               </div>
-              <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; color: var(--text-secondary); margin-top: 12px;">
-                <span id="vStageLabel">Initializing pipeline...</span>
-                <span id="vProgressPercent" style="color: var(--accent-cyan);">0%</span>
+              <!-- Card 2 -->
+              <div class="card-selectable relative bg-paper-card border-2 border-charcoal/60 rounded-2xl p-4 shadow-sketch-sm cursor-pointer" id="songOption2" onclick="selectSong(2)">
+                <h4 class="font-sketch text-lg font-bold text-charcoal">2. Cinematic Ambient</h4>
+                <p class="font-hand text-sm text-charcoal/80 mt-1">Subtle acoustic chill beat with soft piano notes for smooth listening.</p>
+              </div>
+              <!-- Card 3 -->
+              <div class="card-selectable relative bg-paper-card border-2 border-charcoal/60 rounded-2xl p-4 shadow-sketch-sm cursor-pointer" id="songOption3" onclick="selectSong(3)">
+                <h4 class="font-sketch text-lg font-bold text-charcoal">3. Energetic Cyber Bass</h4>
+                <p class="font-hand text-sm text-charcoal/80 mt-1">Punchy electronic rhythm designed for maximum retention and high viral impact.</p>
               </div>
             </div>
           </div>
 
-          <!-- Step 5 View: Final Output Video View -->
-          <div id="videoStep5View" class="panel" style="display: none;">
-            <div class="panel-heading">Step 5: Master Kinetic Video Output</div>
+          <!-- Bottom Action Bar -->
+          <div class="mt-8 pt-4 border-t-2 border-dashed border-charcoal/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <button class="w-full sm:w-auto px-6 py-2.5 bg-white border-2 border-charcoal rounded-full font-sketch text-base font-bold text-charcoal shadow-sketch hover:bg-paper-tint" onclick="goToVideoStep(2)">
+              ← Back to Step 2
+            </button>
+            <button class="btn-bounce w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-moss via-[#64845b] to-terracotta text-white font-sketch text-xl font-bold rounded-full border-2 border-charcoal shadow-sketch flex items-center justify-center gap-2" onclick="startFinalVideoRender()">
+              <span>Render Final Kinetic Video</span>
+              <span class="text-2xl">➔</span>
+            </button>
+          </div>
 
-            <div style="max-width: 860px; margin: 0 auto; text-align: center;">
-              <!-- HTML5 Video Player with Proper Play/Pause Controls -->
-              <div class="media-preview-box" style="margin-bottom: 24px; min-height: 480px;">
-                <video id="finalVideoPlayer" controls autoplay style="width: 100%; max-height: 520px; border-radius: var(--radius-lg); box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8);">
+        </div>
+      </div>
+
+      <!-- ======================================================= -->
+      <!-- STEP 4 VIEW: PIPELINE PROGRESS & LOADING WORKSPACE -->
+      <!-- ======================================================= -->
+      <div id="videoStep4View" class="w-full" style="display: none;">
+        <div class="relative bg-paper-card border-doodle-card p-6 sm:p-10 shadow-sketch-lg max-w-5xl mx-auto w-full flex flex-col items-center">
+          <div class="washi-tape-top"></div>
+
+          <div class="w-full flex items-center justify-between pb-4 border-b border-dashed border-charcoal/30 mb-6">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+              <span class="font-sketch text-sm uppercase font-bold text-charcoal">Neural Cinema Orchestrator Active</span>
+            </div>
+            <span class="font-hand text-sm font-bold text-moss-dark bg-moss-surface px-3 py-0.5 rounded border border-moss/30" id="creatingSubtext">
+              Synthesizing kinetic frames...
+            </span>
+          </div>
+
+          <!-- Central Animated Clapperboard -->
+          <div class="relative my-4 flex flex-col items-center justify-center text-center">
+            <div class="relative w-28 h-28 mb-4 flex items-center justify-center">
+              <div class="animate-bob relative z-10 w-20 h-20 bg-white border-2 border-charcoal rounded-2xl shadow-sketch flex items-center justify-center">
+                <span class="text-4xl">🎬</span>
+              </div>
+            </div>
+            <h2 class="font-sketch text-3xl font-bold text-charcoal">
+              Creating Your Kinetic Video...
+            </h2>
+            <p class="font-hand text-terracotta text-xl font-bold mt-1">
+              ~ weaving words into tactile motion ✨
+            </p>
+          </div>
+
+          <!-- Sketched Progress Bar -->
+          <div class="w-full max-w-2xl mt-6 mb-8">
+            <div class="flex items-baseline justify-between mb-2 px-1">
+              <span class="font-hand text-base font-bold text-charcoal" id="vStageLabel">Initializing pipeline...</span>
+              <span class="font-hand text-2xl font-bold text-moss-dark" id="vProgressPercent">0%</span>
+            </div>
+            
+            <div class="w-full h-6 bg-paper-tint rounded-full border-2 border-charcoal p-0.5 shadow-sketch-sm relative overflow-hidden">
+              <div class="h-full rounded-full bg-gradient-to-r from-[#f4ece1] via-terracotta to-moss transition-all duration-500 ease-out" id="vProgressFill" style="width: 0%;"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ======================================================= -->
+      <!-- STEP 5 VIEW: MASTER VIDEO OUTPUT & PLAYER -->
+      <!-- ======================================================= -->
+      <div id="videoStep5View" class="w-full" style="display: none;">
+        <div class="relative bg-paper-card border-doodle-card p-6 sm:p-10 shadow-sketch-lg max-w-5xl mx-auto w-full">
+          <div class="washi-tape-top"></div>
+
+          <div class="w-full flex items-center justify-between pb-4 border-b border-dashed border-charcoal/30 mb-6 flex-wrap gap-2">
+            <div>
+              <span class="px-3 py-1 rounded-full bg-moss-surface text-moss-dark border border-moss/30 font-hand text-xs font-bold uppercase">✨ RENDERING COMPLETE</span>
+              <h2 class="font-sketch text-3xl font-bold text-charcoal mt-1">Master Kinetic Video Output</h2>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            
+            <!-- Video Player Column -->
+            <div class="lg:col-span-6 flex flex-col items-center">
+              <div id="finalPlayerContainer" class="relative w-full max-w-[320px] bg-charcoal rounded-[2rem] p-3 border-2 border-charcoal shadow-sketch-lg transition-all">
+                <video id="finalVideoPlayer" controls class="w-full aspect-[9/16] rounded-[1.5rem] bg-black object-cover">
                   <source id="finalVideoSource" src="" type="video/mp4">
-                  Your browser does not support HTML5 video playback.
+                  Your browser does not support HTML5 video.
                 </video>
               </div>
+            </div>
 
-              <!-- Action Controls Row: Download MP4 & Restart -->
-              <div style="display: flex; gap: 16px; justify-content: center;">
-                <a id="downloadMp4Btn" href="#" download="master_video.mp4" class="btn btn-gradient" style="padding: 16px 36px; font-size: 16px;">
-                  ⬇️ Download MP4 Format Deliverable
+            <!-- Deliverable Info & Actions Column -->
+            <div class="lg:col-span-6 space-y-6">
+              <div>
+                <h3 class="font-sketch text-2xl font-bold text-charcoal mb-2">🎉 Ready for Distribution</h3>
+                <p class="font-hand text-base text-charcoal/80 leading-relaxed">
+                  Synthesized with ElevenLabs master voice, kinetic typography, and ducked background beats.
+                </p>
+              </div>
+
+              <div class="bg-paper-tint/60 border-2 border-charcoal rounded-xl p-4 shadow-sketch-sm">
+                <h4 class="font-sketch text-base font-bold text-charcoal mb-2">Technical Deliverable Specifications</h4>
+                <ul class="font-hand text-sm text-charcoal space-y-1">
+                  <li id="finalFormatSpec">• Format: <strong>1080 × 1920 (9:16 Vertical Reel)</strong></li>
+                  <li>• Framerate: <strong>60 FPS • H.264 Lossless</strong></li>
+                  <li>• Audio: <strong>48 kHz Stereo Ducked Master</strong></li>
+                </ul>
+              </div>
+
+              <div class="flex flex-col gap-3 pt-2 w-full">
+                <a id="downloadMp4Btn" href="#" download="PostEazy_Kinetic_Reel.mp4" class="w-full btn-bounce py-3.5 px-6 bg-gradient-to-r from-terracotta to-[#c25332] text-white font-sketch text-lg sm:text-xl font-bold rounded-full border-2 border-charcoal shadow-sketch flex items-center justify-center text-center">
+                  <span>Download MP4 Deliverable</span>
                 </a>
-                <button class="btn btn-ghost" onclick="restartVideoWorkflow()" style="padding: 16px 28px;">
-                  🔄 Create Another Video
+                <button class="w-full py-3.5 px-6 bg-white text-charcoal font-sketch text-lg sm:text-xl font-bold rounded-full border-2 border-charcoal shadow-sketch-sm hover:bg-paper-tint flex items-center justify-center text-center" onclick="goToVideoStep(1)">
+                  <span>Create Another Video</span>
                 </button>
               </div>
             </div>
+
           </div>
 
         </div>
-
-        <!-- Dedicated Workspace: Post Generation Studio (Pipeline A) -->
-        <div id="postStudioContainer" style="display: none;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-            <button class="btn btn-ghost" onclick="backToStudioChoice()" style="padding: 8px 16px;">
-              ◄ Back to Studio Choice
-            </button>
-            <h3 style="font-size: 22px; font-weight: 800; color: var(--text-primary);">🖼️ Post Generation Studio</h3>
-            <span class="brand-tag">Static Pipeline A</span>
-          </div>
-
-          <div class="studio-grid">
-            <!-- Left: Controls -->
-            <div class="panel">
-              <div class="panel-heading">1. Setup & Upload</div>
-
-              <div class="form-group">
-                <label class="form-label">Platform Style</label>
-                <div class="platform-selector">
-                  <div class="platform-card selected" id="pPlatLinkedin" onclick="selectPostPlatform('linkedin')">
-                    <span class="platform-icon">💼</span>
-                    <div>
-                      <div class="platform-name">LinkedIn Carousel</div>
-                      <small style="color: var(--text-dim);">Insightful deck</small>
-                    </div>
-                  </div>
-                  <div class="platform-card" id="pPlatInstagram" onclick="selectPostPlatform('instagram')">
-                    <span class="platform-icon">📸</span>
-                    <div>
-                      <div class="platform-name">Instagram Posts</div>
-                      <small style="color: var(--text-dim);">Square / 4:5 visual</small>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">Source Document</label>
-                <div class="dropzone" id="postDropzone" onclick="document.getElementById('postFileInput').click()">
-                  <div class="dropzone-icon">📄</div>
-                  <div class="dropzone-text">Click or drag & drop document</div>
-                </div>
-                <input type="file" id="postFileInput" style="display: none;" accept=".pdf,.pptx,.txt,.md,.docx" onchange="handlePostFileSelect(event)">
-                <div id="postFileInfo" class="file-info" style="display: none;">
-                  <span id="postFileName">document.pdf</span>
-                </div>
-              </div>
-
-              <button class="btn-kinetic" onclick="startPostRender()">
-                Render Static Posts Carousel 🖼️
-              </button>
-            </div>
-
-            <!-- Right: Output Deck Preview -->
-            <div class="panel">
-              <div class="panel-heading">2. Carousel Deliverable</div>
-              <div class="media-preview-box" id="postPreviewBox">
-                <div style="text-align: center; color: var(--text-dim); padding: 40px;">
-                  <div style="font-size: 48px; margin-bottom: 16px;">🖼️</div>
-                  <p>Generated static post carousel will appear here after clicking Render.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
-    </section>
+
+    </div>
+
+    <!-- DEDICATED POST GENERATION STUDIO CONTAINER -->
+    <div id="postStudioContainer" style="display: none;" class="w-full max-w-5xl mx-auto">
+      <div class="bg-paper-card border-doodle-card p-8 shadow-sketch-lg text-center">
+        <button class="px-4 py-1.5 rounded-full border-2 border-charcoal bg-white font-sketch text-base font-bold shadow-sketch-sm hover:bg-paper-tint mb-6" onclick="backToStudioChoice()">
+          ◀ Back to Home
+        </button>
+        <h2 class="font-sketch text-3xl font-bold text-charcoal mb-2">Post Generation Studio</h2>
+        <p class="font-hand text-lg text-charcoal/80 max-w-md mx-auto mb-6">
+          Upload your whitepaper or document to generate multi-slide carousel posts and infographics.
+        </p>
+        <div class="p-8 border-dashed-doodle bg-paper-tint/40 max-w-lg mx-auto">
+          <input type="file" id="postFileInput" class="hidden">
+          <button class="px-6 py-3 bg-moss text-white font-sketch text-xl font-bold rounded-xl border-2 border-charcoal shadow-sketch" onclick="document.getElementById('postFileInput').click()">
+            Upload Document for Carousel Post
+          </button>
+        </div>
+      </div>
+    </div>
+
   </main>
+  <!-- END: Main Content Area -->
 
-  <!-- Auth Modal -->
-  <div class="modal-backdrop" id="authModal">
-    <div class="modal-card">
-      <button class="modal-close" onclick="closeAuthModal()">✖</button>
-      <h3 class="modal-title" id="modalTitle">Login to PostEazy</h3>
-      <p class="modal-sub" id="modalSub">Sign in to access your content generation engine.</p>
+  <!-- BEGIN: Page Footer -->
+  <footer class="w-full max-w-7xl mx-auto px-6 py-6 border-t-2 border-charcoal/15 mt-8 relative z-10">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-3 text-center md:text-left font-hand text-sm text-charcoal/80">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-moss-dark">🌱 POSTEAZY</span>
+        <span>•</span>
+        <span>© 2025 PostEazy Studio. Sketchbook Edition. All rights reserved. 🌸</span>
+      </div>
+      <nav class="flex items-center gap-4 font-semibold">
+        <a class="hover:text-terracotta hover:underline decoration-wavy underline-offset-4" href="#guidelines">Editorial Guidelines</a>
+        <a class="hover:text-terracotta hover:underline decoration-wavy underline-offset-4" href="#api">API Specs</a>
+        <a class="hover:text-terracotta hover:underline decoration-wavy underline-offset-4" href="#status">System Status</a>
+        <a class="hover:text-terracotta hover:underline decoration-wavy underline-offset-4" href="#archive">Archive 🌿</a>
+      </nav>
+    </div>
+  </footer>
+  <!-- END: Page Footer -->
+
+  <!-- Auth Modal Inclusion -->
+  <div id="authModal" class="modal" style="display: none;">
+    <div class="modal-content paper-noise border-doodle p-6 max-w-md mx-auto bg-paper-card">
+      <span class="close font-sketch text-2xl font-bold cursor-pointer" onclick="closeAuthModal()">&times;</span>
+      <h2 class="font-sketch text-2xl font-bold text-charcoal mb-4" id="authTitle">Login to PostEazy</h2>
       
-      <form onsubmit="handleAuthSubmit(event)">
-        <div class="form-group">
-          <label class="form-label">Username</label>
-          <input type="text" id="authUsername" class="input-control" required placeholder="enter username">
+      <form id="authForm" onsubmit="handleAuthSubmit(event)">
+        <div class="mb-4">
+          <label class="font-hand font-bold text-sm block mb-1">Username / Email</label>
+          <input type="text" id="authUsername" class="w-full p-2 border-2 border-charcoal rounded-xl font-hand" required>
         </div>
-        
-        <div class="form-group" id="emailGroup" style="display: none;">
-          <label class="form-label">Email Address</label>
-          <input type="email" id="authEmail" class="input-control" placeholder="user@example.com">
+        <div class="mb-4">
+          <label class="font-hand font-bold text-sm block mb-1">Password</label>
+          <input type="password" id="authPassword" class="w-full p-2 border-2 border-charcoal rounded-xl font-hand" required>
         </div>
-
-        <div class="form-group">
-          <label class="form-label">Password</label>
-          <input type="password" id="authPassword" class="input-control" required placeholder="••••••••">
-        </div>
-
-        <button type="submit" class="btn btn-gradient" id="authSubmitBtn" style="width: 100%; margin-top: 12px;">
-          Sign In
+        <button type="submit" class="w-full py-2 bg-moss text-white font-sketch text-lg font-bold rounded-xl border-2 border-charcoal shadow-sketch">
+          Submit
         </button>
       </form>
     </div>
   </div>
 
-  <!-- Toast Notification -->
-  <div class="toast" id="toast"></div>
+  <!-- Toast Notification element -->
+  <div id="toast" class="toast" style="display: none;"></div>
 
-  <!-- Scripts -->
+  <!-- Main JavaScript App Logic -->
   <script src="js/app.js"></script>
-  <script>
-    // Auto-detect mode from URL query string parameter on load
-    document.addEventListener('DOMContentLoaded', () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const mode = urlParams.get('mode');
-      if (mode === 'video' || mode === 'post') {
-        openStudioMode(mode);
-      }
-    });
-  </script>
 </body>
 </html>
