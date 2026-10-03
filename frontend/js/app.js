@@ -44,6 +44,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initScrollSpy();
   initArtifactCardInteractions();
   checkUrlParamsStudioMode();
+  initHeroScrollStory();
+  initBugEyeTracking();
 });
 
 // ScrollSpy for Top Navbar Link Underline Transition
@@ -799,287 +801,258 @@ function showToast(msg) {
   }
 }
 
-// ================= INTERACTIVE HERO COMIC ENGINE LOGIC =================
-let selectedHeroInputType = 'reports'; // 'reports', 'decks', 'strategy'
-let selectedHeroFormatType = 'instagram'; // 'instagram', 'youtube', 'linkedin', 'blog'
-let heroLikesCount = 1420;
+// ================= HERO SCROLL-DRIVEN STORY ENGINE =================
+let selectedHeroFormatType = 'image';
 
-const HERO_PREVIEWS = {
-  reports: {
-    instagram: {
-      title: "5 Key Insights from Q3 Research Study",
-      snippet: "Our automated pipeline extracted critical market trends, executive metrics, and visual diagrams into a high-engagement social carousel.",
-      panelImg: "assets/panels/panel_3.jpg",
-      caption: "💡 Mascot created Instagram carousel post from Research Study!"
-    },
-    youtube: {
-      title: "60-Second Deep-Dive: Q3 Research Trends",
-      snippet: "Faceless video narration storyboard generated directly from PDF report findings with synchronized visual clips.",
-      panelImg: "assets/panels/panel_6.jpg",
-      caption: "💡 Mascot created YouTube Short video storyboard from PDF!"
-    },
-    linkedin: {
-      title: "Executive Briefing: Q3 Market Research",
-      snippet: "Structured document deck slide summarizing main methodology, growth drivers, and strategic advice.",
-      panelImg: "assets/panels/panel_3.jpg",
-      caption: "💡 Mascot created LinkedIn Slide Carousel from Research Paper!"
-    },
-    blog: {
-      title: "Comprehensive Research Takeaways",
-      snippet: "Clean executive summary article formatted for email newsletters and corporate blogs.",
-      panelImg: "assets/panels/panel_8.jpg",
-      caption: "💡 Mascot generated Executive Article summary!"
+function initHeroScrollStory() {
+  const runway = document.getElementById('hero-runway');
+  if (!runway) return;
+
+  const headerBlock = document.getElementById('heroHeaderBlock');
+  const bunniesAndStack = document.getElementById('heroBunniesAndStack');
+  const documentStack = document.getElementById('documentStackContainer');
+  const bunniesGroup = document.getElementById('bunniesGroup');
+  const platformBubbles = document.getElementById('heroPlatformBubbles');
+  const formatMenu = document.getElementById('heroFormatMenu');
+  const cloudPuff = document.getElementById('heroCloudPuff');
+  const socialPostCard = document.getElementById('heroSocialPostCard');
+  const heartBubble = document.getElementById('heroHeartBubble');
+  const mouthNeutral = document.getElementById('bugMouthNeutral');
+  const mouthHappy = document.getElementById('bugMouthHappy');
+  const ctaBadge = document.getElementById('heroCtaBadge');
+  const scrollCueText = document.getElementById('heroScrollCueText');
+  const beatDots = document.querySelectorAll('.beat-dot-btn');
+
+  let animationFrameId = null;
+
+  function updateStoryBeats() {
+    const rect = runway.getBoundingClientRect();
+    const runwayHeight = runway.offsetHeight - window.innerHeight;
+    if (runwayHeight <= 0) return;
+
+    // Progress 0.0 to 1.0
+    let progress = -rect.top / runwayHeight;
+    progress = Math.max(0, Math.min(1, progress));
+
+    // Beat Active Indicators
+    let activeIndex = 0;
+    if (progress >= 0.90) activeIndex = 5;
+    else if (progress >= 0.75) activeIndex = 4;
+    else if (progress >= 0.60) activeIndex = 3;
+    else if (progress >= 0.40) activeIndex = 2;
+    else if (progress >= 0.20) activeIndex = 1;
+    else activeIndex = 0;
+
+    beatDots.forEach((dot, idx) => {
+      if (idx === activeIndex) dot.classList.add('active');
+      else dot.classList.remove('active');
+    });
+
+    // --- BEAT 1 (0 to 0.20): Bunnies arrive carrying doc stack ---
+    if (headerBlock) {
+      const headerAlpha = Math.max(0, 1 - (progress / 0.15));
+      headerBlock.style.opacity = headerAlpha.toFixed(2);
+      headerBlock.style.transform = `translateY(${(-progress * 120).toFixed(1)}px) scale(${(1 - progress * 0.2).toFixed(2)})`;
     }
-  },
-  decks: {
-    instagram: {
-      title: "Pitch Deck Storyboard: Product Launch",
-      snippet: "Visual summary of value proposition, market size, and traction stats ready for Instagram Reels.",
-      panelImg: "assets/panels/panel_3.jpg",
-      caption: "💡 Mascot transformed Pitch Deck into Instagram Launch Post!"
-    },
-    youtube: {
-      title: "Startup Pitch Deck Explainer (Shorts)",
-      snippet: "Dynamic portrait video script highlighting problem, solution, and business model.",
-      panelImg: "assets/panels/panel_6.jpg",
-      caption: "💡 Mascot generated YouTube Short from Presentation Deck!"
-    },
-    linkedin: {
-      title: "Pitch Deck Slide Breakdown",
-      snippet: "Professional multi-slide PDF document tailored for B2B executives and investors on LinkedIn.",
-      panelImg: "assets/panels/panel_8.jpg",
-      caption: "💡 Mascot converted Pitch Deck to LinkedIn Slide Deck!"
-    },
-    blog: {
-      title: "Investor Memo & Pitch Summary",
-      snippet: "Key takeaways and core metrics organized into an executive reading document.",
-      panelImg: "assets/panels/panel_3.jpg",
-      caption: "💡 Mascot created Pitch Summary Memo!"
+
+    if (bunniesAndStack) {
+      if (progress <= 0.20) {
+        const translatePct = -140 + (progress / 0.20) * 140; // -140% to 0%
+        bunniesAndStack.style.transform = `translateX(${translatePct.toFixed(1)}%)`;
+        bunniesAndStack.style.opacity = '1';
+      } else {
+        bunniesAndStack.style.transform = 'translateX(0%)';
+      }
     }
-  },
-  strategy: {
-    instagram: {
-      title: "2026 Strategy & Analytics Highlights",
-      snippet: "Infographic-style post showcasing key metrics, market share projections, and strategic goals.",
-      panelImg: "assets/panels/panel_8.jpg",
-      caption: "💡 Mascot generated Strategy Highlights Graphic!"
-    },
-    youtube: {
-      title: "Market Strategy Breakdown in 60s",
-      snippet: "Narrated video script breaking down complex financial forecasts and market share metrics.",
-      panelImg: "assets/panels/panel_6.jpg",
-      caption: "💡 Mascot generated Strategy Breakdown Video Storyboard!"
-    },
-    linkedin: {
-      title: "Strategic Advisory Briefing 2026",
-      snippet: "In-depth document post analyzing competitive landscape, risk matrix, and execution plan.",
-      panelImg: "assets/panels/panel_3.jpg",
-      caption: "💡 Mascot created LinkedIn Strategic Advisory Brief!"
-    },
-    blog: {
-      title: "Strategic Growth Forecast & Analysis",
-      snippet: "Full executive briefing document summarizing client strategy and analytics data.",
-      panelImg: "assets/panels/panel_8.jpg",
-      caption: "💡 Mascot created Strategy Briefing Article!"
+
+    // --- BEAT 2 (0.20 to 0.40): Bunnies leave, Platform bubbles pop ---
+    if (bunniesGroup) {
+      if (progress > 0.20 && progress <= 0.40) {
+        const leaveAlpha = Math.max(0, 1 - ((progress - 0.20) / 0.12));
+        bunniesGroup.style.opacity = leaveAlpha.toFixed(2);
+      } else if (progress > 0.40) {
+        bunniesGroup.style.opacity = '0';
+      } else {
+        bunniesGroup.style.opacity = '1';
+      }
+    }
+
+    if (platformBubbles) {
+      if (progress >= 0.20 && progress <= 0.40) {
+        const pAlpha = Math.min(1, (progress - 0.20) / 0.08);
+        const pScale = 0.75 + pAlpha * 0.25;
+        platformBubbles.style.opacity = pAlpha.toFixed(2);
+        platformBubbles.style.transform = `scale(${pScale.toFixed(2)})`;
+      } else {
+        platformBubbles.style.opacity = '0';
+        platformBubbles.style.transform = 'scale(0.75)';
+      }
+    }
+
+    // --- BEAT 3 (0.40 to 0.60): Format menu slides in ---
+    if (formatMenu) {
+      if (progress >= 0.40 && progress <= 0.60) {
+        const fAlpha = Math.min(1, (progress - 0.40) / 0.08);
+        formatMenu.style.opacity = fAlpha.toFixed(2);
+        formatMenu.style.transform = `scale(${(0.9 + fAlpha * 0.1).toFixed(2)})`;
+      } else {
+        formatMenu.style.opacity = '0';
+      }
+    }
+
+    // --- BEAT 4 (0.60 to 0.75): Cloud puff transformation ---
+    if (documentStack) {
+      if (progress >= 0.60) {
+        documentStack.style.opacity = '0';
+      } else {
+        documentStack.style.opacity = '1';
+      }
+    }
+
+    if (cloudPuff) {
+      if (progress >= 0.60 && progress <= 0.75) {
+        const puffRatio = (progress - 0.60) / 0.15;
+        const puffAlpha = Math.sin(puffRatio * Math.PI);
+        const puffScale = 0.6 + puffRatio * 0.6;
+        cloudPuff.style.opacity = puffAlpha.toFixed(2);
+        cloudPuff.style.transform = `scale(${puffScale.toFixed(2)})`;
+      } else {
+        cloudPuff.style.opacity = '0';
+      }
+    }
+
+    // --- BEAT 5 (0.75 to 0.90): Glowing Social Post Card emerges ---
+    if (socialPostCard) {
+      if (progress >= 0.75 && progress <= 0.95) {
+        const cardAlpha = Math.min(1, (progress - 0.75) / 0.08);
+        const cardScale = 0.8 + cardAlpha * 0.2;
+        socialPostCard.style.opacity = cardAlpha.toFixed(2);
+        socialPostCard.style.transform = `scale(${cardScale.toFixed(2)}) rotate(-2deg)`;
+      } else if (progress > 0.95) {
+        socialPostCard.style.opacity = '1';
+        socialPostCard.style.transform = 'scale(1) rotate(-2deg)';
+      } else {
+        socialPostCard.style.opacity = '0';
+      }
+    }
+
+    // --- BEAT 6 (0.90 to 1.00): Heart pop, happy smile, CTA badge ---
+    if (heartBubble) {
+      if (progress >= 0.88) {
+        const hAlpha = Math.min(1, (progress - 0.88) / 0.06);
+        heartBubble.style.opacity = hAlpha.toFixed(2);
+        heartBubble.style.transform = `scale(${(0.6 + hAlpha * 0.4).toFixed(2)})`;
+      } else {
+        heartBubble.style.opacity = '0';
+      }
+    }
+
+    if (mouthNeutral && mouthHappy) {
+      if (progress >= 0.88) {
+        mouthNeutral.style.opacity = '0';
+        mouthHappy.style.opacity = '1';
+      } else {
+        mouthNeutral.style.opacity = '1';
+        mouthHappy.style.opacity = '0';
+      }
+    }
+
+    if (ctaBadge) {
+      if (progress >= 0.85) {
+        const ctaAlpha = Math.min(1, (progress - 0.85) / 0.1);
+        ctaBadge.style.opacity = ctaAlpha.toFixed(2);
+        ctaBadge.style.transform = `translateY(${((1 - ctaAlpha) * 10).toFixed(1)}px)`;
+      } else {
+        ctaBadge.style.opacity = '0';
+      }
+    }
+
+    if (scrollCueText) {
+      if (progress >= 0.92) {
+        scrollCueText.innerText = "Unpinning... Scroll down to explore studio";
+      } else {
+        scrollCueText.innerText = "Scroll down to play story";
+      }
     }
   }
-};
 
-function switchHeroMode(mode) {
-  const interactiveView = document.getElementById('heroInteractiveView');
-  const comicView = document.getElementById('heroComicView');
-  const tabInteractive = document.getElementById('tabInteractive');
-  const tabComic = document.getElementById('tabComic');
-
-  if (!interactiveView || !comicView) return;
-
-  if (mode === 'interactive') {
-    interactiveView.classList.remove('hidden');
-    comicView.classList.add('hidden');
-    tabInteractive.classList.add('active');
-    tabComic.classList.remove('active');
-  } else {
-    interactiveView.classList.add('hidden');
-    comicView.classList.remove('hidden');
-    tabInteractive.classList.remove('active');
-    tabComic.classList.add('active');
-  }
-}
-
-function selectHeroInput(inputType, btnEl) {
-  selectedHeroInputType = inputType;
-  
-  // Highlight active pill
-  document.querySelectorAll('#inputPillsContainer .doc-pill-btn').forEach(btn => {
-    btn.classList.remove('selected');
-    const icon = btn.querySelector('.material-symbols-outlined');
-    if (icon) {
-      icon.classList.remove('text-[#44643b]');
-      icon.classList.add('text-gray-300');
+  window.addEventListener('scroll', () => {
+    if (!animationFrameId) {
+      animationFrameId = requestAnimationFrame(() => {
+        updateStoryBeats();
+        animationFrameId = null;
+      });
     }
   });
 
-  if (btnEl) {
-    btnEl.classList.add('selected');
-    const selIcon = btnEl.querySelector('.material-symbols-outlined');
-    if (selIcon) {
-      selIcon.classList.remove('text-gray-300');
-      selIcon.classList.add('text-[#44643b]');
-    }
-  }
-
-  // Update comic stage image to bunny arrival (Panel 1 or Panel 5)
-  const stageImg = document.getElementById('heroComicStageImg');
-  if (stageImg) {
-    if (inputType === 'strategy') {
-      stageImg.src = 'assets/panels/panel_5.jpg';
-      document.getElementById('heroStageCaption').innerText = '💡 Bunny helpers delivering Strategy & Market Analytics stack!';
-    } else {
-      stageImg.src = 'assets/panels/panel_1.jpg';
-      document.getElementById('heroStageCaption').innerText = '💡 Bunny helpers delivering Reports & Pitch Decks stack!';
-    }
-  }
-
-  hideGeneratedOverlay();
+  updateStoryBeats();
 }
 
-function selectHeroFormat(formatType, cardEl) {
-  selectedHeroFormatType = formatType;
+function initBugEyeTracking() {
+  const leftPupil = document.getElementById('leftPupil');
+  const rightPupil = document.getElementById('rightPupil');
+  if (!leftPupil || !rightPupil) return;
 
-  // Highlight selected format box card
-  document.querySelectorAll('#formatCardsContainer .format-box-card').forEach(card => {
-    card.classList.remove('selected');
-  });
-  if (cardEl) {
-    cardEl.classList.add('selected');
-  }
-
-  // Highlight platform thought bubbles
-  const thoughtInsta = document.getElementById('thoughtInsta');
-  const thoughtYt = document.getElementById('thoughtYt');
-  const thoughtIn = document.getElementById('thoughtIn');
-
-  [thoughtInsta, thoughtYt, thoughtIn].forEach(b => {
-    if (b) b.classList.remove('scale-110', 'border-[#d96c4b]');
-  });
-
-  if (formatType === 'instagram' && thoughtInsta) {
-    thoughtInsta.classList.add('scale-110', 'border-[#d96c4b]');
-  } else if (formatType === 'youtube' && thoughtYt) {
-    thoughtYt.classList.add('scale-110', 'border-[#d96c4b]');
-  } else if (formatType === 'linkedin' && thoughtIn) {
-    thoughtIn.classList.add('scale-110', 'border-[#d96c4b]');
-  }
-
-  // Set stage back to planning mascot (Panel 2)
-  const stageImg = document.getElementById('heroComicStageImg');
-  if (stageImg) {
-    stageImg.src = 'assets/panels/panel_2.jpg';
-    document.getElementById('heroStageCaption').innerText = `💡 Mascot planning target format (${formatType.toUpperCase()})...`;
-  }
-
-  hideGeneratedOverlay();
-}
-
-function triggerHeroTransformation() {
-  const poofOverlay = document.getElementById('poofCloudOverlay');
-  const stageImg = document.getElementById('heroComicStageImg');
-
-  if (!poofOverlay || !stageImg) return;
-
-  // Step 1: Show AI POOF Cloud Explosion (Panel 4)
-  poofOverlay.classList.remove('hidden');
-  document.getElementById('heroStageCaption').innerText = '✨ AI Cloud Explosion! Distilling document into viral content...';
-  document.getElementById('heroStepNum').innerText = '2';
-
-  setTimeout(() => {
-    // Step 2: Swap backdrop stage image to transformation frame (Panel 3 / Panel 8)
-    poofOverlay.classList.add('hidden');
+  window.addEventListener('mousemove', (e) => {
+    const bugArea = document.getElementById('heroBugCharacter');
+    if (!bugArea) return;
     
-    const previewData = (HERO_PREVIEWS[selectedHeroInputType] && HERO_PREVIEWS[selectedHeroInputType][selectedHeroFormatType])
-      ? HERO_PREVIEWS[selectedHeroInputType][selectedHeroFormatType]
-      : HERO_PREVIEWS.reports.instagram;
+    const rect = bugArea.getBoundingClientRect();
+    const bugCenterX = rect.left + rect.width / 2;
+    const bugCenterY = rect.top + rect.height * 0.35;
 
-    stageImg.src = previewData.panelImg;
+    const deltaX = e.clientX - bugCenterX;
+    const deltaY = e.clientY - bugCenterY;
+    const angle = Math.atan2(deltaY, deltaX);
+    const dist = Math.min(5, Math.hypot(deltaX, deltaY) / 40);
 
-    // Reveal generated card overlay
-    const overlay = document.getElementById('generatedCardOverlay');
-    document.getElementById('previewPostTitle').innerText = previewData.title;
-    document.getElementById('previewPostSnippet').innerText = previewData.snippet;
-    document.getElementById('previewFormatBadge').innerText = selectedHeroFormatType.toUpperCase();
-    document.getElementById('heroStageCaption').innerText = previewData.caption;
-    document.getElementById('heroStepNum').innerText = '3';
+    const pupilOffsetX = Math.cos(angle) * dist;
+    const pupilOffsetY = Math.sin(angle) * dist;
 
-    if (overlay) {
-      overlay.classList.remove('pointer-events-none', 'opacity-0', 'scale-95');
-      overlay.classList.add('opacity-100', 'scale-100');
-    }
-  }, 750);
+    leftPupil.setAttribute('cx', (92 + pupilOffsetX).toFixed(1));
+    leftPupil.setAttribute('cy', (85 + pupilOffsetY).toFixed(1));
+    rightPupil.setAttribute('cx', (128 + pupilOffsetX).toFixed(1));
+    rightPupil.setAttribute('cy', (85 + pupilOffsetY).toFixed(1));
+  });
 }
 
-function hideGeneratedOverlay() {
-  const overlay = document.getElementById('generatedCardOverlay');
-  if (overlay) {
-    overlay.classList.add('pointer-events-none', 'opacity-0', 'scale-95');
-    overlay.classList.remove('opacity-100', 'scale-100');
+function selectHeroFormat(formatKey) {
+  selectedHeroFormatType = formatKey;
+  
+  const buttons = document.querySelectorAll('.format-choice-btn');
+  buttons.forEach(btn => btn.classList.remove('active'));
+
+  if (window.event && window.event.currentTarget) {
+    window.event.currentTarget.classList.add('active');
   }
-  const stepNum = document.getElementById('heroStepNum');
-  if (stepNum) stepNum.innerText = '1';
-}
 
-function likeHeroPreviewCard(btn) {
-  heroLikesCount++;
-  const likeCountEl = document.getElementById('heroLikeCount');
-  if (likeCountEl) likeCountEl.innerText = heroLikesCount.toLocaleString();
+  const previewMedia = document.getElementById('heroPostMediaPreview');
+  const cardTitle = document.getElementById('heroPostCardTitle');
+  if (!previewMedia || !cardTitle) return;
 
-  // Trigger popping heart animation
-  const heart = document.createElement('span');
-  heart.innerText = '❤️';
-  heart.className = 'absolute text-2xl heart-pop-anim pointer-events-none';
-  heart.style.left = `${btn.offsetLeft + 10}px`;
-  heart.style.top = `${btn.offsetTop - 15}px`;
-  if (btn.parentElement) btn.parentElement.appendChild(heart);
-
-  setTimeout(() => heart.remove(), 900);
-}
-
-function launchHeroStudioPipeline() {
-  const pipeline = (selectedHeroFormatType === 'youtube') ? 'video' : 'posts';
-  if (typeof openStudioMode === 'function') {
-    openStudioMode(pipeline);
-  }
-  const workbench = document.getElementById('workbench');
-  if (workbench) {
-    workbench.scrollIntoView({ behavior: 'smooth' });
+  if (formatKey === 'image') {
+    cardTitle.innerText = "AI Market Trends 2026";
+    previewMedia.className = "w-full h-36 rounded-xl bg-gradient-to-br from-amber-100 via-emerald-100 to-rose-100 border border-charcoal/30 flex flex-col items-center justify-center p-3 relative overflow-hidden mb-3";
+  } else if (formatKey === 'video') {
+    cardTitle.innerText = "Kinetic Reel: Tech Insights";
+    previewMedia.className = "w-full h-36 rounded-xl bg-gradient-to-br from-purple-100 via-pink-100 to-rose-100 border border-charcoal/30 flex flex-col items-center justify-center p-3 relative overflow-hidden mb-3";
+  } else if (formatKey === 'text') {
+    cardTitle.innerText = "Executive Summary Thread";
+    previewMedia.className = "w-full h-36 rounded-xl bg-gradient-to-br from-blue-100 via-sky-100 to-indigo-100 border border-charcoal/30 flex flex-col items-center justify-center p-3 relative overflow-hidden mb-3";
   }
 }
 
-const COMIC_PANEL_DETAILS = {
-  1: { title: "Panel 1: Heavy Document Arrival", desc: "Cute bunny helpers deliver stacks of Reports, Research Papers, Pitch Decks & Presentations to the ant mascot on the park bench.", img: "assets/panels/panel_1.jpg" },
-  2: { title: "Panel 2: Platform Planning", desc: "The ant mascot sitting on the park bench brainstorms target social media channels (Instagram, YouTube, LinkedIn).", img: "assets/panels/panel_2.jpg" },
-  3: { title: "Panel 3: First Transformation", desc: "PostEazy automatically distills text and renders a glowing, ready-to-publish social post card.", img: "assets/panels/panel_3.jpg" },
-  4: { title: "Panel 4: AI POOF Cloud", desc: "Magic cloud particle explosion! PostEazy's AI engine breaks down dense chapters into bite-sized visual slides.", img: "assets/panels/panel_4.jpg" },
-  5: { title: "Panel 5: Strategy & Analytics", desc: "The continuous pipeline ingests Strategy Decks, Client Reports, Market Research, and Analytics seamlessly.", img: "assets/panels/panel_5.jpg" },
-  6: { title: "Panel 6: Multi-Channel Distribution", desc: "Simultaneous multi-platform publishing produces customized content for Instagram, YouTube Shorts, and LinkedIn.", img: "assets/panels/panel_6.jpg" },
-  7: { title: "Panel 7: Format Selector Card", desc: "Select your desired medium: Image, Video, Text, or Graphic Design with a single tap.", img: "assets/panels/panel_7.jpg" },
-  8: { title: "Panel 8: Viral Engagement", desc: "Published social posts capture high audience engagement, hearts, and likes effortless!", img: "assets/panels/panel_8.jpg" },
-  9: { title: "Panel 9: Automated Loop", desc: "A continuous, effortless content flow for all your organization's documents and publications.", img: "assets/panels/panel_9.jpg" }
-};
+function scrollToBeatProgress(progressFraction) {
+  const runway = document.getElementById('hero-runway');
+  if (!runway) return;
 
-function openComicLightbox(panelNum) {
-  const modal = document.getElementById('comicLightboxModal');
-  if (!modal) return;
-  const details = COMIC_PANEL_DETAILS[panelNum] || COMIC_PANEL_DETAILS[1];
+  const runwayTop = runway.offsetTop;
+  const runwayHeight = runway.offsetHeight - window.innerHeight;
+  const targetScrollY = runwayTop + progressFraction * runwayHeight;
 
-  document.getElementById('lightboxTitle').innerText = details.title;
-  document.getElementById('lightboxDesc').innerText = details.desc;
-  document.getElementById('lightboxImg').src = details.img;
-
-  modal.classList.remove('hidden');
-}
-
-function closeComicLightbox() {
-  const modal = document.getElementById('comicLightboxModal');
-  if (modal) modal.classList.add('hidden');
+  window.scrollTo({
+    top: targetScrollY,
+    behavior: 'smooth'
+  });
 }
 

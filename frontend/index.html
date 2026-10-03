@@ -395,324 +395,380 @@
 
 <!-- ================= MAIN CONTENT ================= -->
 <main class="w-full flex-1">
-<!-- ================= SEGMENT 1: ATMOSPHERIC HERO CANVAS ================= -->
-<section class="relative pt-6 pb-16 md:pt-8 md:pb-20 px-4 sm:px-6 md:px-margin max-w-screen-2xl mx-auto overflow-hidden" id="hero">
-  <!-- Watercolor Atmosphere Backdrop -->
-  <div class="watercolor-glow absolute inset-0 -z-10 pointer-events-none"></div>
-
-  <!-- Background Floating Clouds -->
-  <div aria-hidden="true" class="absolute inset-0 pointer-events-none z-0 overflow-hidden">
-    <div class="cloud-drift-slow absolute top-8 left-[3%] w-56 md:w-72 opacity-65 drop-shadow-sm">
-      <svg class="w-full h-auto" fill="none" viewBox="0 0 220 90">
-        <path d="M35 70 C18 70 8 58 12 44 C15 32 29 28 38 31 C44 18 62 10 78 16 C90 6 112 7 122 18 C135 12 152 16 158 28 C172 26 186 36 184 48 C196 53 197 68 184 72 C172 73 50 72 35 70 Z" fill="#FFFDF8" stroke="#74796e" stroke-dasharray="2 1" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.3"></path>
-      </svg>
-    </div>
-    <div class="cloud-drift-medium absolute top-6 right-[4%] w-60 md:w-80 opacity-60">
-      <svg class="w-full h-auto" fill="none" viewBox="0 0 240 95">
-        <path d="M40 75 C20 74 10 60 18 45 C24 33 42 32 50 38 C58 22 80 14 98 22 C112 10 138 12 150 25 C164 18 184 24 190 38 C206 38 218 52 212 67 C207 77 185 76 170 76 C130 76 60 76 40 75 Z" fill="#FFFDF8" stroke="#74796e" stroke-dasharray="2 1" stroke-linecap="round" stroke-width="1.3"></path>
-      </svg>
-    </div>
-  </div>
-
-  <div class="relative w-full max-w-6xl mx-auto z-20">
-    <!-- HERO HEADER BLOCK -->
-    <div class="text-center max-w-3xl mx-auto mb-8">
-      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#f4ece1] border-2 border-[#322d29] shadow-sketch-sm mb-3">
-        <span class="text-lg">🎨</span>
-        <span class="font-handwriting text-[#44643b] text-lg font-bold tracking-wide">Heavy Documents Made Easy</span>
+<!-- ================= SEGMENT 1: SCROLL-BASED HERO RUNWAY ================= -->
+<div class="relative w-full" id="hero-runway" style="height: 480vh;">
+  <!-- Sticky Viewport -->
+  <section class="sticky top-0 w-full h-screen overflow-hidden flex flex-col justify-between select-none paper-noise border-b border-outline-variant/60" id="hero-sticky">
+    
+    <!-- Top Bar Headline Overlay (Fades out as scroll starts 0%-15%) -->
+    <div class="relative z-30 pt-4 md:pt-6 px-4 text-center transition-all duration-300 pointer-events-auto" id="heroHeaderBlock">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-secondary-container/80 text-on-secondary-container text-xs font-bold uppercase tracking-wider mb-2 border border-secondary/20 shadow-sm" style="font-family: 'Patrick Hand', cursive;">
+        <span>✨ Interactive Scroll Story</span>
       </div>
-      <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-[#1f241d] uppercase font-headline-xl leading-[1.08]" style="font-family: 'Gochi Hand', 'Patrick Hand', cursive;">
-        TURN HEAVY DOCUMENTS<br/>
-        <span class="font-serif-display lowercase italic font-normal text-[#44643b]">into</span>
-        <span class="text-[#d96c4b]"> VIRAL SOCIAL POSTS</span>
+      <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-on-surface uppercase font-headline-xl leading-tight" style="font-family: 'Gochi Hand', 'Patrick Hand', cursive;">
+        NEXT-GEN <span class="font-serif-display lowercase italic font-normal text-primary">content</span> ENGINE
       </h1>
-      <p class="font-body-md text-[#5c6457] mt-3 font-semibold text-lg max-w-2xl mx-auto">
-        Watch how PostEazy takes your Reports, Research Papers & Pitch Decks and transforms them into Instagram Posts, YouTube Shorts & LinkedIn Carousels in seconds!
+      <p class="font-handwriting text-tertiary text-lg sm:text-xl font-bold mt-1">
+        Transform long documents into high-converting videos & posts effortlessly.
       </p>
-
-      <!-- MODE TOGGLE SWITCH -->
-      <div class="flex items-center justify-center gap-3 mt-6">
-        <button class="hero-tab-btn active" id="tabInteractive" onclick="switchHeroMode('interactive')">
-          ⚡ Interactive Playground
-        </button>
-        <button class="hero-tab-btn" id="tabComic" onclick="switchHeroMode('comic')">
-          📖 Full 9-Panel Comic Story
-        </button>
-      </div>
     </div>
 
-    <!-- ================= MODE 1: INTERACTIVE PLAYGROUND ================= -->
-    <div id="heroInteractiveView" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-      <!-- Left Panel: Interactive Inputs & Formats -->
-      <div class="lg:col-span-5 bg-[#fffdf9] border-2 border-[#322d29] rounded-3xl p-6 shadow-sketch-lg relative">
-        <div class="washi-tape-top"></div>
-        <h3 class="font-sketch text-2xl font-bold text-[#1f241d] mb-4 flex items-center gap-2">
-          <span class="w-7 h-7 rounded-full bg-[#f6cf65] border border-[#322d29] flex items-center justify-center text-sm">1</span>
-          Select Input Document
-        </h3>
-        
-        <div class="space-y-2.5 mb-6" id="inputPillsContainer">
-          <button class="doc-pill-btn selected" onclick="selectHeroInput('reports', this)">
-            <span class="text-xl">📄</span>
-            <div class="text-left min-w-0 flex-1">
-              <div class="font-bold text-sm leading-tight text-[#1f241d]">Reports & Research Papers</div>
-              <div class="text-xs text-[#5c6457]">Dense multi-page PDFs & studies</div>
-            </div>
-            <span class="material-symbols-outlined text-base text-[#44643b]">check_circle</span>
-          </button>
+    <!-- MAIN PARK & CHARACTER CANVAS -->
+    <div class="relative w-full flex-1 flex items-center justify-center max-w-6xl mx-auto px-4 overflow-hidden" id="heroCanvasArea">
+      
+      <!-- Ambient Background Illustration (Park, Bench, Trees, Ground Path) -->
+      <div class="absolute inset-0 flex items-end justify-center pointer-events-none z-0">
+        <svg class="w-full h-full max-h-[600px] object-cover" viewBox="0 0 1200 600" fill="none">
+          <!-- Sky / Background Glow -->
+          <defs>
+            <linearGradient id="parkSky" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#fff6ed" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#f5e8d8" stop-opacity="0.4"/>
+            </linearGradient>
+            <linearGradient id="grassGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#cbd9c2"/>
+              <stop offset="100%" stop-color="#a4ba97"/>
+            </linearGradient>
+            <radialGradient id="sunGlow" cx="50%" cy="30%" r="50%">
+              <stop offset="0%" stop-color="#fff2d6" stop-opacity="0.8"/>
+              <stop offset="100%" stop-color="#fff8f3" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
           
-          <button class="doc-pill-btn" onclick="selectHeroInput('decks', this)">
-            <span class="text-xl">📊</span>
-            <div class="text-left min-w-0 flex-1">
-              <div class="font-bold text-sm leading-tight text-[#1f241d]">Pitch Decks & Presentations</div>
-              <div class="text-xs text-[#5c6457]">Slide decks & key propositions</div>
-            </div>
-            <span class="material-symbols-outlined text-base text-gray-300">check_circle</span>
-          </button>
-
-          <button class="doc-pill-btn" onclick="selectHeroInput('strategy', this)">
-            <span class="text-xl">📈</span>
-            <div class="text-left min-w-0 flex-1">
-              <div class="font-bold text-sm leading-tight text-[#1f241d]">Strategy & Market Analytics</div>
-              <div class="text-xs text-[#5c6457]">Financial reports & data metrics</div>
-            </div>
-            <span class="material-symbols-outlined text-base text-gray-300">check_circle</span>
-          </button>
-        </div>
-
-        <h3 class="font-sketch text-2xl font-bold text-[#1f241d] mb-3 flex items-center gap-2">
-          <span class="w-7 h-7 rounded-full bg-[#eef4ec] border border-[#322d29] flex items-center justify-center text-sm text-[#44643b]">2</span>
-          Select Target Format
-        </h3>
-        
-        <div class="grid grid-cols-2 gap-2.5 mb-6" id="formatCardsContainer">
-          <div class="format-box-card selected" onclick="selectHeroFormat('instagram', this)">
-            <div class="flex items-center gap-2 font-bold text-xs text-[#1f241d]">
-              <span class="text-base">📸</span> Instagram Post
-            </div>
-            <p class="text-[11px] text-[#5c6457] mt-1">Vibrant visual post with caption</p>
-          </div>
+          <rect width="1200" height="600" fill="url(#parkSky)"/>
+          <circle cx="600" cy="180" r="320" fill="url(#sunGlow)"/>
           
-          <div class="format-box-card" onclick="selectHeroFormat('youtube', this)">
-            <div class="flex items-center gap-2 font-bold text-xs text-[#1f241d]">
-              <span class="text-base">▶️</span> YouTube Short
-            </div>
-            <p class="text-[11px] text-[#5c6457] mt-1">Portrait video storyboard</p>
-          </div>
+          <!-- Background Trees & Bush Silhouettes -->
+          <path d="M-50 480 Q100 360 250 460 T550 420 T850 470 T1250 440 L1250 600 L-50 600 Z" fill="#dce6d5" opacity="0.6"/>
+          <path d="M-20 460 Q120 380 300 450 T700 410 T1100 450 L1250 600 L-50 600 Z" fill="url(#grassGrad)"/>
 
-          <div class="format-box-card" onclick="selectHeroFormat('linkedin', this)">
-            <div class="flex items-center gap-2 font-bold text-xs text-[#1f241d]">
-              <span class="text-base">💼</span> LinkedIn Carousel
-            </div>
-            <p class="text-[11px] text-[#5c6457] mt-1">Professional document slides</p>
-          </div>
+          <!-- Cobblestone Path -->
+          <path d="M 50 600 Q 400 520 1150 600 Z" fill="#e8ded1" stroke="#322d29" stroke-width="2" stroke-dasharray="6 6"/>
 
-          <div class="format-box-card" onclick="selectHeroFormat('blog', this)">
-            <div class="flex items-center gap-2 font-bold text-xs text-[#1f241d]">
-              <span class="text-base">✍️</span> Executive Article
-            </div>
-            <p class="text-[11px] text-[#5c6457] mt-1">Key takeaway summary</p>
-          </div>
-        </div>
+          <!-- Park Bench (Center-Right: x=680 to 920, y=380) -->
+          <g id="parkBenchGroup">
+            <!-- Bench legs -->
+            <path d="M 690 470 L 690 530 M 910 470 L 910 530" stroke="#322d29" stroke-width="6" stroke-linecap="round"/>
+            <path d="M 720 480 L 720 535 M 880 480 L 880 535" stroke="#322d29" stroke-width="5" stroke-linecap="round"/>
+            <!-- Bench back slats -->
+            <rect x="670" y="400" width="260" height="16" rx="4" fill="#a67c52" stroke="#322d29" stroke-width="2.5"/>
+            <rect x="670" y="422" width="260" height="16" rx="4" fill="#8c633c" stroke="#322d29" stroke-width="2.5"/>
+            <!-- Bench seat slatted plank -->
+            <rect x="660" y="450" width="280" height="22" rx="6" fill="#bd9060" stroke="#322d29" stroke-width="3"/>
+          </g>
 
-        <!-- Transform Trigger Button -->
-        <button class="btn-bounce w-full py-3.5 px-6 rounded-2xl bg-[#d96c4b] text-white font-bold text-lg border-2 border-[#322d29] shadow-sketch flex items-center justify-center gap-2 font-handwriting" onclick="triggerHeroTransformation()">
-          <span class="text-xl">✨</span> Transform Document with PostEazy!
-        </button>
+          <!-- Park Street Lamp (Far Left x=120) -->
+          <g id="streetLampGroup">
+            <path d="M 120 540 L 120 280 Q 120 260 140 260 L 145 260" stroke="#322d29" stroke-width="5" stroke-linecap="round"/>
+            <polygon points="135,260 155,260 160,285 130,285" fill="#f6cf65" stroke="#322d29" stroke-width="2"/>
+            <circle cx="145" cy="295" r="16" fill="#fff5cc" opacity="0.65"/>
+          </g>
+
+          <!-- Gentle Floating Leaves in Sky -->
+          <g class="ambient-floating-leaves" opacity="0.75">
+            <path d="M 280 220 C 290 210 300 225 285 235 Z" fill="#7a9a6b"/>
+            <path d="M 850 180 C 860 170 870 185 855 195 Z" fill="#d97d64"/>
+            <path d="M 450 150 C 460 140 470 155 455 165 Z" fill="#bd9060"/>
+          </g>
+        </svg>
       </div>
 
-      <!-- Right Panel: Dynamic Comic Canvas Stage -->
-      <div class="lg:col-span-7 bg-[#fffdf9] border-2 border-[#322d29] rounded-3xl p-6 shadow-sketch-lg relative flex flex-col justify-between min-h-[460px]">
-        <div class="washi-tape-right"></div>
+      <!-- INTERACTIVE LAYER: THE BUG CHARACTER (Sitting on Bench at Right) -->
+      <div class="absolute z-20 transition-all duration-300" id="heroBugCharacter" style="right: 18%; bottom: 15%; width: 220px; height: 260px;">
+        <svg viewBox="0 0 220 260" class="w-full h-full drop-shadow-md">
+          <!-- Legs sitting on bench -->
+          <path d="M 80 180 Q 60 210 70 235" stroke="#322d29" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M 140 180 Q 160 210 150 235" stroke="#322d29" stroke-width="5" fill="none" stroke-linecap="round"/>
+          
+          <!-- Torso -->
+          <ellipse cx="110" cy="160" rx="42" ry="50" fill="#728c69" stroke="#322d29" stroke-width="3"/>
+          <!-- Belly detail -->
+          <ellipse cx="110" cy="165" rx="26" ry="34" fill="#a4ba97" stroke="#322d29" stroke-width="2"/>
+
+          <!-- Arms holding laptop -->
+          <path d="M 75 150 Q 95 170 110 165" stroke="#322d29" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+          <path d="M 145 150 Q 125 170 110 165" stroke="#322d29" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+
+          <!-- Laptop on lap -->
+          <g id="bugLaptop">
+            <!-- Screen Base -->
+            <rect x="85" y="145" width="50" height="32" rx="4" fill="#dcd6cd" stroke="#322d29" stroke-width="2"/>
+            <rect x="89" y="149" width="42" height="24" rx="2" fill="#322d29"/>
+            <path d="M 104 159 L 112 159 M 108 155 L 108 163" stroke="#eef4ec" stroke-width="2" stroke-linecap="round"/>
+            <!-- Laptop keyboard -->
+            <polygon points="75,178 145,178 155,188 65,188" fill="#b0a89e" stroke="#322d29" stroke-width="2"/>
+          </g>
+
+          <!-- Bug Head -->
+          <circle cx="110" cy="85" r="45" fill="#728c69" stroke="#322d29" stroke-width="3"/>
+          
+          <!-- Antennae (Twitching animation) -->
+          <g id="bugAntennae" class="animate-antenna-twitch">
+            <path d="M 95 42 Q 70 10 60 15" stroke="#322d29" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+            <circle cx="58" cy="16" r="6" fill="#d97d64" stroke="#322d29" stroke-width="2"/>
+            
+            <path d="M 125 42 Q 150 10 160 15" stroke="#322d29" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+            <circle cx="162" cy="16" r="6" fill="#d97d64" stroke="#322d29" stroke-width="2"/>
+          </g>
+
+          <!-- Round Glasses -->
+          <circle cx="92" cy="85" r="18" fill="rgba(255,255,255,0.7)" stroke="#322d29" stroke-width="3"/>
+          <circle cx="128" cy="85" r="18" fill="rgba(255,255,255,0.7)" stroke="#322d29" stroke-width="3"/>
+          <line x1="110" y1="85" x2="110" y2="85" stroke="#322d29" stroke-width="3"/>
+          <line x1="74" y1="83" x2="66" y2="80" stroke="#322d29" stroke-width="2.5"/>
+          <line x1="146" y1="83" x2="154" y2="80" stroke="#322d29" stroke-width="2.5"/>
+
+          <!-- Eyes (Pupils track mouse dynamically) -->
+          <g id="bugPupils">
+            <circle id="leftPupil" cx="92" cy="85" r="5" fill="#322d29"/>
+            <circle id="rightPupil" cx="128" cy="85" r="5" fill="#322d29"/>
+            <circle cx="90" cy="83" r="1.5" fill="#ffffff"/>
+            <circle cx="126" cy="83" r="1.5" fill="#ffffff"/>
+          </g>
+
+          <!-- Mouth - Neutral Curious (Default) -->
+          <path id="bugMouthNeutral" d="M 103 110 Q 110 115 117 110" stroke="#322d29" stroke-width="3" fill="none" stroke-linecap="round"/>
+          
+          <!-- Mouth - Beaming Smile (Hidden until Beat 6) -->
+          <g id="bugMouthHappy" style="opacity: 0; transition: opacity 0.3s ease;">
+            <path d="M 98 108 Q 110 126 122 108 Z" fill="#d97d64" stroke="#322d29" stroke-width="2.5"/>
+            <!-- Rosy blushing cheeks -->
+            <ellipse cx="74" cy="98" rx="7" ry="4" fill="#f2a898" opacity="0.8"/>
+            <ellipse cx="146" cy="98" rx="7" ry="4" fill="#f2a898" opacity="0.8"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- STORY BEAT 1 & 2: THE BUNNIES & TALL DOCUMENT STACK (Left Side) -->
+      <div class="absolute z-20 transition-all duration-500 ease-out" id="heroBunniesAndStack" style="left: 12%; bottom: 16%; transform: translateX(-140%);">
         
-        <!-- Platform Floating Thought Bubbles (Inspired by Panel 2 & 6) -->
-        <div class="flex items-center justify-center gap-4 mb-2">
-          <div id="thoughtInsta" class="thought-bubble-glow bg-[#fce8e6] border-2 border-[#322d29] rounded-full px-3 py-1 text-xs font-bold flex items-center gap-1.5 shadow-sketch-sm">
-            <span>📸</span> Instagram
+        <!-- Document Stack -->
+        <div class="relative flex flex-col items-center select-none" id="documentStackContainer">
+          <!-- Stack Header Tag -->
+          <div class="px-3 py-1 bg-sun-yellow text-charcoal font-bold text-xs rounded-md shadow-sm border border-charcoal/40 mb-1 animate-bounce" style="font-family: 'Patrick Hand', cursive;">
+            📄 Unstructured Docs
           </div>
-          <div id="thoughtYt" class="thought-bubble-glow bg-[#feeceb] border-2 border-[#322d29] rounded-full px-3 py-1 text-xs font-bold flex items-center gap-1.5 shadow-sketch-sm">
-            <span>▶️</span> YouTube
-          </div>
-          <div id="thoughtIn" class="thought-bubble-glow bg-[#e8f2fe] border-2 border-[#322d29] rounded-full px-3 py-1 text-xs font-bold flex items-center gap-1.5 shadow-sketch-sm">
-            <span>💼</span> LinkedIn
+
+          <!-- Document Layers Stack -->
+          <div class="relative w-48 sm:w-56 flex flex-col gap-1.5 p-3 bg-white/95 border-2 border-charcoal rounded-xl shadow-sketch-lg hover:rotate-1 transition-transform cursor-pointer">
+            <div class="washi-tape-top" style="width: 70px;"></div>
+            
+            <div class="doc-tab-item px-3 py-2 bg-paper-tint border border-charcoal/30 rounded-lg flex items-center justify-between hover:bg-moss-surface transition-colors">
+              <span class="font-bold text-xs text-charcoal font-scrapbook">📊 Reports</span>
+              <span class="text-[10px] font-mono text-charcoal/60">PDF</span>
+            </div>
+            
+            <div class="doc-tab-item px-3 py-2 bg-paper-tint border border-charcoal/30 rounded-lg flex items-center justify-between hover:bg-moss-surface transition-colors">
+              <span class="font-bold text-xs text-charcoal font-scrapbook">🔬 Research Papers</span>
+              <span class="text-[10px] font-mono text-charcoal/60">DOCX</span>
+            </div>
+            
+            <div class="doc-tab-item px-3 py-2 bg-paper-tint border border-charcoal/30 rounded-lg flex items-center justify-between hover:bg-moss-surface transition-colors">
+              <span class="font-bold text-xs text-charcoal font-scrapbook">💼 Pitch Decks</span>
+              <span class="text-[10px] font-mono text-charcoal/60">PPTX</span>
+            </div>
+            
+            <div class="doc-tab-item px-3 py-2 bg-paper-tint border border-charcoal/30 rounded-lg flex items-center justify-between hover:bg-moss-surface transition-colors">
+              <span class="font-bold text-xs text-charcoal font-scrapbook">📈 Presentations</span>
+              <span class="text-[10px] font-mono text-charcoal/60">KEY</span>
+            </div>
           </div>
         </div>
 
-        <!-- Main Display Stage Frame -->
-        <div class="relative w-full aspect-[16/9] border-2 border-[#322d29] rounded-2xl overflow-hidden bg-[#faf6f0] flex items-center justify-center shadow-inner my-2">
-          
-          <!-- Base Comic Panel Image (Changes depending on state) -->
-          <img id="heroComicStageImg" src="assets/panels/panel_2.jpg" alt="Mascot Story Frame" class="w-full h-full object-cover transition-opacity duration-300">
-
-          <!-- AI POOF Explosion Cloud Overlay (Panel 4) -->
-          <div id="poofCloudOverlay" class="absolute inset-0 bg-white/40 backdrop-blur-xs flex flex-col items-center justify-center z-30 pointer-events-none hidden">
-            <img src="assets/panels/panel_4.jpg" alt="AI POOF Cloud" class="w-full h-full object-cover poof-overlay rounded-2xl">
+        <!-- The Two Bunnies Carrying the Stack -->
+        <div class="flex items-center justify-between w-full -mt-6 px-1 transition-all duration-300" id="bunniesGroup">
+          <!-- Bunny Left -->
+          <div class="w-14 h-16 relative bunny-left-pose">
+            <svg viewBox="0 0 60 70" class="w-full h-full drop-shadow">
+              <!-- Ears -->
+              <ellipse cx="20" cy="18" rx="6" ry="16" fill="#fffdf9" stroke="#322d29" stroke-width="2"/>
+              <ellipse cx="20" cy="18" rx="3" ry="10" fill="#f8ece8"/>
+              <ellipse cx="34" cy="16" rx="6" ry="16" fill="#fffdf9" stroke="#322d29" stroke-width="2"/>
+              <ellipse cx="34" cy="16" rx="3" ry="10" fill="#f8ece8"/>
+              <!-- Body & Head -->
+              <circle cx="28" cy="45" r="22" fill="#fffdf9" stroke="#322d29" stroke-width="2"/>
+              <!-- Eyes & Nose -->
+              <circle cx="22" cy="42" r="2" fill="#322d29"/>
+              <circle cx="34" cy="42" r="2" fill="#322d29"/>
+              <ellipse cx="28" cy="47" rx="2" ry="1.5" fill="#d97d64"/>
+              <!-- Rosy Cheeks -->
+              <ellipse cx="18" cy="46" rx="3" ry="2" fill="#f2a898" opacity="0.8"/>
+              <ellipse cx="38" cy="46" rx="3" ry="2" fill="#f2a898" opacity="0.8"/>
+            </svg>
           </div>
 
-          <!-- Generated Social Post Card Overlay (Panels 3 & 8) -->
-          <div id="generatedCardOverlay" class="absolute inset-4 z-20 bg-[#fffdf9] border-2 border-[#322d29] rounded-2xl p-4 shadow-sketch-lg flex flex-col justify-between transform transition-all duration-500 scale-95 opacity-0 pointer-events-none">
-            <div class="flex items-center justify-between border-b border-gray-200 pb-2">
-              <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-full bg-[#586f50] text-white flex items-center justify-center font-bold text-xs">🐜</div>
-                <div>
-                  <div class="font-bold text-xs text-[#1f241d]" id="previewPostAuthor">@PostEazy_Studio</div>
-                  <div class="text-[10px] text-[#5c6457]">Generated via AI Engine ✨</div>
-                </div>
+          <!-- Bunny Right -->
+          <div class="w-14 h-16 relative bunny-right-pose">
+            <svg viewBox="0 0 60 70" class="w-full h-full drop-shadow">
+              <!-- Ears -->
+              <ellipse cx="26" cy="16" rx="6" ry="16" fill="#fffdf9" stroke="#322d29" stroke-width="2"/>
+              <ellipse cx="26" cy="16" rx="3" ry="10" fill="#f8ece8"/>
+              <ellipse cx="40" cy="18" rx="6" ry="16" fill="#fffdf9" stroke="#322d29" stroke-width="2"/>
+              <ellipse cx="40" cy="18" rx="3" ry="10" fill="#f8ece8"/>
+              <!-- Body & Head -->
+              <circle cx="32" cy="45" r="22" fill="#fffdf9" stroke="#322d29" stroke-width="2"/>
+              <!-- Eyes & Nose -->
+              <circle cx="26" cy="42" r="2" fill="#322d29"/>
+              <circle cx="38" cy="42" r="2" fill="#322d29"/>
+              <ellipse cx="32" cy="47" rx="2" ry="1.5" fill="#d97d64"/>
+              <!-- Rosy Cheeks -->
+              <ellipse cx="22" cy="46" rx="3" ry="2" fill="#f2a898" opacity="0.8"/>
+              <ellipse cx="42" cy="46" rx="3" ry="2" fill="#f2a898" opacity="0.8"/>
+            </svg>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- STORY BEAT 2: THREE PLATFORM SPEECH BUBBLES (Popping above Bug's head) -->
+      <div class="absolute z-30 flex items-center gap-3 transition-all duration-300 opacity-0 scale-75 pointer-events-auto" id="heroPlatformBubbles" style="right: 17%; bottom: 56%;">
+        <!-- Instagram Bubble -->
+        <div class="platform-bubble-item flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl shadow-sketch-sm border-2 border-charcoal transform -rotate-3 hover:scale-110 transition-transform cursor-pointer">
+          <span class="material-symbols-outlined text-base">photo_camera</span>
+          <span class="text-xs font-bold font-scrapbook">Instagram</span>
+        </div>
+        <!-- YouTube Bubble -->
+        <div class="platform-bubble-item flex items-center gap-1.5 px-3 py-1.5 bg-red-500 text-white rounded-2xl shadow-sketch-sm border-2 border-charcoal transform rotate-2 hover:scale-110 transition-transform cursor-pointer">
+          <span class="material-symbols-outlined text-base">play_circle</span>
+          <span class="text-xs font-bold font-scrapbook">YouTube</span>
+        </div>
+        <!-- LinkedIn Bubble -->
+        <div class="platform-bubble-item flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-2xl shadow-sketch-sm border-2 border-charcoal transform -rotate-2 hover:scale-110 transition-transform cursor-pointer">
+          <span class="material-symbols-outlined text-base">work</span>
+          <span class="text-xs font-bold font-scrapbook">LinkedIn</span>
+        </div>
+      </div>
+
+      <!-- STORY BEAT 3: FORMAT MENU CARD (Interactive Options) -->
+      <div class="absolute z-30 transition-all duration-500 opacity-0 scale-90 pointer-events-auto" id="heroFormatMenu" style="left: 12%; bottom: 20%; width: 230px;">
+        <div class="bg-paper-card border-2 border-charcoal rounded-2xl p-4 shadow-sketch-lg relative">
+          <div class="washi-tape-top" style="width: 80px;"></div>
+          <div class="text-xs font-bold text-tertiary uppercase tracking-wider mb-2 font-scrapbook">Select Output Format</div>
+          
+          <div class="flex flex-col gap-2">
+            <button class="format-choice-btn flex items-center gap-2.5 p-2 rounded-xl border-2 border-charcoal bg-moss-surface font-bold text-xs text-charcoal text-left transition-all hover:translate-x-1 active" onclick="selectHeroFormat('image')">
+              <span class="material-symbols-outlined text-base text-moss-dark">image</span>
+              <div class="flex flex-col">
+                <span>Multi-Slide Image</span>
+                <span class="text-[10px] font-normal text-charcoal/60">Carousel & Infographic</span>
               </div>
-              <span class="px-2 py-0.5 rounded-full bg-[#f4ece1] text-[#d96c4b] font-bold text-[10px] border border-[#322d29]" id="previewFormatBadge">Instagram Post</span>
-            </div>
+            </button>
 
-            <!-- Post Content Body -->
-            <div class="my-2 bg-[#f9f5ed] border border-[#322d29]/20 rounded-xl p-3">
-              <h4 class="font-bold text-sm text-[#1f241d] mb-1" id="previewPostTitle">5 Key Insights from Q3 Research Report</h4>
-              <p class="text-xs text-[#5c6457] line-clamp-2" id="previewPostSnippet">Our automated pipeline extracted critical market trends, executive metrics, and visual diagrams into a high-engagement social carousel.</p>
-            </div>
+            <button class="format-choice-btn flex items-center gap-2.5 p-2 rounded-xl border border-charcoal/30 bg-paper-tint font-bold text-xs text-charcoal text-left transition-all hover:translate-x-1" onclick="selectHeroFormat('video')">
+              <span class="material-symbols-outlined text-base text-tertiary">movie</span>
+              <div class="flex flex-col">
+                <span>Kinetic Video</span>
+                <span class="text-[10px] font-normal text-charcoal/60">Reels / Shorts (9:16)</span>
+              </div>
+            </button>
 
-            <!-- Post Footer & Heart Like Counter Button -->
-            <div class="flex items-center justify-between">
-              <button class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#fce8e6] border border-[#322d29] text-xs font-bold text-[#d96c4b] hover:scale-105 active:scale-95 transition-transform" onclick="likeHeroPreviewCard(this)">
-                <span>❤️</span> <span id="heroLikeCount">1,420</span> Likes
-              </button>
-              
-              <button class="btn-bounce px-3.5 py-1.5 rounded-xl bg-[#586f50] text-white font-bold text-xs border border-[#322d29] flex items-center gap-1" onclick="launchHeroStudioPipeline()">
-                🚀 Open in Studio
-              </button>
-            </div>
+            <button class="format-choice-btn flex items-center gap-2.5 p-2 rounded-xl border border-charcoal/30 bg-paper-tint font-bold text-xs text-charcoal text-left transition-all hover:translate-x-1" onclick="selectHeroFormat('text')">
+              <span class="material-symbols-outlined text-base text-blue-600">article</span>
+              <div class="flex flex-col">
+                <span>Thread & Post</span>
+                <span class="text-[10px] font-normal text-charcoal/60">LinkedIn & X Summary</span>
+              </div>
+            </button>
           </div>
         </div>
-
-        <!-- Caption Note Footer -->
-        <div class="bg-[#f4ece1] border border-[#322d29] rounded-xl px-4 py-2 flex items-center justify-between">
-          <span class="font-handwriting text-[#1f241d] text-base font-bold" id="heroStageCaption">
-            💡 Mascot receiving input documents & planning distribution...
-          </span>
-          <span class="text-xs text-[#5c6457] font-mono">Step <span id="heroStepNum">1</span>/3</span>
-        </div>
       </div>
-    </div>
 
-    <!-- ================= MODE 2: FULL 9-PANEL COMIC STORY GALLERY ================= -->
-    <div id="heroComicView" class="hidden">
-      <div class="bg-[#fffdf9] border-2 border-[#322d29] rounded-3xl p-6 sm:p-8 shadow-sketch-lg relative">
-        <div class="washi-tape-top"></div>
-        
-        <div class="text-center mb-8">
-          <h2 class="font-sketch text-3xl font-bold text-[#1f241d]">The PostEazy Story Comic</h2>
-          <p class="font-handwriting text-[#5c6457] text-xl">How our AI assistant turns stacks of heavy documents into effortless social content</p>
-        </div>
-
-        <!-- 3x3 Comic Panels Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- STORY BEAT 4: CLOUD PUFF TRANSFORM BURST (Sparkles + Cloud overlay) -->
+      <div class="absolute z-40 transition-all duration-300 opacity-0 scale-50 pointer-events-none" id="heroCloudPuff" style="left: 10%; bottom: 15%; width: 320px; height: 320px;">
+        <svg viewBox="0 0 300 300" class="w-full h-full filter drop-shadow-lg">
+          <!-- Puff cloud bubbles -->
+          <circle cx="150" cy="150" r="80" fill="#ffffff" stroke="#322d29" stroke-width="3"/>
+          <circle cx="100" cy="130" r="60" fill="#ffffff" stroke="#322d29" stroke-width="3"/>
+          <circle cx="200" cy="140" r="65" fill="#ffffff" stroke="#322d29" stroke-width="3"/>
+          <circle cx="120" cy="190" r="55" fill="#ffffff" stroke="#322d29" stroke-width="3"/>
+          <circle cx="180" cy="180" r="50" fill="#ffffff" stroke="#322d29" stroke-width="3"/>
           
-          <!-- Panel 1 -->
-          <div class="comic-panel-grid-card p-3" onclick="openComicLightbox(1)">
-            <div class="aspect-[16/9] rounded-xl overflow-hidden border border-[#322d29] mb-2 relative">
-              <img src="assets/panels/panel_1.jpg" alt="Panel 1" class="w-full h-full object-cover">
-              <span class="absolute top-2 left-2 bg-[#f6cf65] border border-[#322d29] text-[#1f241d] font-bold text-xs px-2 py-0.5 rounded-md">01</span>
+          <!-- Sparkles & Stars -->
+          <path d="M 150 70 L 155 90 L 175 95 L 155 100 L 150 120 L 145 100 L 125 95 L 145 90 Z" fill="#f6cf65" stroke="#322d29" stroke-width="1.5"/>
+          <path d="M 80 180 L 83 195 L 98 198 L 83 201 L 80 216 L 77 201 L 62 198 L 77 195 Z" fill="#d97d64" stroke="#322d29" stroke-width="1.5"/>
+          <path d="M 220 100 L 223 112 L 235 115 L 223 118 L 220 130 L 217 118 L 205 115 L 217 112 Z" fill="#728c69" stroke="#322d29" stroke-width="1.5"/>
+        </svg>
+      </div>
+
+      <!-- STORY BEAT 5: GLOWING SOCIAL POST CARD (The polished output) -->
+      <div class="absolute z-30 transition-all duration-500 opacity-0 scale-75 rotate-[-2deg] pointer-events-auto" id="heroSocialPostCard" style="left: 10%; bottom: 18%; width: 290px;">
+        <!-- Glowing aura container -->
+        <div class="relative bg-paper-card border-2 border-charcoal rounded-2xl p-4 shadow-sketch-lg hover:scale-105 transition-transform" style="box-shadow: 0 0 30px rgba(246, 207, 101, 0.6), 4px 6px 0px #322d29;">
+          <div class="washi-tape-top" style="width: 90px; background: rgba(246,207,101,0.9);"></div>
+          
+          <!-- Post Card Header -->
+          <div class="flex items-center gap-2 mb-3 pb-2 border-b border-charcoal/20">
+            <div class="w-8 h-8 rounded-full bg-moss-surface border border-charcoal flex items-center justify-center text-moss-dark text-xs font-bold">
+              🐛
             </div>
-            <h4 class="font-bold text-sm text-[#1f241d]">Heavy Document Arrival</h4>
-            <p class="text-xs text-[#5c6457] font-handwriting text-base">Cute bunnies deliver stacks of Reports, Research Papers & Pitch Decks.</p>
+            <div class="flex flex-col">
+              <span class="font-bold text-xs text-charcoal font-scrapbook">PostEazy Studio</span>
+              <span class="text-[10px] text-charcoal/60">Generated 2s ago</span>
+            </div>
           </div>
 
-          <!-- Panel 2 -->
-          <div class="comic-panel-grid-card p-3" onclick="openComicLightbox(2)">
-            <div class="aspect-[16/9] rounded-xl overflow-hidden border border-[#322d29] mb-2 relative">
-              <img src="assets/panels/panel_2.jpg" alt="Panel 2" class="w-full h-full object-cover">
-              <span class="absolute top-2 left-2 bg-[#f6cf65] border border-[#322d29] text-[#1f241d] font-bold text-xs px-2 py-0.5 rounded-md">02</span>
+          <!-- Post Media Preview -->
+          <div class="w-full h-36 rounded-xl bg-gradient-to-br from-amber-100 via-emerald-100 to-rose-100 border border-charcoal/30 flex flex-col items-center justify-center p-3 relative overflow-hidden mb-3" id="heroPostMediaPreview">
+            <span class="material-symbols-outlined text-4xl text-primary mb-1">auto_awesome</span>
+            <div class="font-bold text-xs text-charcoal text-center font-scrapbook" id="heroPostCardTitle">
+              AI Market Trends 2026
             </div>
-            <h4 class="font-bold text-sm text-[#1f241d]">Platform Planning</h4>
-            <p class="text-xs text-[#5c6457] font-handwriting text-base">Ant mascot sitting on park bench plans target channels (Instagram, YouTube, LinkedIn).</p>
+            <span class="px-2 py-0.5 bg-white/80 rounded-md text-[10px] font-mono font-bold text-charcoal border border-charcoal/20 mt-1">
+              READY TO PUBLISH
+            </span>
           </div>
 
-          <!-- Panel 3 -->
-          <div class="comic-panel-grid-card p-3" onclick="openComicLightbox(3)">
-            <div class="aspect-[16/9] rounded-xl overflow-hidden border border-[#322d29] mb-2 relative">
-              <img src="assets/panels/panel_3.jpg" alt="Panel 3" class="w-full h-full object-cover">
-              <span class="absolute top-2 left-2 bg-[#f6cf65] border border-[#322d29] text-[#1f241d] font-bold text-xs px-2 py-0.5 rounded-md">03</span>
+          <!-- Post Actions -->
+          <div class="flex items-center justify-between text-xs text-charcoal font-bold">
+            <div class="flex items-center gap-3">
+              <span class="flex items-center gap-1 text-red-500">❤️ 1.4k</span>
+              <span class="flex items-center gap-1 text-blue-600">💬 280</span>
             </div>
-            <h4 class="font-bold text-sm text-[#1f241d]">First Transformation</h4>
-            <p class="text-xs text-[#5c6457] font-handwriting text-base">PostEazy outputs a polished social post ready to publish.</p>
+            <span class="px-2 py-0.5 bg-terracotta-soft text-tertiary rounded-md border border-tertiary/30 text-[10px]">High Impact</span>
           </div>
-
-          <!-- Panel 4 -->
-          <div class="comic-panel-grid-card p-3" onclick="openComicLightbox(4)">
-            <div class="aspect-[16/9] rounded-xl overflow-hidden border border-[#322d29] mb-2 relative">
-              <img src="assets/panels/panel_4.jpg" alt="Panel 4" class="w-full h-full object-cover">
-              <span class="absolute top-2 left-2 bg-[#f6cf65] border border-[#322d29] text-[#1f241d] font-bold text-xs px-2 py-0.5 rounded-md">04</span>
-            </div>
-            <h4 class="font-bold text-sm text-[#1f241d]">AI POOF Magic Cloud</h4>
-            <p class="text-xs text-[#5c6457] font-handwriting text-base">Instant AI cloud explosion distills dense insights into vibrant formats.</p>
-          </div>
-
-          <!-- Panel 5 -->
-          <div class="comic-panel-grid-card p-3" onclick="openComicLightbox(5)">
-            <div class="aspect-[16/9] rounded-xl overflow-hidden border border-[#322d29] mb-2 relative">
-              <img src="assets/panels/panel_5.jpg" alt="Panel 5" class="w-full h-full object-cover">
-              <span class="absolute top-2 left-2 bg-[#f6cf65] border border-[#322d29] text-[#1f241d] font-bold text-xs px-2 py-0.5 rounded-md">05</span>
-            </div>
-            <h4 class="font-bold text-sm text-[#1f241d]">Strategy & Analytics</h4>
-            <p class="text-xs text-[#5c6457] font-handwriting text-base">Continuous pipeline handles Strategy Decks, Client Reports & Market Analysis.</p>
-          </div>
-
-          <!-- Panel 6 -->
-          <div class="comic-panel-grid-card p-3" onclick="openComicLightbox(6)">
-            <div class="aspect-[16/9] rounded-xl overflow-hidden border border-[#322d29] mb-2 relative">
-              <img src="assets/panels/panel_6.jpg" alt="Panel 6" class="w-full h-full object-cover">
-              <span class="absolute top-2 left-2 bg-[#f6cf65] border border-[#322d29] text-[#1f241d] font-bold text-xs px-2 py-0.5 rounded-md">06</span>
-            </div>
-            <h4 class="font-bold text-sm text-[#1f241d]">Multi-Channel Distribution</h4>
-            <p class="text-xs text-[#5c6457] font-handwriting text-base">Simultaneous multi-platform content generated for Instagram, YouTube & LinkedIn.</p>
-          </div>
-
-          <!-- Panel 7 -->
-          <div class="comic-panel-grid-card p-3" onclick="openComicLightbox(7)">
-            <div class="aspect-[16/9] rounded-xl overflow-hidden border border-[#322d29] mb-2 relative">
-              <img src="assets/panels/panel_7.jpg" alt="Panel 7" class="w-full h-full object-cover">
-              <span class="absolute top-2 left-2 bg-[#f6cf65] border border-[#322d29] text-[#1f241d] font-bold text-xs px-2 py-0.5 rounded-md">07</span>
-            </div>
-            <h4 class="font-bold text-sm text-[#1f241d]">Format Selector Card</h4>
-            <p class="text-xs text-[#5c6457] font-handwriting text-base">Select your output type: Image, Video, Text, or Graphic Design.</p>
-          </div>
-
-          <!-- Panel 8 -->
-          <div class="comic-panel-grid-card p-3" onclick="openComicLightbox(8)">
-            <div class="aspect-[16/9] rounded-xl overflow-hidden border border-[#322d29] mb-2 relative">
-              <img src="assets/panels/panel_8.jpg" alt="Panel 8" class="w-full h-full object-cover">
-              <span class="absolute top-2 left-2 bg-[#f6cf65] border border-[#322d29] text-[#1f241d] font-bold text-xs px-2 py-0.5 rounded-md">08</span>
-            </div>
-            <h4 class="font-bold text-sm text-[#1f241d]">Viral Engagement</h4>
-            <p class="text-xs text-[#5c6457] font-handwriting text-base">Published posts capture massive audience engagement and hearts!</p>
-          </div>
-
-          <!-- Panel 9 -->
-          <div class="comic-panel-grid-card p-3" onclick="openComicLightbox(9)">
-            <div class="aspect-[16/9] rounded-xl overflow-hidden border border-[#322d29] mb-2 relative">
-              <img src="assets/panels/panel_9.jpg" alt="Panel 9" class="w-full h-full object-cover">
-              <span class="absolute top-2 left-2 bg-[#f6cf65] border border-[#322d29] text-[#1f241d] font-bold text-xs px-2 py-0.5 rounded-md">09</span>
-            </div>
-            <h4 class="font-bold text-sm text-[#1f241d]">Automated Loop</h4>
-            <p class="text-xs text-[#5c6457] font-handwriting text-base">Continuous, effortless content flow for all your organization's documents.</p>
-          </div>
-
         </div>
       </div>
+
+      <!-- STORY BEAT 6: HEART POP BUBBLE (Above Bug's head) -->
+      <div class="absolute z-40 transition-all duration-300 opacity-0 scale-50 pointer-events-none" id="heroHeartBubble" style="right: 20%; bottom: 62%;">
+        <div class="px-3.5 py-2 bg-rose-500 text-white font-bold text-sm rounded-full shadow-sketch-sm border-2 border-charcoal flex items-center gap-1 animate-bounce">
+          <span>❤️</span>
+          <span class="font-scrapbook">Loved It!</span>
+        </div>
+      </div>
+
     </div>
 
-  </div>
-</section>
+    <!-- BOTTOM FLOATING PROGRESS BAR & CUE -->
+    <div class="relative z-30 pb-6 px-4 flex flex-col items-center gap-2 pointer-events-auto">
+      
+      <!-- Conversion CTA Badge (Fades in at 80%-100%) -->
+      <div class="transition-all duration-300 opacity-0 transform translate-y-2 pointer-events-auto" id="heroCtaBadge">
+        <a href="#workbench" class="btn-bounce inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary text-white font-bold text-base shadow-sketch border-2 border-charcoal hover:bg-moss-dark transition-all">
+          <span>Launch Content Studio Now</span>
+          <span class="text-xl">➔</span>
+        </a>
+      </div>
 
-<!-- Lightbox Modal for Comic Panels -->
-<div id="comicLightboxModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 hidden" onclick="closeComicLightbox()">
-  <div class="relative max-w-3xl w-full bg-[#fffdf9] border-2 border-[#322d29] rounded-3xl p-6 shadow-2xl" onclick="event.stopPropagation()">
-    <button class="absolute top-4 right-4 w-9 h-9 rounded-full bg-[#f4ece1] border border-[#322d29] font-bold text-[#1f241d] flex items-center justify-center hover:bg-[#d96c4b] hover:text-white transition-colors" onclick="closeComicLightbox()">✕</button>
-    
-    <div class="aspect-[16/9] rounded-2xl overflow-hidden border-2 border-[#322d29] mb-4">
-      <img id="lightboxImg" src="assets/hero_story_comic.jpg" alt="Comic Detail" class="w-full h-full object-contain bg-black">
+      <!-- Beat Timeline Progress Dots -->
+      <div class="flex items-center gap-2.5 px-4 py-2 bg-paper-card/90 backdrop-blur-md rounded-full border-2 border-charcoal shadow-sketch-sm">
+        <button class="beat-dot-btn active" onclick="scrollToBeatProgress(0.1)" title="Beat 1: Arrival"></button>
+        <button class="beat-dot-btn" onclick="scrollToBeatProgress(0.3)" title="Beat 2: Platforms"></button>
+        <button class="beat-dot-btn" onclick="scrollToBeatProgress(0.5)" title="Beat 3: Formats"></button>
+        <button class="beat-dot-btn" onclick="scrollToBeatProgress(0.68)" title="Beat 4: Magic Puff"></button>
+        <button class="beat-dot-btn" onclick="scrollToBeatProgress(0.82)" title="Beat 5: Post Card"></button>
+        <button class="beat-dot-btn" onclick="scrollToBeatProgress(0.95)" title="Beat 6: Unpin"></button>
+      </div>
+
+      <!-- Scroll Prompt Banner -->
+      <div class="flex items-center gap-1.5 text-secondary text-xs font-bold uppercase tracking-wider animate-pulse" style="font-family: 'Patrick Hand', cursive;">
+        <span id="heroScrollCueText">Scroll down to play story</span>
+        <span class="material-symbols-outlined text-sm">arrow_downward</span>
+      </div>
+
     </div>
-    
-    <h3 id="lightboxTitle" class="font-sketch text-2xl font-bold text-[#1f241d]">Panel Detail</h3>
-    <p id="lightboxDesc" class="font-handwriting text-lg text-[#5c6457] mt-1">Detailed story description.</p>
-  </div>
+
+  </section>
 </div>
 
 
