@@ -44,8 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initScrollSpy();
   initArtifactCardInteractions();
   checkUrlParamsStudioMode();
-  initHeroScrollStory();
-  initBugEyeTracking();
+  initVideoScrollScrubber();
 });
 
 // ScrollSpy for Top Navbar Link Underline Transition
@@ -801,40 +800,45 @@ function showToast(msg) {
   }
 }
 
-// ================= HERO SCROLL-DRIVEN STORY ENGINE =================
-let selectedHeroFormatType = 'image';
-
-function initHeroScrollStory() {
+// ================= HERO SCROLL-DRIVEN VIDEO SCRUBBER ENGINE =================
+function initVideoScrollScrubber() {
   const runway = document.getElementById('hero-runway');
-  if (!runway) return;
+  const video = document.getElementById('heroVideoScrubber');
+  if (!runway || !video) return;
 
   const headerBlock = document.getElementById('heroHeaderBlock');
-  const bunniesAndStack = document.getElementById('heroBunniesAndStack');
-  const documentStack = document.getElementById('documentStackContainer');
-  const bunniesGroup = document.getElementById('bunniesGroup');
-  const platformBubbles = document.getElementById('heroPlatformBubbles');
-  const formatMenu = document.getElementById('heroFormatMenu');
-  const cloudPuff = document.getElementById('heroCloudPuff');
-  const socialPostCard = document.getElementById('heroSocialPostCard');
-  const heartBubble = document.getElementById('heroHeartBubble');
-  const mouthNeutral = document.getElementById('bugMouthNeutral');
-  const mouthHappy = document.getElementById('bugMouthHappy');
+  const timeLabel = document.getElementById('videoScrubTimeLabel');
   const ctaBadge = document.getElementById('heroCtaBadge');
   const scrollCueText = document.getElementById('heroScrollCueText');
   const beatDots = document.querySelectorAll('.beat-dot-btn');
 
   let animationFrameId = null;
 
-  function updateStoryBeats() {
+  // Pause video to manually control playhead via scroll
+  video.pause();
+
+  function syncVideoFrame() {
     const rect = runway.getBoundingClientRect();
     const runwayHeight = runway.offsetHeight - window.innerHeight;
     if (runwayHeight <= 0) return;
 
-    // Progress 0.0 to 1.0
+    // Scroll progress ratio from 0.0 to 1.0
     let progress = -rect.top / runwayHeight;
     progress = Math.max(0, Math.min(1, progress));
 
-    // Beat Active Indicators
+    // Update MP4 playhead frame-by-frame
+    if (video.duration && !isNaN(video.duration)) {
+      const targetTime = progress * video.duration;
+      if (Math.abs(video.currentTime - targetTime) > 0.01) {
+        video.currentTime = targetTime;
+      }
+
+      if (timeLabel) {
+        timeLabel.innerText = `${targetTime.toFixed(1)}s / ${video.duration.toFixed(1)}s`;
+      }
+    }
+
+    // Active progress dots
     let activeIndex = 0;
     if (progress >= 0.90) activeIndex = 5;
     else if (progress >= 0.75) activeIndex = 4;
@@ -848,115 +852,14 @@ function initHeroScrollStory() {
       else dot.classList.remove('active');
     });
 
-    // --- BEAT 1 (0 to 0.20): Bunnies arrive carrying doc stack ---
+    // Fade out top title block on scroll start
     if (headerBlock) {
       const headerAlpha = Math.max(0, 1 - (progress / 0.15));
       headerBlock.style.opacity = headerAlpha.toFixed(2);
-      headerBlock.style.transform = `translateY(${(-progress * 120).toFixed(1)}px) scale(${(1 - progress * 0.2).toFixed(2)})`;
+      headerBlock.style.transform = `translateY(${(-progress * 80).toFixed(1)}px)`;
     }
 
-    if (bunniesAndStack) {
-      if (progress <= 0.20) {
-        const translatePct = -140 + (progress / 0.20) * 140; // -140% to 0%
-        bunniesAndStack.style.transform = `translateX(${translatePct.toFixed(1)}%)`;
-        bunniesAndStack.style.opacity = '1';
-      } else {
-        bunniesAndStack.style.transform = 'translateX(0%)';
-      }
-    }
-
-    // --- BEAT 2 (0.20 to 0.40): Bunnies leave, Platform bubbles pop ---
-    if (bunniesGroup) {
-      if (progress > 0.20 && progress <= 0.40) {
-        const leaveAlpha = Math.max(0, 1 - ((progress - 0.20) / 0.12));
-        bunniesGroup.style.opacity = leaveAlpha.toFixed(2);
-      } else if (progress > 0.40) {
-        bunniesGroup.style.opacity = '0';
-      } else {
-        bunniesGroup.style.opacity = '1';
-      }
-    }
-
-    if (platformBubbles) {
-      if (progress >= 0.20 && progress <= 0.40) {
-        const pAlpha = Math.min(1, (progress - 0.20) / 0.08);
-        const pScale = 0.75 + pAlpha * 0.25;
-        platformBubbles.style.opacity = pAlpha.toFixed(2);
-        platformBubbles.style.transform = `scale(${pScale.toFixed(2)})`;
-      } else {
-        platformBubbles.style.opacity = '0';
-        platformBubbles.style.transform = 'scale(0.75)';
-      }
-    }
-
-    // --- BEAT 3 (0.40 to 0.60): Format menu slides in ---
-    if (formatMenu) {
-      if (progress >= 0.40 && progress <= 0.60) {
-        const fAlpha = Math.min(1, (progress - 0.40) / 0.08);
-        formatMenu.style.opacity = fAlpha.toFixed(2);
-        formatMenu.style.transform = `scale(${(0.9 + fAlpha * 0.1).toFixed(2)})`;
-      } else {
-        formatMenu.style.opacity = '0';
-      }
-    }
-
-    // --- BEAT 4 (0.60 to 0.75): Cloud puff transformation ---
-    if (documentStack) {
-      if (progress >= 0.60) {
-        documentStack.style.opacity = '0';
-      } else {
-        documentStack.style.opacity = '1';
-      }
-    }
-
-    if (cloudPuff) {
-      if (progress >= 0.60 && progress <= 0.75) {
-        const puffRatio = (progress - 0.60) / 0.15;
-        const puffAlpha = Math.sin(puffRatio * Math.PI);
-        const puffScale = 0.6 + puffRatio * 0.6;
-        cloudPuff.style.opacity = puffAlpha.toFixed(2);
-        cloudPuff.style.transform = `scale(${puffScale.toFixed(2)})`;
-      } else {
-        cloudPuff.style.opacity = '0';
-      }
-    }
-
-    // --- BEAT 5 (0.75 to 0.90): Glowing Social Post Card emerges ---
-    if (socialPostCard) {
-      if (progress >= 0.75 && progress <= 0.95) {
-        const cardAlpha = Math.min(1, (progress - 0.75) / 0.08);
-        const cardScale = 0.8 + cardAlpha * 0.2;
-        socialPostCard.style.opacity = cardAlpha.toFixed(2);
-        socialPostCard.style.transform = `scale(${cardScale.toFixed(2)}) rotate(-2deg)`;
-      } else if (progress > 0.95) {
-        socialPostCard.style.opacity = '1';
-        socialPostCard.style.transform = 'scale(1) rotate(-2deg)';
-      } else {
-        socialPostCard.style.opacity = '0';
-      }
-    }
-
-    // --- BEAT 6 (0.90 to 1.00): Heart pop, happy smile, CTA badge ---
-    if (heartBubble) {
-      if (progress >= 0.88) {
-        const hAlpha = Math.min(1, (progress - 0.88) / 0.06);
-        heartBubble.style.opacity = hAlpha.toFixed(2);
-        heartBubble.style.transform = `scale(${(0.6 + hAlpha * 0.4).toFixed(2)})`;
-      } else {
-        heartBubble.style.opacity = '0';
-      }
-    }
-
-    if (mouthNeutral && mouthHappy) {
-      if (progress >= 0.88) {
-        mouthNeutral.style.opacity = '0';
-        mouthHappy.style.opacity = '1';
-      } else {
-        mouthNeutral.style.opacity = '1';
-        mouthHappy.style.opacity = '0';
-      }
-    }
-
+    // Show conversion CTA badge near the end of runway (>85%)
     if (ctaBadge) {
       if (progress >= 0.85) {
         const ctaAlpha = Math.min(1, (progress - 0.85) / 0.1);
@@ -971,7 +874,7 @@ function initHeroScrollStory() {
       if (progress >= 0.92) {
         scrollCueText.innerText = "Unpinning... Scroll down to explore studio";
       } else {
-        scrollCueText.innerText = "Scroll down to play story";
+        scrollCueText.innerText = "Scroll down to scrub video frame-by-frame";
       }
     }
   }
@@ -979,67 +882,15 @@ function initHeroScrollStory() {
   window.addEventListener('scroll', () => {
     if (!animationFrameId) {
       animationFrameId = requestAnimationFrame(() => {
-        updateStoryBeats();
+        syncVideoFrame();
         animationFrameId = null;
       });
     }
   });
 
-  updateStoryBeats();
-}
-
-function initBugEyeTracking() {
-  const leftPupil = document.getElementById('leftPupil');
-  const rightPupil = document.getElementById('rightPupil');
-  if (!leftPupil || !rightPupil) return;
-
-  window.addEventListener('mousemove', (e) => {
-    const bugArea = document.getElementById('heroBugCharacter');
-    if (!bugArea) return;
-    
-    const rect = bugArea.getBoundingClientRect();
-    const bugCenterX = rect.left + rect.width / 2;
-    const bugCenterY = rect.top + rect.height * 0.35;
-
-    const deltaX = e.clientX - bugCenterX;
-    const deltaY = e.clientY - bugCenterY;
-    const angle = Math.atan2(deltaY, deltaX);
-    const dist = Math.min(5, Math.hypot(deltaX, deltaY) / 40);
-
-    const pupilOffsetX = Math.cos(angle) * dist;
-    const pupilOffsetY = Math.sin(angle) * dist;
-
-    leftPupil.setAttribute('cx', (92 + pupilOffsetX).toFixed(1));
-    leftPupil.setAttribute('cy', (85 + pupilOffsetY).toFixed(1));
-    rightPupil.setAttribute('cx', (128 + pupilOffsetX).toFixed(1));
-    rightPupil.setAttribute('cy', (85 + pupilOffsetY).toFixed(1));
-  });
-}
-
-function selectHeroFormat(formatKey) {
-  selectedHeroFormatType = formatKey;
-  
-  const buttons = document.querySelectorAll('.format-choice-btn');
-  buttons.forEach(btn => btn.classList.remove('active'));
-
-  if (window.event && window.event.currentTarget) {
-    window.event.currentTarget.classList.add('active');
-  }
-
-  const previewMedia = document.getElementById('heroPostMediaPreview');
-  const cardTitle = document.getElementById('heroPostCardTitle');
-  if (!previewMedia || !cardTitle) return;
-
-  if (formatKey === 'image') {
-    cardTitle.innerText = "AI Market Trends 2026";
-    previewMedia.className = "w-full h-36 rounded-xl bg-gradient-to-br from-amber-100 via-emerald-100 to-rose-100 border border-charcoal/30 flex flex-col items-center justify-center p-3 relative overflow-hidden mb-3";
-  } else if (formatKey === 'video') {
-    cardTitle.innerText = "Kinetic Reel: Tech Insights";
-    previewMedia.className = "w-full h-36 rounded-xl bg-gradient-to-br from-purple-100 via-pink-100 to-rose-100 border border-charcoal/30 flex flex-col items-center justify-center p-3 relative overflow-hidden mb-3";
-  } else if (formatKey === 'text') {
-    cardTitle.innerText = "Executive Summary Thread";
-    previewMedia.className = "w-full h-36 rounded-xl bg-gradient-to-br from-blue-100 via-sky-100 to-indigo-100 border border-charcoal/30 flex flex-col items-center justify-center p-3 relative overflow-hidden mb-3";
-  }
+  video.addEventListener('loadedmetadata', syncVideoFrame);
+  video.addEventListener('canplay', syncVideoFrame);
+  syncVideoFrame();
 }
 
 function scrollToBeatProgress(progressFraction) {
@@ -1055,4 +906,5 @@ function scrollToBeatProgress(progressFraction) {
     behavior: 'smooth'
   });
 }
+
 
