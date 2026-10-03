@@ -355,20 +355,20 @@
               <div>
                 <!-- MULTIMODAL INPUT TABS SELECTOR BAR -->
                 <div class="flex items-center gap-1 mb-3 bg-paper-tint/80 p-1 rounded-xl border border-charcoal/20 overflow-x-auto text-xs font-hand font-bold">
-                  <button class="px-3 py-1.5 rounded-lg border border-charcoal bg-white shadow-sketch-sm text-charcoal flex items-center gap-1 transition-all active" id="inputTabBtnFile" onclick="switchInputTab('file')">
-                    <span>📄</span> Document
+                  <button class="px-3.5 py-1.5 rounded-lg border border-charcoal bg-white shadow-sketch-sm text-charcoal flex items-center justify-center transition-all active" id="inputTabBtnFile" onclick="switchInputTab('file')">
+                    Document
                   </button>
-                  <button class="px-3 py-1.5 rounded-lg border border-charcoal/30 bg-transparent text-charcoal/70 flex items-center gap-1 transition-all hover:bg-white" id="inputTabBtnUrl" onclick="switchInputTab('url')">
-                    <span>🌐</span> Web URL
+                  <button class="px-3.5 py-1.5 rounded-lg border border-charcoal/30 bg-transparent text-charcoal/70 flex items-center justify-center transition-all hover:bg-white" id="inputTabBtnUrl" onclick="switchInputTab('url')">
+                    Web URL
                   </button>
-                  <button class="px-3 py-1.5 rounded-lg border border-charcoal/30 bg-transparent text-charcoal/70 flex items-center gap-1 transition-all hover:bg-white" id="inputTabBtnVideo" onclick="switchInputTab('video')">
-                    <span>🎥</span> Video Clip
+                  <button class="px-3.5 py-1.5 rounded-lg border border-charcoal/30 bg-transparent text-charcoal/70 flex items-center justify-center transition-all hover:bg-white" id="inputTabBtnVideo" onclick="switchInputTab('video')">
+                    Video Clip
                   </button>
-                  <button class="px-3 py-1.5 rounded-lg border border-charcoal/30 bg-transparent text-charcoal/70 flex items-center gap-1 transition-all hover:bg-white" id="inputTabBtnImage" onclick="switchInputTab('image')">
-                    <span>🖼️</span> Image
+                  <button class="px-3.5 py-1.5 rounded-lg border border-charcoal/30 bg-transparent text-charcoal/70 flex items-center justify-center transition-all hover:bg-white" id="inputTabBtnImage" onclick="switchInputTab('image')">
+                    Image
                   </button>
-                  <button class="px-3 py-1.5 rounded-lg border border-charcoal/30 bg-transparent text-charcoal/70 flex items-center gap-1 transition-all hover:bg-white" id="inputTabBtnPrompt" onclick="switchInputTab('prompt')">
-                    <span>✍️</span> Topic Prompt
+                  <button class="px-3.5 py-1.5 rounded-lg border border-charcoal/30 bg-transparent text-charcoal/70 flex items-center justify-center transition-all hover:bg-white" id="inputTabBtnPrompt" onclick="switchInputTab('prompt')">
+                    Topic Prompt
                   </button>
                 </div>
 
@@ -381,7 +381,7 @@
                     </div>
                     <h3 class="font-sketch text-xl text-charcoal font-bold mb-1" id="dropTitle">Click or drag & drop document</h3>
                     <p class="font-hand text-sm text-charcoal/70 mb-3 max-w-xs" id="dropSubtitle">Upload papers, decks, or write-ups up to 25MB</p>
-                    <div class="px-3.5 py-1.5 bg-white border-2 border-charcoal rounded-xl shadow-sketch-sm text-xs font-hand font-bold text-charcoal group-hover:bg-paper">📎 Browse Document Files</div>
+                    <div class="px-3.5 py-1.5 bg-white border-2 border-charcoal rounded-xl shadow-sketch-sm text-xs font-hand font-bold text-charcoal group-hover:bg-paper">Browse Document Files</div>
                   </div>
                 </div>
 
@@ -401,10 +401,9 @@
                 <div id="tabContentVideo" class="input-tab-pane" style="display: none;">
                   <div class="relative border-dashed-doodle bg-paper-tint/50 hover:bg-paper-tint/90 transition-colors p-8 py-10 flex flex-col items-center justify-center text-center cursor-pointer group min-h-[260px]" onclick="document.getElementById('videoFileInput').click()">
                     <input type="file" id="videoFileInput" accept=".mp4,.mov,.webm,.mkv" style="display: none;" onchange="handleMediaSelect(event, 'video')">
-                    <span class="material-symbols-outlined text-4xl text-tertiary mb-2">movie</span>
                     <h3 class="font-sketch text-xl text-charcoal font-bold mb-1" id="dropVideoTitle">Click or drag video clip</h3>
                     <p class="font-hand text-sm text-charcoal/70 mb-3 max-w-xs">Upload MP4, MOV, or WEBM video clip to extract speech transcript</p>
-                    <div class="px-3.5 py-1.5 bg-white border-2 border-charcoal rounded-xl shadow-sketch-sm text-xs font-hand font-bold text-charcoal">🎬 Select Video File</div>
+                    <div class="px-3.5 py-1.5 bg-white border-2 border-charcoal rounded-xl shadow-sketch-sm text-xs font-hand font-bold text-charcoal">Select Video File</div>
                   </div>
                 </div>
 
@@ -412,10 +411,9 @@
                 <div id="tabContentImage" class="input-tab-pane" style="display: none;">
                   <div class="relative border-dashed-doodle bg-paper-tint/50 hover:bg-paper-tint/90 transition-colors p-8 py-10 flex flex-col items-center justify-center text-center cursor-pointer group min-h-[260px]" onclick="document.getElementById('imageFileInput').click()">
                     <input type="file" id="imageFileInput" accept=".png,.jpg,.jpeg,.webp" style="display: none;" onchange="handleMediaSelect(event, 'image')">
-                    <span class="material-symbols-outlined text-4xl text-primary mb-2">image</span>
                     <h3 class="font-sketch text-xl text-charcoal font-bold mb-1" id="dropImageTitle">Click or drag image asset</h3>
                     <p class="font-hand text-sm text-charcoal/70 mb-3 max-w-xs">Upload PNG, JPG, or WEBP infographic / chart for OCR text parsing</p>
-                    <div class="px-3.5 py-1.5 bg-white border-2 border-charcoal rounded-xl shadow-sketch-sm text-xs font-hand font-bold text-charcoal">🖼️ Select Image File</div>
+                    <div class="px-3.5 py-1.5 bg-white border-2 border-charcoal rounded-xl shadow-sketch-sm text-xs font-hand font-bold text-charcoal">Select Image File</div>
                   </div>
                 </div>
 
@@ -452,9 +450,6 @@
                   <!-- Option A: Short-Form (9:16 Vertical) -->
                   <div class="card-selectable selected relative border-2 border-charcoal rounded-2xl p-3.5 shadow-sketch cursor-pointer group" id="typeShortForm" onclick="selectVideoCategory('short')">
                     <div class="flex items-center gap-3">
-                      <div class="w-10 h-10 rounded-xl bg-white border-2 border-charcoal flex items-center justify-center flex-shrink-0 shadow-sketch-sm">
-                        <span class="material-symbols-outlined text-xl text-charcoal">smartphone</span>
-                      </div>
                       <div class="flex-1 flex items-center justify-between gap-2">
                         <div>
                           <h4 class="font-sketch text-lg font-bold text-charcoal leading-tight">Short-Form Video (Reels / Shorts / TikTok)</h4>
@@ -468,9 +463,6 @@
                   <!-- Option B: Long-Form (16:9 Landscape) -->
                   <div class="card-selectable relative bg-paper-card border-2 border-charcoal/50 hover:border-charcoal rounded-2xl p-3.5 shadow-sketch-sm cursor-pointer" id="typeLongForm" onclick="selectVideoCategory('long')">
                     <div class="flex items-center gap-3">
-                      <div class="w-10 h-10 rounded-xl bg-paper-tint border-2 border-charcoal/60 flex items-center justify-center flex-shrink-0">
-                        <span class="material-symbols-outlined text-xl text-charcoal">tv</span>
-                      </div>
                       <div class="flex-1 flex items-center justify-between gap-2">
                         <div>
                           <h4 class="font-sketch text-lg font-bold text-charcoal/85 leading-tight">Long-Form Video (YouTube)</h4>
