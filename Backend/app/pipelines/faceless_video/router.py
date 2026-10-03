@@ -6,7 +6,10 @@ from fastapi import APIRouter, UploadFile, File, Form, HTTPException, status, Ba
 from fastapi.responses import FileResponse
 
 from app.config import settings
-from app.schemas import Platform, JobStatus, VideoScript, JobState
+from app.schemas import (
+    Platform, JobStatus, VideoScript, JobState, 
+    DocumentExtractResponse, UrlIngestRequest, PromptIngestRequest
+)
 from app.services.ingest import extract_document_text
 from app.jobs import job_store
 from app.presets import get_preset
