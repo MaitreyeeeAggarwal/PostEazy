@@ -308,6 +308,113 @@ function selectVideoPlatform(platform) {
   showToast(`Platform set: ${platform.toUpperCase()}`);
 }
 
+// ================= MULTIMODAL INGESTION TAB HANDLERS =================
+let currentInputMode = 'file'; // 'file', 'url', 'video', 'image', 'prompt'
+
+function switchInputTab(mode) {
+  currentInputMode = mode;
+  const tabs = ['file', 'url', 'video', 'image', 'prompt'];
+
+  tabs.forEach(t => {
+    const btnName = `inputTabBtn${t.charAt(0).toUpperCase() + t.slice(1)}`;
+    const paneName = `tabContent${t.charAt(0).toUpperCase() + t.slice(1)}`;
+    const btn = document.getElementById(btnName);
+    const pane = document.getElementById(paneName);
+
+    if (btn) {
+      if (t === mode) {
+        btn.className = 'px-3 py-1.5 rounded-lg border border-charcoal bg-white shadow-sketch-sm text-charcoal flex items-center gap-1 transition-all active font-bold';
+      } else {
+        btn.className = 'px-3 py-1.5 rounded-lg border border-charcoal/30 bg-transparent text-charcoal/70 flex items-center gap-1 transition-all hover:bg-white font-bold';
+      }
+    }
+
+    if (pane) {
+      pane.style.display = (t === mode) ? 'block' : 'none';
+    }
+  });
+}
+
+async function handleUrlIngest() {
+  const urlField = document.getElementById('inputUrlField');
+  const url = urlField ? urlField.value.trim() : '';
+
+  if (!url || !url.startsWith('http')) {
+    showToast('⚠️ Please enter a valid URL (e.g. https://example.com/article)');
+    return;
+  }
+
+  showToast('🌐 Fetching article from URL...');
+
+  try {
+    const res = await fetch(`${API_BASE}/api/video/ingest-url`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url })
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || 'URL ingestion failed');
+    }
+
+    const docData = await res.json();
+    showToast(`✅ URL Ingested: ${docData.char_count} chars extracted!`);
+
+    const blob = new Blob([docData.text], { type: 'text/plain' });
+    selectedFile = new File([blob], `article_${Date.now()}.txt`, { type: 'text/plain' });
+
+    goToVideoStep2();
+  } catch (err) {
+    showToast(`❌ Error: ${err.message}`);
+  }
+}
+
+async function handlePromptIngest() {
+  const promptArea = document.getElementById('inputPromptArea');
+  const promptText = promptArea ? promptArea.value.trim() : '';
+
+  if (!promptText) {
+    showToast('⚠️ Please enter a topic prompt or script instructions first!');
+    return;
+  }
+
+  showToast('✍️ Synthesizing script outline from topic prompt...');
+
+  try {
+    const res = await fetch(`${API_BASE}/api/video/ingest-prompt`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: promptText })
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || 'Prompt synthesis failed');
+    }
+
+    const docData = await res.json();
+    showToast(`✨ Topic Script Synthesized!`);
+
+    const blob = new Blob([docData.text], { type: 'text/plain' });
+    selectedFile = new File([blob], `prompt_${Date.now()}.txt`, { type: 'text/plain' });
+
+    goToVideoStep2();
+  } catch (err) {
+    showToast(`❌ Error: ${err.message}`);
+  }
+}
+
+function handleMediaSelect(event, mediaType) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  selectedFile = file;
+  showToast(`📁 ${mediaType.toUpperCase()} file selected: ${file.name}`);
+  goToVideoStep2();
+}
+
+
 function selectVideoCategory(category) {
   selectedVideoCategory = category;
   document.getElementById('typeShortForm').classList.toggle('selected', category === 'short');
@@ -368,7 +475,7 @@ function goToVideoStep(stepNum) {
 // Step 1 -> Step 2: Document Ingestion & AI Script Analysis
 async function goToVideoStep2() {
   if (!selectedFile) {
-    showToast('⚠️ Please upload a document file (.pdf, .pptx, .docx, .txt, .md) first!');
+    showToast('⚠️ Please provide a document, URL, video, image, or topic prompt first!');
     return;
   }
 

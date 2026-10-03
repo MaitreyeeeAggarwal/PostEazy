@@ -378,3 +378,72 @@ async def download_video_output(job_id: str):
         return FileResponse(path=str(mp4_path), media_type="video/mp4", filename=f"master_{job_id}.mp4")
 
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Video deliverable master_shorts.mp4 not found on server.")
+
+# --- Multimodal API Endpoints (URL & Prompt Ingestion) ---
+
+@router.post("/ingest-url", response_model=DocumentExtractResponse)
+async def ingest_url_endpoint(payload: UrlIngestRequest):
+    """Ingest Web article content from a public URL into DocIR text response."""
+    try:
+        from app.services.ingest import extract_url_text
+        return extract_url_text(payload.url)
+    except Exception as err:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Failed to ingest URL: {str(err)}"
+        )
+
+@router.post("/ingest-prompt", response_model=DocumentExtractResponse)
+async def ingest_prompt_endpoint(payload: PromptIngestRequest):
+    """Synthesize content from a user topic prompt into DocIR text response."""
+    try:
+        from app.services.ingest import extract_prompt_text
+        return extract_prompt_text(payload.prompt)
+    except Exception as err:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Failed to process prompt: {str(err)}"
+        )
+
+@router.post("/jobs/from-url", response_model=JobStatus, status_code=status.HTTP_202_ACCEPTED)
+async def create_video_job_from_url(
+    background_tasks: BackgroundTasks,
+    payload: UrlIngestRequest,
+    platform: Platform = Platform.INSTAGRAM,
+    duration_seconds: int = 60
+):
+    """Launch video generation pipeline directly from a Web URL."""
+    job = job_store.create_job(pipeline="faceless_video", initial_stage="url_ingested")
+    uploads_dir = Path(settings.WORK_DIR) / "uploads"
+    uploads_dir.mkdir(parents=True, exist_ok=True)
+    file_path = uploads_dir / f"{job.job_id}_url.txt"
+    
+    from app.services.ingest import extract_url_text
+    doc_res = extract_url_text(payload.url)
+    with open(file_path, "w", encoding="utf-8") as f_out:
+        f_out.write(doc_res.text)
+
+    background_tasks.add_task(run_video_job_pipeline, job.job_id, str(file_path), platform, duration_seconds)
+    return job
+
+@router.post("/jobs/from-prompt", response_model=JobStatus, status_code=status.HTTP_202_ACCEPTED)
+async def create_video_job_from_prompt(
+    background_tasks: BackgroundTasks,
+    payload: PromptIngestRequest,
+    platform: Platform = Platform.INSTAGRAM,
+    duration_seconds: int = 60
+):
+    """Launch video generation pipeline directly from a raw topic prompt."""
+    job = job_store.create_job(pipeline="faceless_video", initial_stage="prompt_received")
+    uploads_dir = Path(settings.WORK_DIR) / "uploads"
+    uploads_dir.mkdir(parents=True, exist_ok=True)
+    file_path = uploads_dir / f"{job.job_id}_prompt.txt"
+
+    from app.services.ingest import extract_prompt_text
+    doc_res = extract_prompt_text(payload.prompt)
+    with open(file_path, "w", encoding="utf-8") as f_out:
+        f_out.write(doc_res.text)
+
+    background_tasks.add_task(run_video_job_pipeline, job.job_id, str(file_path), platform, duration_seconds)
+    return job
+

@@ -35,9 +35,24 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     username: Optional[str] = None
 
+# --- Input Enums ---
+class InputType(str, Enum):
+    FILE = "file"
+    URL = "url"
+    VIDEO = "video"
+    IMAGE = "image"
+    PROMPT = "prompt"
+
 # --- Ingestion Schemas ---
+class UrlIngestRequest(BaseModel):
+    url: str
+
+class PromptIngestRequest(BaseModel):
+    prompt: str
+
 class DocumentExtractResponse(BaseModel):
     filename: str
+    input_type: InputType = InputType.FILE
     char_count: int
     page_or_slide_count: int
     text: str
