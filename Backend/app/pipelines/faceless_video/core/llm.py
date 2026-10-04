@@ -36,10 +36,10 @@ class NVIDIAClient:
     def is_configured(self) -> bool:
         return bool(self.api_key and self.api_key.strip() and not NVIDIAClient._globally_disabled)
 
-    def complete(self, prompt: str, system_prompt: str = "", model: Optional[str] = None, temperature: float = 0.2, max_tokens: int = 2048, timeout: float = 3.0) -> str:
-        """Calls NVIDIA OpenAI-compatible chat completions endpoint with fast failure to rule-based fallbacks."""
-        if not self.is_configured:
-            raise ValueError("NVIDIA_API_KEY environment variable is not set or API is disabled.")
+    def complete(self, prompt: str, system_prompt: str = "", model: Optional[str] = None, temperature: float = 0.2, max_tokens: int = 2048, timeout: float = 15.0) -> str:
+        """Calls NVIDIA OpenAI-compatible chat completions endpoint."""
+        if not self.api_key or not self.api_key.strip():
+            raise ValueError("NVIDIA_API_KEY environment variable is not set.")
 
         chosen_model = model or self.default_model
         headers = {
@@ -65,8 +65,7 @@ class NVIDIAClient:
             data = resp.json()
             return data["choices"][0]["message"]["content"]
         except Exception as err:
-            print(f"[NVIDIA Client] API call failed or timed out ({err}). Fast switching to rule-based fallback.")
-            NVIDIAClient._globally_disabled = True
+            print(f"[NVIDIA Client] API call failed ({err}).")
             raise err
 
     def complete_structured(

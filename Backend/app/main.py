@@ -67,6 +67,10 @@ if frontend_dir.exists():
         app.mount("/css", StaticFiles(directory=str(frontend_dir / "css")), name="css")
     if (frontend_dir / "js").exists():
         app.mount("/js", StaticFiles(directory=str(frontend_dir / "js")), name="js")
+    if (frontend_dir / "media").exists():
+        app.mount("/media", StaticFiles(directory=str(frontend_dir / "media")), name="media")
+    if (frontend_dir / "assets").exists():
+        app.mount("/assets", StaticFiles(directory=str(frontend_dir / "assets")), name="assets")
 
 @app.get("/", include_in_schema=False)
 @app.get("/index.html", include_in_schema=False)

@@ -1011,8 +1011,10 @@ function initCinematicHeroScroll() {
       Math.max(0, Math.round(currentFrameFloat))
     );
 
-    if (isFrameSequenceReady && frameImages[frameIndex] && frameImages[frameIndex].complete) {
+    if (frameImages[frameIndex] && frameImages[frameIndex].complete) {
       drawImageObjectFitCover(frameImages[frameIndex]);
+    } else if (frameImages[0] && frameImages[0].complete) {
+      drawImageObjectFitCover(frameImages[0]);
     } else if (video && video.readyState >= 2) {
       drawImageObjectFitCover(video);
     }

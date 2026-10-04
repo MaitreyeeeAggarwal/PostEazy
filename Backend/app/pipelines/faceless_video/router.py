@@ -194,16 +194,43 @@ def generate_document_video_script(file_path: str, filename: str, platform: Plat
     """Generates dynamic VideoScript from document IR, claims, and narrative arc."""
     try:
         from app.services.ingest import load_document
+        from app.services.ingest.video_ingest import clean_display_title
         from app.pipelines.faceless_video.distil.claims import extract_claims
         from app.pipelines.faceless_video.plan.arc import plan_narrative_arc
         from app.pipelines.faceless_video.compile.scenes import compile_scenes
         from app.pipelines.faceless_video.core.llm import get_llm_client
 
         doc = load_document(file_path)
+        llm = get_llm_client()
+        display_title = clean_display_title(doc.title or filename)
+        preset = get_preset(platform)
+
+        if llm.is_configured:
+            try:
+                doc_summary = "\n".join([b.text for b in doc.blocks[:10]])
+                prompt = (
+                    f"Analyze the content of '{display_title}' (Content Summary: {doc_summary}).\n"
+                    f"Synthesize an engaging, high-retention 3-scene video short script for {preset.name}.\n\n"
+                    f"Rules:\n"
+                    f"1. Scene 1 must be a viral hook grabbing attention instantly.\n"
+                    f"2. Scene 2 delivers key counter-intuitive tension or insight.\n"
+                    f"3. Scene 3 provides a memorable payoff takeaway.\n"
+                    f"4. Each scene needs spoken narration (10-20 words), 2 background keywords, and punchy on_screen_text (2-4 words).\n"
+                    f"5. Title, caption, and hashtags must be clean and free from temporary filenames or junk tags."
+                )
+                res_script = llm.complete_structured(
+                    prompt=prompt,
+                    response_schema=VideoScript,
+                    system_prompt="You are an elite AI video producer crafting viral short-form video scripts."
+                )
+                if res_script and res_script.scenes:
+                    return res_script
+            except Exception as llm_err:
+                print(f"[NVIDIA Script Generation Note]: LLM script synthesis failed ({llm_err}). Using rule-based pipeline.")
+
         claims = extract_claims(doc)
         beats = plan_narrative_arc(claims, target_seconds=float(duration_seconds))
         scenes = compile_scenes(beats, claims)
-        llm = get_llm_client()
 
         preset = get_preset(platform)
         script_scenes = []
@@ -216,25 +243,30 @@ def generate_document_video_script(file_path: str, filename: str, platform: Plat
                 "on_screen_text": screen_text
             })
 
-        clean_words = [w.lower() for w in doc.title.replace("_", " ").replace(".", " ").split() if len(w) > 3]
+        clean_words = [
+            w.lower() for w in display_title.replace("_", " ").replace(".", " ").split()
+            if len(w) > 3 and w.lower() not in {"temp", "script", "transcript", "upload", "file", "video"}
+        ]
         hashtags = list(dict.fromkeys(["video", "faceless", "ai", "contentengine"] + clean_words))[:6]
 
         return VideoScript(
-            title=f"Video Script for {doc.title or filename}",
+            title=f"Video Script for {display_title}",
             scenes=script_scenes,
-            caption=f"Distilled video short from '{doc.title or filename}' optimized for {preset.name}.",
+            caption=f"Distilled video short from '{display_title}' optimized for {preset.name}.",
             hashtags=hashtags
         )
     except Exception as err:
         print(f"[Script Generation Error]: {err}. Falling back to basic script.")
+        from app.services.ingest.video_ingest import clean_display_title
+        display_title = clean_display_title(filename)
         preset = get_preset(platform)
         return VideoScript(
-            title=f"Video Script for {filename}",
+            title=f"Video Script for {display_title}",
             scenes=[
                 {
-                    "narration": f"Key insights from {filename}.",
+                    "narration": f"Key insights from {display_title}.",
                     "keywords": ["document", "technology"],
-                    "on_screen_text": filename[:20]
+                    "on_screen_text": display_title[:20]
                 }
             ],
             caption=f"Generated caption for {preset.name}.",
