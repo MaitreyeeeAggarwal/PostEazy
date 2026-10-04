@@ -1,0 +1,6 @@
+.git
+.pytest_cache
+.uv-cache
+.uv-python
+Backend/creative_renderer/node_modules
+data

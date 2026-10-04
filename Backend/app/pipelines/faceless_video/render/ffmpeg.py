@@ -4,6 +4,12 @@ import subprocess
 from pathlib import Path
 from app.core.ir import SceneSpec
 from app.pipelines.faceless_video.render.frames import render_frame
+from app.pipelines.faceless_video.render.decorate import overlay_decoration
+
+
+# Bump this whenever the alpha overlay composition changes. It prevents an
+# already-rendered, undecorated scene MOV from being reused after an upgrade.
+DECORATION_RENDER_VERSION = "stickers-v1"
 
 
 def render_scene_typography_mov(
@@ -20,7 +26,7 @@ def render_scene_typography_mov(
     scenes_dir = Path(work_dir) / "scenes"
     scenes_dir.mkdir(parents=True, exist_ok=True)
 
-    out_mov = scenes_dir / f"text_{scene.idx:03d}.mov"
+    out_mov = scenes_dir / f"text_{scene.idx:03d}_{DECORATION_RENDER_VERSION}.mov"
     if out_mov.exists():
         return str(out_mov)
 
@@ -42,6 +48,15 @@ def render_scene_typography_mov(
         for frame_idx in range(total_frames):
             t = frame_idx / float(fps)
             img = render_frame(scene, t, width=width, height=height, theme=theme, brand_kit=brand_kit, style_template=style_template)
+            # Decorative assets are deterministic per scene and only occupy
+            # renderer-safe zones, so each scene gains visual identity without
+            # covering the kinetic typography.
+            img = overlay_decoration(
+                img,
+                scene_idx=scene.idx,
+                style_key=getattr(style_template, "key", theme),
+                enabled=True,
+            )
             proc.stdin.write(img.tobytes())
         proc.stdin.close()
         proc.wait()

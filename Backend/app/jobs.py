@@ -5,6 +5,7 @@ from typing import Dict, Optional, Any
 from app.schemas import JobStatus, JobState
 from app.database import SessionLocal
 from app.models import JobModel
+from app.core.pipeline_logging import log_pipeline_event
 
 
 class JobStore:
@@ -26,6 +27,7 @@ class JobStore:
         )
         with self._lock:
             self._jobs[job_id] = job
+        log_pipeline_event(pipeline, "job_created", job_id=job_id, stage=initial_stage, progress=0)
 
         # Persist to database if available
         if SessionLocal is not None and JobModel is not None:
@@ -133,7 +135,20 @@ class JobStore:
             except Exception as e:
                 print(f"[DB Warning] Could not update job in DB: {e}")
 
-        return job or self.get_job(job_id)
+        updated_job = job or self.get_job(job_id)
+        if updated_job:
+            log_pipeline_event(
+                updated_job.pipeline,
+                "job_updated",
+                job_id=job_id,
+                stage=stage or updated_job.stage,
+                progress=progress if progress is not None else updated_job.progress,
+                status=(status.value if isinstance(status, JobState) else status) or updated_job.status.value,
+                has_script=script is not None,
+                has_outputs=output_urls is not None,
+                error_summary=error[:300] if error else None,
+            )
+        return updated_job
 
 
 # Global singleton job store instance

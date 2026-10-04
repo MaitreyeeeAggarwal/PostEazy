@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Optional, Any, Dict
+from typing import List, Optional, Any, Dict, Literal, Union
 from pydantic import BaseModel, Field
 
 # --- Platform Enums ---
@@ -128,4 +128,74 @@ class PresentationDeckScript(BaseModel):
     aspect_ratio: str = "16:9"  # "16:9" or "4:3"
     slides: List[PresentationSlide]
     speaker_notes: Optional[List[str]] = []
+
+
+# --- Business Document Schemas (Executive Summary / Advisory) ---
+class DocumentKind(str, Enum):
+    EXECUTIVE = "executive"
+    ADVISORY = "advisory"
+
+
+class EvidenceCitation(BaseModel):
+    """A compact, source-verifiable reference used in generated documents."""
+    locator: str
+    excerpt: str = ""
+
+
+class EvidenceFinding(BaseModel):
+    heading: str
+    detail: str
+    citations: List[EvidenceCitation] = Field(min_length=1)
+
+
+class PriorityAction(BaseModel):
+    action: str
+    rationale: str
+    citations: List[EvidenceCitation] = Field(min_length=1)
+
+
+class AdvisoryRisk(BaseModel):
+    title: str
+    severity: Literal["low", "medium", "high", "critical"] = "medium"
+    impact: str
+    citations: List[EvidenceCitation] = Field(min_length=1)
+
+
+class AdvisoryRecommendation(BaseModel):
+    recommendation: str
+    priority: Literal["now", "next", "monitor"] = "next"
+    timeframe: str = "Next planning cycle"
+    rationale: str
+    citations: List[EvidenceCitation] = Field(min_length=1)
+
+
+class ExecutiveSummaryDraft(BaseModel):
+    kind: Literal["executive"] = "executive"
+    source_document_id: str = ""
+    title: str
+    audience: str = "Executive leadership"
+    overview: str
+    key_findings: List[EvidenceFinding] = Field(min_length=1, max_length=5)
+    implications: List[EvidenceFinding] = Field(min_length=1, max_length=4)
+    decision_requests: List[PriorityAction] = Field(min_length=1, max_length=3)
+    priority_actions: List[PriorityAction] = Field(min_length=1, max_length=4)
+
+
+class AdvisoryReportDraft(BaseModel):
+    kind: Literal["advisory"] = "advisory"
+    source_document_id: str = ""
+    title: str
+    audience: str = "Executive leadership"
+    assessment: str
+    risks: List[AdvisoryRisk] = Field(min_length=1, max_length=6)
+    recommendations: List[AdvisoryRecommendation] = Field(min_length=1, max_length=6)
+    immediate_next_steps: List[PriorityAction] = Field(min_length=1, max_length=4)
+
+
+BusinessDocumentDraft = Union[ExecutiveSummaryDraft, AdvisoryReportDraft]
+
+
+class BusinessDocumentPlan(BaseModel):
+    source_document_id: str
+    draft: BusinessDocumentDraft
 

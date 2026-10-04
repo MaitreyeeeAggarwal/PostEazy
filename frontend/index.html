@@ -396,7 +396,7 @@
 <!-- ================= MAIN CONTENT ================= -->
 <main class="w-full flex-1">
 <!-- ================= SEGMENT 1: CINEMATIC SCROLL HERO SEQUENCE ================= -->
-<div class="relative w-full" id="hero-runway" style="height: 420vh;">
+<div class="relative w-full" id="hero" style="height: 420vh;">
   <!-- Sticky Full-Bleed Viewport -->
   <section class="sticky top-0 w-full h-screen overflow-hidden flex flex-col justify-between select-none" id="hero-sticky" style="background-color: #fff8f3;">
     
@@ -465,8 +465,8 @@
   </p>
 </div>
 
-<!-- MAIN CHOICE GRID: Create a Video vs Create a Post -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto w-full mb-10" id="studioChoiceGrid">
+<!-- MAIN CHOICE GRID: Video, Post, and Presentation workflows -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto w-full mb-10" id="studioChoiceGrid">
   
   <!-- Option 1: Create a Video -->
   <div class="relative bg-paper-card border-doodle-card p-6 sm:p-8 shadow-sketch-lg hover:shadow-sketch-active transition-all cursor-pointer group flex flex-col justify-between" onclick="openStudioMode('video')">
@@ -498,6 +498,33 @@
       <span>Launch Post Studio</span>
       <span class="text-2xl">➔</span>
     </button>
+  </div>
+
+  <!-- Option 3: Create a Presentation -->
+  <div class="relative bg-paper-card border-doodle-card p-6 sm:p-8 shadow-sketch-lg hover:shadow-sketch-active transition-all cursor-pointer group flex flex-col justify-between" onclick="openStudioMode('presentation')">
+    <div class="washi-tape-top washi-tape-sky"></div>
+    <div class="pt-2">
+      <span class="px-2.5 py-0.5 bg-[#e6f1f4] text-[#35606a] font-hand text-xs font-bold rounded-md border border-[#35606a]/30 uppercase tracking-wider">Slide Decks &amp; Exports</span>
+      <h3 class="font-sketch text-3xl font-bold text-charcoal mt-2 mb-2">Create a Presentation</h3>
+      <p class="font-hand text-base text-charcoal/80 leading-relaxed mb-6">
+        Turn a document, web page, or topic into a polished slide deck with a generated outline, live preview, and HTML, PDF, or PPTX exports.
+      </p>
+    </div>
+    <button type="button" class="btn-bounce w-full py-3.5 text-white font-sketch text-xl font-bold rounded-xl border-2 border-charcoal shadow-sketch flex items-center justify-center gap-2 hover:brightness-105" style="background: linear-gradient(135deg, #4b7880 0%, #5a9096 55%, #728c69 100%); border: 2px solid #322d29; color: #ffffff !important;" onclick="openStudioMode('presentation')">
+      <span>Launch Presentation Studio</span>
+      <span class="text-2xl">➔</span>
+    </button>
+  </div>
+
+  <!-- Option 4: Executive and Advisory Documents -->
+  <div class="relative bg-paper-card border-doodle-card p-6 sm:p-8 shadow-sketch-lg hover:shadow-sketch-active transition-all cursor-pointer group flex flex-col justify-between" onclick="openStudioMode('document', 'executive')">
+    <div class="washi-tape-top washi-tape-sage"></div>
+    <div class="pt-2">
+      <span class="px-2.5 py-0.5 bg-moss-surface text-moss-dark font-hand text-xs font-bold rounded-md border border-moss/30 uppercase tracking-wider">Source-cited briefs</span>
+      <h3 class="font-sketch text-3xl font-bold text-charcoal mt-2 mb-2">Executive &amp; Advisory Documents</h3>
+      <p class="font-hand text-base text-charcoal/80 leading-relaxed mb-6">Turn a source into an editable leadership summary or an advisory report with risks, recommendations, and PDF export.</p>
+    </div>
+    <button type="button" class="btn-bounce w-full py-3.5 text-white font-sketch text-xl font-bold rounded-xl border-2 border-charcoal shadow-sketch" style="background: linear-gradient(135deg, #466653 0%, #728c69 100%); border: 2px solid #322d29;">Launch Document Studio <span class="text-2xl">➔</span></button>
   </div>
 
 </div>

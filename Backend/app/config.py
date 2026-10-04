@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     VERSION: str = "1.0.0"
     HOST: str = "0.0.0.0"
     PORT: int = 8000
+    LOG_LEVEL: str = "INFO"
     CORS_ORIGINS: List[str] = ["*"]
 
     # Security

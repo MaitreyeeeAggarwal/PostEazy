@@ -6,11 +6,13 @@ from app.schemas import Platform, JobStatus, StaticPostScript, JobState
 from app.services.ingest import extract_document_text
 from app.jobs import job_store
 from app.presets import get_preset
+from app.core.pipeline_logging import log_pipeline_event
 
 router = APIRouter(prefix="/api/posts", tags=["Pipeline A: Static Posts"])
 
 async def run_static_post_pipeline(job_id: str, text: str, platform: Platform):
     try:
+        log_pipeline_event("static_posts", "pipeline_started", job_id=job_id, platform=platform.value, source_chars=len(text))
         # Stage 1: Parsed
         job_store.update_job(job_id, status=JobState.RUNNING, stage="distilling_insights", progress=30)
         await asyncio.sleep(1.5)
@@ -44,6 +46,7 @@ async def run_static_post_pipeline(job_id: str, text: str, platform: Platform):
 
         # Stage 2: Slide Rendering
         job_store.update_job(job_id, stage="rendering_slides", progress=70, script=script_data)
+        log_pipeline_event("static_posts", "script_ready", job_id=job_id, slides=len(script_data["slides"]), preset=preset.name)
         await asyncio.sleep(2.0)
 
         # Stage 3: Done
@@ -57,7 +60,9 @@ async def run_static_post_pipeline(job_id: str, text: str, platform: Platform):
             progress=100,
             output_urls=output_urls
         )
+        log_pipeline_event("static_posts", "pipeline_completed", job_id=job_id, output_formats=["download"])
     except Exception as e:
+        log_pipeline_event("static_posts", "pipeline_failed", job_id=job_id, level=40, error_summary=str(e)[:300])
         job_store.update_job(job_id, status=JobState.FAILED, stage="error", error=str(e))
 
 @router.post("/scripts", response_model=StaticPostScript)
@@ -102,6 +107,7 @@ async def create_static_post_job(
 ):
     doc_res = await extract_document_text(file)
     job = job_store.create_job(pipeline="static_posts", initial_stage="document_parsed")
+    log_pipeline_event("static_posts", "source_ingested", job_id=job.job_id, filename=doc_res.filename, characters=doc_res.char_count, platform=platform.value)
 
     background_tasks.add_task(run_static_post_pipeline, job.job_id, doc_res.text, platform)
 

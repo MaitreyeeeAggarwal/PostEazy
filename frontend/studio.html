@@ -174,6 +174,18 @@
 
   <!-- Legacy CSS file for auth modals & general toast compatibility -->
   <link rel="stylesheet" href="css/styles.css">
+  <style>
+    /* Prevent the workflow selector from flashing before the requested mode opens. */
+    html.direct-studio-mode #studioChoiceGrid {
+      display: none !important;
+    }
+  </style>
+  <script>
+    const mode = new URLSearchParams(window.location.search).get('mode');
+    if (mode && mode !== 'select') {
+      document.documentElement.classList.add('direct-studio-mode');
+    }
+  </script>
 </head>
 <body class="text-charcoal font-sans min-h-screen flex flex-col justify-between selection:bg-terracotta selection:text-white relative overflow-x-hidden">
 
@@ -208,7 +220,7 @@
         </div>
       <nav class="hidden md:flex items-center gap-8 text-charcoal/80">
         <a href="index.html" class="nav-item hover:text-[#48633c] transition-colors">Home</a>
-        <a href="studio.html" class="nav-item relative text-[#3b5330] font-bold pb-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[#48633c] after:rounded-full">Studio</a>
+        <a href="studio.html?mode=select" class="nav-item relative text-[#3b5330] font-bold pb-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[#48633c] after:rounded-full">Studio</a>
       </nav>
       <div class="flex items-center gap-3">
         <span id="userGreeting" style="display: none;" class="font-hand text-sm font-bold text-moss-dark"></span>
@@ -287,6 +299,17 @@
           <span>Launch Presentation Studio</span>
           <span class="text-xl">➔</span>
         </button>
+      </div>
+
+      <!-- Option 4: Executive / Advisory Document -->
+      <div class="relative bg-paper-card border-doodle-card p-6 shadow-sketch-lg hover:shadow-sketch transition-all cursor-pointer group flex flex-col justify-between" onclick="openStudioMode('document', 'executive')">
+        <div class="washi-tape-top"></div>
+        <div class="pt-2">
+          <span class="px-2.5 py-0.5 bg-moss-surface text-moss-dark font-hand text-xs font-bold rounded-md border border-moss/30 uppercase tracking-wider">HTML &amp; PDF Briefings</span>
+          <h3 class="font-sketch text-2xl font-bold text-charcoal mt-2 mb-2">Create a Decision Document</h3>
+          <p class="font-hand text-sm text-charcoal/80 leading-relaxed mb-6">Create source-cited executive summaries and advisory reports, then edit them before export.</p>
+        </div>
+        <button class="btn-bounce w-full py-3 text-white font-sketch text-lg font-bold rounded-xl border-2 border-charcoal shadow-sketch" style="background: linear-gradient(135deg, #466653 0%, #728c69 100%); border: 2px solid #322d29;">Launch Document Studio ➔</button>
       </div>
 
     </div>
@@ -880,39 +903,214 @@
       </div>
     </div>
 
-    <!-- DEDICATED PRESENTATION GENERATION STUDIO CONTAINER -->
-    <div id="presentationStudioContainer" style="display: none;" class="w-full max-w-5xl mx-auto">
-      <div class="bg-paper-card border-doodle-card p-8 shadow-sketch-lg">
-        <div class="flex items-center justify-between mb-6">
-          <button class="px-4 py-1.5 rounded-full border-2 border-charcoal bg-white font-sketch text-base font-bold shadow-sketch-sm hover:bg-paper-tint" onclick="backToStudioChoice()">
-            ◀ Back to Home
-          </button>
-          <span class="font-sketch text-xl font-bold text-charcoal">Presentation Slide Deck Studio</span>
+    <!-- DEDICATED BUSINESS DOCUMENT STUDIO CONTAINER -->
+    <div id="businessDocumentStudioContainer" style="display: none;" class="w-full max-w-6xl mx-auto">
+      <div class="bg-paper-card border-doodle-card p-6 sm:p-8 shadow-sketch-lg">
+        <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+          <button class="px-4 py-1.5 rounded-full border-2 border-charcoal bg-white font-sketch text-base font-bold shadow-sketch-sm hover:bg-paper-tint" onclick="backToStudioChoice()">◀ Back to Home</button>
+          <div class="px-4 py-1 rounded-full border-2 border-charcoal bg-white shadow-sketch-sm"><span id="docStudioTitle" class="font-sketch text-lg font-bold text-charcoal">Executive Summary Studio</span></div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <section id="docPlanView" class="relative bg-paper-card border-doodle-card p-6 sm:p-8 shadow-sketch-lg">
+          <div class="washi-tape-top"></div>
+          <span class="font-sketch text-xs uppercase tracking-widest text-terracotta font-bold">Step 01 of 03</span>
+          <h2 class="font-sketch text-2xl sm:text-3xl font-bold text-charcoal mt-1">Choose a decision document and source</h2>
+          <p class="font-hand text-charcoal/75 mt-1">Every generated finding and recommendation is tied back to the source you provide.</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+            <button type="button" data-document-kind="executive" aria-pressed="true" onclick="selectBusinessDocumentKind('executive')" class="text-left p-5 rounded-2xl border-2 border-charcoal bg-moss-surface ring-4 ring-terracotta"><span class="block font-sketch text-xl font-bold">Executive Summary</span><span class="font-hand text-sm text-charcoal/80">One-page leadership brief: findings, implications, decisions, and actions.</span></button>
+            <button type="button" data-document-kind="advisory" aria-pressed="false" onclick="selectBusinessDocumentKind('advisory')" class="text-left p-5 rounded-2xl border-2 border-charcoal bg-white"><span class="block font-sketch text-xl font-bold">Advisory Report</span><span class="font-hand text-sm text-charcoal/80">Risk, impact, recommendations, and immediate next steps.</span></button>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+            <label class="font-hand font-bold text-sm">Select file<input type="file" id="docFileInput" accept=".pdf,.pptx,.docx,.txt,.md,.png,.jpg,.jpeg,.mp4" class="mt-1 w-full p-2 bg-white border-2 border-charcoal rounded-xl font-hand font-normal"></label>
+            <label class="font-hand font-bold text-sm">Web URL<input type="url" id="docUrlInput" placeholder="https://example.com/report" class="mt-1 w-full p-2 bg-white border-2 border-charcoal rounded-xl font-hand font-normal"></label>
+            <label class="font-hand font-bold text-sm md:col-span-2">Topic prompt<textarea id="docPromptInput" rows="3" placeholder="Assess enterprise AI adoption risks for a leadership team…" class="mt-1 w-full p-2 bg-white border-2 border-charcoal rounded-xl font-hand font-normal"></textarea></label>
+            <label class="font-hand font-bold text-sm md:col-span-2">Audience<input id="docAudienceInput" value="Executive leadership" class="mt-1 w-full p-2 bg-white border-2 border-charcoal rounded-xl font-hand font-normal"></label>
+          </div>
+          <div class="mt-7 pt-4 border-t-2 border-dashed border-charcoal/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4"><span id="docPlanStatus" class="font-hand text-sm text-charcoal/75" aria-live="polite"></span><button type="button" onclick="createBusinessDocumentPlan()" class="btn-bounce px-7 py-3 bg-gradient-to-r from-moss via-[#64845b] to-terracotta text-white font-sketch text-xl font-bold rounded-xl border-2 border-charcoal shadow-sketch">Create editable draft ➔</button></div>
+        </section>
+
+        <section id="docReviewView" style="display: none;" class="relative bg-paper-card border-doodle-card p-6 sm:p-8 shadow-sketch-lg">
+          <div class="washi-tape-top"></div>
+          <span class="font-sketch text-xs uppercase tracking-widest text-terracotta font-bold">Step 02 of 03</span>
+          <h2 class="font-sketch text-2xl sm:text-3xl font-bold text-charcoal mt-1">Review the source-cited draft</h2>
+          <p class="font-hand text-charcoal/75 mt-1">Edit the briefing language as needed. Source citations are locked and verified before rendering.</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-5"><label class="font-hand font-bold text-sm">Title<input id="docDraftTitle" class="mt-1 w-full p-2 bg-white border-2 border-charcoal rounded-xl font-hand font-normal"></label><label class="font-hand font-bold text-sm">Audience<input id="docDraftAudience" class="mt-1 w-full p-2 bg-white border-2 border-charcoal rounded-xl font-hand font-normal"></label><label class="font-hand font-bold text-sm md:col-span-2"><span id="docDraftNarrativeLabel">Executive overview</span><textarea id="docDraftNarrative" rows="4" class="mt-1 w-full p-2 bg-white border-2 border-charcoal rounded-xl font-hand font-normal"></textarea></label></div>
+          <div id="docItemEditors" class="mt-5 space-y-5"></div>
+          <div class="mt-7 pt-4 border-t-2 border-dashed border-charcoal/20 flex flex-col sm:flex-row justify-between gap-3"><button type="button" onclick="showBusinessDocumentView('plan')" class="px-6 py-2 bg-white border-2 border-charcoal rounded-xl font-sketch font-bold">← Change source</button><div class="flex flex-col sm:items-end gap-2"><span id="docRenderStatus" class="font-hand text-sm text-charcoal/75" aria-live="polite"></span><button type="button" onclick="renderApprovedBusinessDocument()" class="btn-bounce px-7 py-3 bg-gradient-to-r from-moss via-[#64845b] to-terracotta text-white font-sketch text-xl font-bold rounded-xl border-2 border-charcoal shadow-sketch">Render approved document ➔</button></div></div>
+        </section>
+
+        <section id="docFinalView" style="display: none;" class="relative bg-paper-card border-doodle-card p-6 sm:p-8 shadow-sketch-lg">
+          <div class="washi-tape-top"></div><span class="font-sketch text-xs uppercase tracking-widest text-terracotta font-bold">Step 03 of 03</span><h2 class="font-sketch text-2xl sm:text-3xl font-bold text-charcoal mt-1">Your decision document</h2><p id="docFinalStatus" class="font-hand text-charcoal/75 mt-1" aria-live="polite">Preparing your document…</p><div id="docOutputPreview" class="mt-5 min-h-[180px] p-5 bg-paper-tint/40 border-2 border-dashed border-charcoal/40 rounded-xl flex items-center justify-center"><span class="font-hand text-charcoal/70">HTML preview and PDF download will appear here.</span></div><div class="mt-7 pt-4 border-t-2 border-dashed border-charcoal/20"><button type="button" onclick="showBusinessDocumentView('plan')" class="px-6 py-2 bg-white border-2 border-charcoal rounded-xl font-sketch font-bold">Create another document</button></div>
+        </section>
+      </div>
+    </div>
+
+    <!-- DEDICATED PRESENTATION GENERATION STUDIO CONTAINER -->
+    <div id="presentationStudioContainer" style="display: none;" class="w-full max-w-6xl mx-auto">
+      <div class="bg-paper-card border-doodle-card p-8 shadow-sketch-lg">
+        <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+          <button class="px-4 py-1.5 rounded-full border-2 border-charcoal bg-white font-sketch text-base font-bold shadow-sketch-sm hover:bg-paper-tint transition-all flex items-center gap-2" onclick="backToStudioChoice()">
+            <span>◀</span><span>Back to Home</span>
+          </button>
+          <div class="px-4 py-1 rounded-full border-2 border-charcoal bg-white shadow-sketch-sm">
+            <span class="font-sketch text-lg font-bold text-charcoal">Presentation Generation Studio</span>
+          </div>
+        </div>
+
+        <nav aria-label="Presentation workflow steps" class="w-full mb-8">
+          <div class="bg-paper-card border-2 border-charcoal rounded-2xl p-3 px-4 shadow-sketch-sm flex items-center justify-between overflow-x-auto gap-2 text-sm">
+            <div class="flex items-center gap-2 flex-shrink-0 px-3 py-1.5 rounded-xl border border-charcoal font-hand font-bold text-base transition-all" id="pStep1Indicator"><span class="w-6 h-6 rounded-full bg-white text-charcoal font-sans text-xs font-bold flex items-center justify-center border border-charcoal">1</span><span>Upload &amp; Plan</span></div>
+            <span class="text-charcoal/40 font-sketch text-lg font-bold select-none">➔</span>
+            <div class="flex items-center gap-2 flex-shrink-0 px-3 py-1.5 rounded-xl font-hand font-bold text-base transition-all text-charcoal/60" id="pStep2Indicator"><span class="w-6 h-6 rounded-full bg-charcoal/10 text-charcoal/70 font-sans text-xs font-bold flex items-center justify-center">2</span><span>Review Slides</span></div>
+            <span class="text-charcoal/40 font-sketch text-lg font-bold select-none">➔</span>
+            <div class="flex items-center gap-2 flex-shrink-0 px-3 py-1.5 rounded-xl font-hand font-bold text-base transition-all text-charcoal/60" id="pStep3Indicator"><span class="w-6 h-6 rounded-full bg-charcoal/10 text-charcoal/70 font-sans text-xs font-bold flex items-center justify-center">3</span><span>Style &amp; Layout</span></div>
+            <span class="text-charcoal/40 font-sketch text-lg font-bold select-none">➔</span>
+            <div class="flex items-center gap-2 flex-shrink-0 px-3 py-1.5 rounded-xl font-hand font-bold text-base transition-all text-charcoal/60" id="pStep4Indicator"><span class="w-6 h-6 rounded-full bg-charcoal/10 text-charcoal/70 font-sans text-xs font-bold flex items-center justify-center">4</span><span>Creating</span></div>
+            <span class="text-charcoal/40 font-sketch text-lg font-bold select-none">➔</span>
+            <div class="flex items-center gap-2 flex-shrink-0 px-3 py-1.5 rounded-xl font-hand font-bold text-base transition-all text-charcoal/60" id="pStep5Indicator"><span class="w-6 h-6 rounded-full bg-charcoal/10 text-charcoal/70 font-sans text-xs font-bold flex items-center justify-center">5</span><span>Final Deck</span></div>
+          </div>
+        </nav>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 font-hand text-sm" style="display: none;" aria-hidden="true">
+          <div class="bg-moss-surface border border-moss/30 rounded-xl p-3"><strong>1. Ingest</strong><br>Source document or topic</div>
+          <div class="bg-paper-tint border border-charcoal/20 rounded-xl p-3"><strong>2. Review</strong><br>Edit AI slide content</div>
+          <div class="bg-paper-tint border border-charcoal/20 rounded-xl p-3"><strong>3. Design &amp; render</strong><br>Choose a visual direction</div>
+        </div>
+
+        <section class="relative bg-paper-card border-doodle-card p-6 sm:p-8 shadow-sketch-lg" id="presStep1View">
+          <div class="washi-tape-left"></div><div class="washi-tape-right"></div><div class="washi-tape-top"></div>
+          <div class="border-b-2 border-charcoal/15 pb-4 mb-6">
+            <span class="font-sketch text-xs uppercase tracking-widest text-terracotta font-bold">Step 01 of 05</span>
+            <h2 class="font-sketch text-2xl sm:text-3xl text-charcoal mt-0.5 font-bold">Upload source &amp; plan your deck</h2>
+            <p class="font-hand text-charcoal/75 mt-1">Analyse a document, article, or topic and let AI recommend the right number of slides.</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="font-hand font-bold text-sm block mb-1" for="presFileInput">Select file</label>
+              <input type="file" id="presFileInput" accept=".pdf,.pptx,.docx,.txt,.md,.png,.jpg,.jpeg,.mp4" class="w-full p-2 bg-white border-2 border-charcoal rounded-xl font-hand text-sm">
+            </div>
+            <div>
+              <label class="font-hand font-bold text-sm block mb-1" for="presUrlInput">Or a web URL</label>
+              <input type="url" id="presUrlInput" placeholder="https://example.com/article" class="w-full p-2.5 bg-white border-2 border-charcoal rounded-xl font-hand text-sm">
+            </div>
+            <div>
+              <label class="font-hand font-bold text-sm block mb-1" for="presPromptInput">Or a topic prompt</label>
+              <textarea id="presPromptInput" rows="2" placeholder="Enterprise AI security best practices…" class="w-full p-2.5 bg-white border-2 border-charcoal rounded-xl font-hand text-sm"></textarea>
+            </div>
+          </div>
+          <div class="mt-8 pt-5 border-t-2 border-charcoal/15 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-2 font-hand text-sm text-charcoal/70"><span class="text-moss font-bold text-base">●</span><span>Engine ready: <strong>Presentation Planner v1.0</strong></span></div>
+            <div class="flex flex-col sm:items-end gap-2">
+              <span id="presIngestStatus" class="font-hand text-sm text-charcoal/70" aria-live="polite"></span>
+              <button type="button" class="btn-bounce w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-moss via-[#64845b] to-terracotta text-white font-sketch text-xl font-bold rounded-2xl border-2 border-charcoal shadow-sketch flex items-center justify-center gap-3" onclick="createPresentationOutline()">Generate editable slide plan <span class="text-2xl">➔</span></button>
+            </div>
+          </div>
+        </section>
+
+        <section id="presStep2View" style="display: none;" class="relative bg-paper-card border-doodle-card p-6 sm:p-8 shadow-sketch-lg">
+          <div class="washi-tape-top"></div>
+          <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-4 border-b-2 border-charcoal/15 pb-4">
+            <div>
+              <span class="font-sketch text-xs uppercase tracking-widest text-terracotta font-bold">Step 02 of 05</span>
+              <h2 class="font-sketch text-2xl sm:text-3xl font-bold text-charcoal mt-0.5">Review &amp; edit slide content</h2>
+              <p class="font-hand text-charcoal/75">The AI proposes <span id="presSlideCount" class="font-bold">0</span> slides from your source. Edit every slide before rendering.</p>
+            </div>
+            <button type="button" class="px-4 py-2 bg-white border-2 border-charcoal rounded-xl font-sketch font-bold shadow-sketch-sm" onclick="addPresentationSlide()">+ Add slide</button>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+            <label class="font-hand font-bold text-sm">Deck title<input id="presDeckTitle" class="mt-1 w-full p-2 bg-white border-2 border-charcoal rounded-xl font-hand font-normal"></label>
+            <label class="font-hand font-bold text-sm">Deck subtitle<input id="presDeckSubtitle" class="mt-1 w-full p-2 bg-white border-2 border-charcoal rounded-xl font-hand font-normal"></label>
+            <label class="font-hand font-bold text-sm">Audience<input id="presDeckAudience" class="mt-1 w-full p-2 bg-white border-2 border-charcoal rounded-xl font-hand font-normal"></label>
+          </div>
+          <div id="presSlideEditors" class="space-y-4"></div>
+          <div class="mt-8 pt-4 border-t-2 border-dashed border-charcoal/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <button type="button" class="w-full sm:w-auto px-6 py-2.5 bg-white border-2 border-charcoal rounded-full font-sketch text-base font-bold text-charcoal shadow-sketch hover:bg-paper-tint" onclick="goToPresentationStep(1)">← Back to Step 1</button>
+            <button type="button" class="btn-bounce w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-moss via-[#64845b] to-terracotta text-white font-sketch text-xl font-bold rounded-full border-2 border-charcoal shadow-sketch flex items-center justify-center gap-2" onclick="continueToPresentationDesign()">Continue to Style &amp; Layout <span class="text-2xl">➔</span></button>
+          </div>
+        </section>
+
+        <section id="presStep3View" style="display: none;" class="relative bg-paper-card border-doodle-card p-6 sm:p-8 shadow-sketch-lg">
+          <div class="washi-tape-top"></div>
+          <div class="border-b-2 border-dashed border-charcoal/20 pb-4 mb-6">
+            <span class="font-sketch text-xs uppercase tracking-widest text-terracotta font-bold">Step 03 of 05</span>
+            <h2 class="font-sketch text-2xl sm:text-3xl font-bold text-charcoal mt-0.5">Choose your deck style &amp; layout</h2>
+          </div>
+          <p class="font-hand text-charcoal/75 mb-4">Your palette and slide layouts are applied to the HTML, PDF, and editable PowerPoint output.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <button type="button" data-presentation-theme="bold_tech" class="presentation-theme-choice text-left p-4 rounded-xl border-2 border-charcoal bg-[#101827] text-white" onclick="selectPresentationTheme('bold_tech')"><span class="block font-sketch text-lg">Bold Tech</span><span class="font-hand text-sm text-sky-200">Navy + electric blue</span></button>
+            <button type="button" data-presentation-theme="minimalist_editorial" class="presentation-theme-choice text-left p-4 rounded-xl border-2 border-charcoal bg-[#fcf8f3] text-charcoal" onclick="selectPresentationTheme('minimalist_editorial')"><span class="block font-sketch text-lg">Editorial</span><span class="font-hand text-sm text-[#904c30]">Cream + terracotta</span></button>
+            <button type="button" data-presentation-theme="neon_cyberpunk" class="presentation-theme-choice text-left p-4 rounded-xl border-2 border-charcoal bg-[#131b2e] text-white" onclick="selectPresentationTheme('neon_cyberpunk')"><span class="block font-sketch text-lg">Neon Cyberpunk</span><span class="font-hand text-sm text-pink-300">Obsidian + magenta</span></button>
+            <button type="button" data-presentation-theme="warm_corporate" class="presentation-theme-choice text-left p-4 rounded-xl border-2 border-charcoal bg-[#f0e7dc] text-charcoal" onclick="selectPresentationTheme('warm_corporate')"><span class="block font-sketch text-lg">Warm Corporate</span><span class="font-hand text-sm text-[#4a663e]">Sage + warm gold</span></button>
+          </div>
+          <div class="mt-8 pt-4 border-t-2 border-dashed border-charcoal/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <button type="button" class="w-full sm:w-auto px-6 py-2.5 bg-white border-2 border-charcoal rounded-full font-sketch text-base font-bold text-charcoal shadow-sketch hover:bg-paper-tint" onclick="goToPresentationStep(2)">← Back to Step 2</button>
+            <div class="flex flex-col sm:items-end gap-2"><span id="presStatusText" class="font-hand text-sm text-charcoal/75" aria-live="polite"></span><button type="button" class="btn-bounce w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-moss via-[#64845b] to-terracotta text-white font-sketch text-xl font-bold rounded-full border-2 border-charcoal shadow-sketch" onclick="renderApprovedPresentation()">Render final presentation <span class="text-2xl">➔</span></button></div>
+          </div>
+        </section>
+
+        <section id="presStep4View" style="display: none;" class="relative bg-paper-card border-doodle-card p-6 sm:p-10 shadow-sketch-lg flex flex-col items-center">
+          <div class="washi-tape-top"></div>
+          <div class="w-full flex items-center justify-between pb-4 border-b border-dashed border-charcoal/30 mb-6"><div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span><span class="font-sketch text-sm uppercase font-bold text-charcoal">Presentation renderer active</span></div><span class="font-hand text-sm font-bold text-moss-dark bg-moss-surface px-3 py-0.5 rounded border border-moss/30">Building your approved deck…</span></div>
+          <div class="relative my-4 flex flex-col items-center justify-center text-center"><div class="w-20 h-20 bg-white border-2 border-charcoal rounded-2xl shadow-sketch flex items-center justify-center"><span class="font-sketch text-xl font-bold text-terracotta">PPT</span></div><h2 class="font-sketch text-3xl font-bold text-charcoal mt-4">Creating Your Presentation…</h2><p class="font-hand text-terracotta text-xl font-bold mt-1">~ arranging insights into slides</p></div>
+          <div class="w-full max-w-2xl self-center mx-auto mt-6 mb-4">
+            <div class="w-full flex items-center justify-between gap-4 mb-2 px-1">
+              <span class="min-w-0 flex-1 truncate font-hand text-base font-bold text-charcoal" id="presStageLabel">Initializing renderer…</span>
+              <span class="shrink-0 font-hand text-2xl font-bold text-moss-dark tabular-nums" id="presProgressPercent">0%</span>
+            </div>
+            <div class="w-full h-6 box-border bg-paper-tint rounded-full border-2 border-charcoal p-0.5 shadow-sketch-sm overflow-hidden">
+              <div id="presProgressFill" class="h-full min-w-0 rounded-full bg-gradient-to-r from-[#f4ece1] via-terracotta to-moss transition-all duration-500 ease-out" style="width: 0%;"></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="presStep5View" style="display: none;" class="relative bg-paper-card border-doodle-card p-6 sm:p-10 shadow-sketch-lg" aria-live="polite">
+          <div class="washi-tape-top"></div>
+          <div class="w-full flex items-center justify-between pb-4 border-b border-dashed border-charcoal/30 mb-6"><div><span class="px-3 py-1 rounded-full bg-moss-surface text-moss-dark border border-moss/30 font-hand text-xs font-bold uppercase">rendering complete</span><h2 class="font-sketch text-3xl font-bold text-charcoal mt-1">Master Presentation Output</h2></div></div>
+          <div id="presDeckPreview" class="p-4 bg-paper-tint/40 border-2 border-dashed border-charcoal/40 rounded-xl min-h-[110px] flex flex-col justify-center items-center text-center">
+            <span class="font-hand font-bold text-charcoal/70">Your approved presentation exports will appear here.</span>
+          </div>
+          <div id="presSlidePreviewControls" style="display: none;" class="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <button type="button" id="presPreviewPrevious" class="w-full sm:w-auto px-5 py-2.5 bg-white border-2 border-charcoal rounded-full font-sketch font-bold shadow-sketch-sm hover:bg-paper-tint" onclick="changePresentationPreviewSlide(-1)">← Previous slide</button>
+            <span id="presPreviewCounter" class="font-hand text-sm font-bold text-charcoal">Slide 1 of 1</span>
+            <button type="button" id="presPreviewNext" class="w-full sm:w-auto px-5 py-2.5 bg-moss text-white border-2 border-charcoal rounded-full font-sketch font-bold shadow-sketch-sm hover:bg-moss-dark" onclick="changePresentationPreviewSlide(1)">Next slide →</button>
+          </div>
+          <div id="presDownloadGroup" style="display: none;" class="mt-6 space-y-2">
+            <h4 class="font-sketch text-lg font-bold text-charcoal mb-2">Export formats</h4>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <a id="btnPresDownloadHtml" target="_blank" class="py-2 px-3 bg-blue-600 text-white font-sketch text-sm font-bold rounded-xl text-center border-2 border-charcoal shadow-sketch-sm">HTML deck</a>
+              <a id="btnPresDownloadPdf" download class="py-2 px-3 bg-red-600 text-white font-sketch text-sm font-bold rounded-xl text-center border-2 border-charcoal shadow-sketch-sm">Vector PDF</a>
+              <a id="btnPresDownloadPptx" download class="py-2 px-3 bg-orange-600 text-white font-sketch text-sm font-bold rounded-xl text-center border-2 border-charcoal shadow-sketch-sm">Editable PPTX</a>
+            </div>
+          </div>
+          <div class="mt-8 pt-4 border-t-2 border-dashed border-charcoal/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <button type="button" class="w-full sm:w-auto px-6 py-2.5 bg-white border-2 border-charcoal rounded-full font-sketch text-base font-bold text-charcoal shadow-sketch hover:bg-paper-tint" onclick="goToPresentationStep(2)">← Revise slide content</button>
+            <button type="button" class="btn-bounce w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-moss via-[#64845b] to-terracotta text-white font-sketch text-xl font-bold rounded-full border-2 border-charcoal shadow-sketch" onclick="restartPresentationWorkflow()">Create another presentation</button>
+          </div>
+        </section>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8" style="display: none;" aria-hidden="true">
           <!-- Input Form -->
           <div class="p-6 bg-paper-tint/30 border-2 border-charcoal rounded-2xl">
             <h3 class="font-sketch text-2xl font-bold text-charcoal mb-4">1. Ingest Document or Topic</h3>
             
             <div class="mb-4">
               <label class="font-hand font-bold text-sm block mb-1">Select File (PDF, Video, PPTX, Image)</label>
-              <input type="file" id="presFileInput" class="w-full p-2 bg-white border-2 border-charcoal rounded-xl font-hand text-sm">
+              <input type="file" id="legacyPresFileInput" class="w-full p-2 bg-white border-2 border-charcoal rounded-xl font-hand text-sm">
             </div>
 
             <div class="mb-4">
               <label class="font-hand font-bold text-sm block mb-1">Or Ingest Web URL</label>
-              <input type="url" id="presUrlInput" placeholder="https://example.com/article" class="w-full p-2.5 bg-white border-2 border-charcoal rounded-xl font-hand text-sm">
+              <input type="url" id="legacyPresUrlInput" placeholder="https://example.com/article" class="w-full p-2.5 bg-white border-2 border-charcoal rounded-xl font-hand text-sm">
             </div>
 
             <div class="mb-4">
               <label class="font-hand font-bold text-sm block mb-1">Or Topic Request Prompt</label>
-              <textarea id="presPromptInput" rows="3" placeholder="Create a presentation on Enterprise AI Security Best Practices..." class="w-full p-2.5 bg-white border-2 border-charcoal rounded-xl font-hand text-sm"></textarea>
+              <textarea id="legacyPresPromptInput" rows="3" placeholder="Create a presentation on Enterprise AI Security Best Practices..." class="w-full p-2.5 bg-white border-2 border-charcoal rounded-xl font-hand text-sm"></textarea>
             </div>
 
             <div class="mb-6">
               <label class="font-hand font-bold text-sm block mb-1">Visual Theme Palette</label>
-              <select id="presThemeSelect" class="w-full p-2.5 bg-white border-2 border-charcoal rounded-xl font-hand text-sm font-bold">
+              <select id="legacyPresThemeSelect" class="w-full p-2.5 bg-white border-2 border-charcoal rounded-xl font-hand text-sm font-bold">
                 <option value="bold_tech">Bold Tech (Dark Navy & Electric Blue)</option>
                 <option value="minimalist_editorial">Minimalist Editorial (Cream Parchment & Terracotta)</option>
                 <option value="neon_cyberpunk">Neon Cyberpunk (Dark Obsidian & Glowing Magenta)</option>
@@ -926,27 +1124,27 @@
           </div>
 
           <!-- Preview & Export Area -->
-          <div class="p-6 bg-white border-2 border-charcoal rounded-2xl flex flex-col justify-between" id="presResultArea">
+          <div class="p-6 bg-white border-2 border-charcoal rounded-2xl flex flex-col justify-between" id="legacyPresResultArea">
             <div>
               <h3 class="font-sketch text-2xl font-bold text-charcoal mb-2">2. Slide Deck Preview</h3>
-              <p class="font-hand text-sm text-charcoal/70 mb-4" id="presStatusText">Generate a deck to view interactive slides and export formats.</p>
+              <p class="font-hand text-sm text-charcoal/70 mb-4" id="legacyPresStatusText">Generate a deck to view interactive slides and export formats.</p>
               
-              <div id="presDeckPreview" class="p-4 bg-paper-tint/40 border-2 border-dashed border-charcoal/40 rounded-xl min-h-[220px] flex flex-col justify-center items-center text-center">
+              <div id="legacyPresDeckPreview" class="p-4 bg-paper-tint/40 border-2 border-dashed border-charcoal/40 rounded-xl min-h-[220px] flex flex-col justify-center items-center text-center">
                 <span class="text-4xl mb-2">📊</span>
                 <span class="font-hand font-bold text-charcoal/70">Your generated slide outline and HTML preview will appear here.</span>
               </div>
             </div>
 
-            <div id="presDownloadGroup" style="display: none;" class="mt-6 space-y-2">
+            <div id="legacyPresDownloadGroup" style="display: none;" class="mt-6 space-y-2">
               <h4 class="font-sketch text-lg font-bold text-charcoal mb-2">Export Formats:</h4>
               <div class="grid grid-cols-3 gap-2">
-                <a id="btnPresDownloadHtml" target="_blank" class="py-2 px-3 bg-blue-600 text-white font-sketch text-sm font-bold rounded-xl text-center border-2 border-charcoal shadow-sketch-sm">
+                <a id="legacyBtnPresDownloadHtml" target="_blank" class="py-2 px-3 bg-blue-600 text-white font-sketch text-sm font-bold rounded-xl text-center border-2 border-charcoal shadow-sketch-sm">
                   🌐 HTML Deck
                 </a>
-                <a id="btnPresDownloadPdf" download class="py-2 px-3 bg-red-600 text-white font-sketch text-sm font-bold rounded-xl text-center border-2 border-charcoal shadow-sketch-sm">
+                <a id="legacyBtnPresDownloadPdf" download class="py-2 px-3 bg-red-600 text-white font-sketch text-sm font-bold rounded-xl text-center border-2 border-charcoal shadow-sketch-sm">
                   📄 Vector PDF
                 </a>
-                <a id="btnPresDownloadPptx" download class="py-2 px-3 bg-orange-600 text-white font-sketch text-sm font-bold rounded-xl text-center border-2 border-charcoal shadow-sketch-sm">
+                <a id="legacyBtnPresDownloadPptx" download class="py-2 px-3 bg-orange-600 text-white font-sketch text-sm font-bold rounded-xl text-center border-2 border-charcoal shadow-sketch-sm">
                   📊 Editable PPTX
                 </a>
               </div>

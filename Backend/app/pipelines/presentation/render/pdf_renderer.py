@@ -1,14 +1,20 @@
 from pathlib import Path
-from reportlab.lib.pagesizes import landscape, A4
-from reportlab.lib import colors
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from app.schemas import PresentationDeckScript, PresentationSlideLayout
 from app.pipelines.presentation.core.theme_engine import get_theme_config
+from app.pipelines.presentation.render.decorative import get_slide_decorations
 
 
 def render_presentation_pdf(deck: PresentationDeckScript, output_path: str) -> str:
     """Renders 16:9 vector PDF presentation deck using ReportLab."""
+    try:
+        from reportlab.lib.pagesizes import landscape, A4
+        from reportlab.lib import colors
+        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.lib.utils import ImageReader
+    except ImportError as err:
+        print(f"[PDF Render Warning]: ReportLab library missing ({err}). Skipping PDF render.")
+        return output_path
     theme = get_theme_config(deck.theme)
     page_width, page_height = landscape(A4)
     
@@ -129,6 +135,18 @@ def render_presentation_pdf(deck: PresentationDeckScript, output_path: str) -> s
         canvas.saveState()
         canvas.setFillColor(bg_color)
         canvas.rect(0, 0, page_width, page_height, fill=1, stroke=0)
+        decorations = get_slide_decorations(deck.theme, canvas.getPageNumber())
+        if decorations.frame:
+            canvas.drawImage(ImageReader(str(decorations.frame)), 0, 0, page_width, page_height, mask="auto")
+        sticker_positions = [
+            (page_width - 78, page_height - 78, 42),
+            (36, page_height - 126, 38),
+            (page_width - 72, page_height - 210, 34),
+        ]
+        for sticker, (x, y, size) in zip(decorations.stickers or ((decorations.sticker,) if decorations.sticker else ()), sticker_positions):
+            canvas.drawImage(ImageReader(str(sticker)), x, y, size, size, mask="auto", preserveAspectRatio=True)
+        if decorations.accent:
+            canvas.drawImage(ImageReader(str(decorations.accent)), 36, 36, 58, 40, mask="auto", preserveAspectRatio=True)
         canvas.restoreState()
 
     doc.build(story, onFirstPage=draw_bg, onLaterPages=draw_bg)

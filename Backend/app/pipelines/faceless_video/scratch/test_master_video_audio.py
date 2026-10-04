@@ -6,7 +6,7 @@ backend_dir = Path(r"c:\development\SiH\PostEazy\Backend")
 if str(backend_dir) not in sys.path:
     sys.path.insert(0, str(backend_dir))
 
-from app.pipelines.faceless_video.assets.tts import TTSEngine
+from app.pipelines.assets.tts import TTSEngine
 from app.pipelines.faceless_video.mix.audio import mix_master_audio
 
 work_dir = backend_dir / "work" / "test_master"

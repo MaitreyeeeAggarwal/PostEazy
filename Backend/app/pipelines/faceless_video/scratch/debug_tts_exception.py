@@ -7,7 +7,7 @@ backend_dir = Path(r"c:\development\SiH\PostEazy\Backend")
 if str(backend_dir) not in sys.path:
     sys.path.insert(0, str(backend_dir))
 
-from app.pipelines.faceless_video.assets.tts import TTSEngine
+from app.pipelines.assets.tts import TTSEngine
 
 async def simulate_fastapi_background_task():
     print("=== Simulating FastAPI Background Task Execution ===")

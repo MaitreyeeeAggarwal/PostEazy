@@ -1,0 +1,877 @@
+[
+  {
+    "file": "frames/corner_bracket_gold.png",
+    "category": "frames",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "bold",
+      "elegant"
+    ],
+    "energy": "medium",
+    "placement": [
+      "frame",
+      "corner"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "frames/corner_bracket_light.png",
+    "category": "frames",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "minimal",
+      "professional"
+    ],
+    "energy": "low",
+    "placement": [
+      "frame",
+      "corner"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "frames/corner_bracket_purple.png",
+    "category": "frames",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "techy",
+      "professional"
+    ],
+    "energy": "low",
+    "placement": [
+      "frame",
+      "corner"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "frames/terminal_frame_gold.png",
+    "category": "frames",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "techy",
+      "fun"
+    ],
+    "energy": "medium",
+    "placement": [
+      "frame"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "frames/terminal_frame_purple.png",
+    "category": "frames",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "techy",
+      "bold"
+    ],
+    "energy": "medium",
+    "placement": [
+      "frame"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "frames/viewfinder_gold.png",
+    "category": "frames",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "bold",
+      "fun"
+    ],
+    "energy": "medium",
+    "placement": [
+      "frame",
+      "accent"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "frames/viewfinder_purple.png",
+    "category": "frames",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "techy",
+      "professional"
+    ],
+    "energy": "medium",
+    "placement": [
+      "frame",
+      "accent"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "handdrawn/arrow_diagonal.png",
+    "category": "handdrawn",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "fun",
+      "bold"
+    ],
+    "energy": "high",
+    "placement": [
+      "accent",
+      "corner"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "handdrawn/arrow_down_curve.png",
+    "category": "handdrawn",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "fun",
+      "bold"
+    ],
+    "energy": "high",
+    "placement": [
+      "accent"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "handdrawn/arrow_right_curve.png",
+    "category": "handdrawn",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "fun",
+      "bold"
+    ],
+    "energy": "high",
+    "placement": [
+      "accent",
+      "highlight"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "handdrawn/arrow_swoosh.png",
+    "category": "handdrawn",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "fun",
+      "elegant"
+    ],
+    "energy": "medium",
+    "placement": [
+      "accent",
+      "highlight"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "handdrawn/arrow_up_curve.png",
+    "category": "handdrawn",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "fun",
+      "bold"
+    ],
+    "energy": "high",
+    "placement": [
+      "accent"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "handdrawn/scribble_circle_1.png",
+    "category": "handdrawn",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "fun",
+      "bold"
+    ],
+    "energy": "high",
+    "placement": [
+      "highlight",
+      "accent"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "handdrawn/scribble_circle_2.png",
+    "category": "handdrawn",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "fun",
+      "minimal"
+    ],
+    "energy": "medium",
+    "placement": [
+      "highlight"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "handdrawn/scribble_circle_3.png",
+    "category": "handdrawn",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "fun",
+      "elegant"
+    ],
+    "energy": "medium",
+    "placement": [
+      "highlight",
+      "accent"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "handdrawn/underline_1.png",
+    "category": "handdrawn",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "fun",
+      "bold"
+    ],
+    "energy": "high",
+    "placement": [
+      "underline",
+      "highlight"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "handdrawn/underline_2.png",
+    "category": "handdrawn",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "minimal",
+      "professional"
+    ],
+    "energy": "medium",
+    "placement": [
+      "underline"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "handdrawn/underline_3.png",
+    "category": "handdrawn",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "fun",
+      "elegant"
+    ],
+    "energy": "high",
+    "placement": [
+      "underline",
+      "highlight"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "shapes/bg_mesh_dark.png",
+    "category": "shapes",
+    "size": [
+      1080,
+      1920
+    ],
+    "tone": [
+      "techy",
+      "elegant"
+    ],
+    "energy": "low",
+    "placement": [
+      "background"
+    ],
+    "recolorable": false
+  },
+  {
+    "file": "shapes/bg_mesh_gold.png",
+    "category": "shapes",
+    "size": [
+      1080,
+      1920
+    ],
+    "tone": [
+      "bold",
+      "fun"
+    ],
+    "energy": "medium",
+    "placement": [
+      "background"
+    ],
+    "recolorable": false
+  },
+  {
+    "file": "shapes/bg_mesh_purple.png",
+    "category": "shapes",
+    "size": [
+      1080,
+      1920
+    ],
+    "tone": [
+      "bold",
+      "techy"
+    ],
+    "energy": "medium",
+    "placement": [
+      "background"
+    ],
+    "recolorable": false
+  },
+  {
+    "file": "shapes/bg_mesh_teal.png",
+    "category": "shapes",
+    "size": [
+      1080,
+      1920
+    ],
+    "tone": [
+      "minimal",
+      "professional"
+    ],
+    "energy": "low",
+    "placement": [
+      "background"
+    ],
+    "recolorable": false
+  },
+  {
+    "file": "shapes/blob_gold_1.png",
+    "category": "shapes",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "bold",
+      "fun"
+    ],
+    "energy": "medium",
+    "placement": [
+      "background",
+      "accent"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "shapes/blob_gold_2.png",
+    "category": "shapes",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "bold",
+      "fun"
+    ],
+    "energy": "medium",
+    "placement": [
+      "background",
+      "accent"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "shapes/blob_gold_3.png",
+    "category": "shapes",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "fun",
+      "elegant"
+    ],
+    "energy": "medium",
+    "placement": [
+      "background"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "shapes/blob_light_1.png",
+    "category": "shapes",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "minimal",
+      "elegant"
+    ],
+    "energy": "low",
+    "placement": [
+      "background"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "shapes/blob_light_2.png",
+    "category": "shapes",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "minimal",
+      "elegant"
+    ],
+    "energy": "low",
+    "placement": [
+      "background"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "shapes/blob_purple_1.png",
+    "category": "shapes",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "bold",
+      "elegant"
+    ],
+    "energy": "low",
+    "placement": [
+      "background",
+      "accent"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "shapes/blob_purple_2.png",
+    "category": "shapes",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "bold",
+      "elegant"
+    ],
+    "energy": "low",
+    "placement": [
+      "background",
+      "accent"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "shapes/blob_purple_3.png",
+    "category": "shapes",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "elegant",
+      "fun"
+    ],
+    "energy": "medium",
+    "placement": [
+      "background"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "stickers/arrow_up_right.png",
+    "category": "stickers",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "professional",
+      "minimal"
+    ],
+    "energy": "medium",
+    "placement": [
+      "corner",
+      "accent"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "stickers/asterisk.png",
+    "category": "stickers",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "fun",
+      "bold"
+    ],
+    "energy": "medium",
+    "placement": [
+      "accent"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "stickers/brain.png",
+    "category": "stickers",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "techy",
+      "professional"
+    ],
+    "energy": "medium",
+    "placement": [
+      "accent"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "stickers/chart_up.png",
+    "category": "stickers",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "professional",
+      "bold"
+    ],
+    "energy": "high",
+    "placement": [
+      "accent"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "stickers/circle_ring.png",
+    "category": "stickers",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "minimal",
+      "elegant"
+    ],
+    "energy": "low",
+    "placement": [
+      "highlight",
+      "accent"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "stickers/code_brackets.png",
+    "category": "stickers",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "techy",
+      "minimal"
+    ],
+    "energy": "medium",
+    "placement": [
+      "accent",
+      "frame"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "stickers/cursor.png",
+    "category": "stickers",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "techy",
+      "minimal"
+    ],
+    "energy": "medium",
+    "placement": [
+      "accent"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "stickers/lightning_gold.png",
+    "category": "stickers",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "bold",
+      "fun"
+    ],
+    "energy": "high",
+    "placement": [
+      "accent"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "stickers/lightning_purple.png",
+    "category": "stickers",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "bold",
+      "techy"
+    ],
+    "energy": "high",
+    "placement": [
+      "accent"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "stickers/plus.png",
+    "category": "stickers",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "minimal",
+      "techy"
+    ],
+    "energy": "low",
+    "placement": [
+      "corner",
+      "accent"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "stickers/rocket.png",
+    "category": "stickers",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "fun",
+      "bold"
+    ],
+    "energy": "high",
+    "placement": [
+      "accent",
+      "corner"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "stickers/sparkle_gold.png",
+    "category": "stickers",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "fun",
+      "bold"
+    ],
+    "energy": "high",
+    "placement": [
+      "corner",
+      "accent"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "stickers/sparkle_purple.png",
+    "category": "stickers",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "fun",
+      "bold"
+    ],
+    "energy": "high",
+    "placement": [
+      "corner",
+      "accent"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "stickers/star_four_gold.png",
+    "category": "stickers",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "fun",
+      "elegant"
+    ],
+    "energy": "high",
+    "placement": [
+      "accent"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "stickers/star_four_purple.png",
+    "category": "stickers",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "fun",
+      "elegant"
+    ],
+    "energy": "high",
+    "placement": [
+      "accent"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "stickers/target.png",
+    "category": "stickers",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "techy",
+      "professional"
+    ],
+    "energy": "medium",
+    "placement": [
+      "accent",
+      "corner"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "stickers/terminal.png",
+    "category": "stickers",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "techy",
+      "minimal"
+    ],
+    "energy": "medium",
+    "placement": [
+      "accent"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "textures/crosshatch_lines.png",
+    "category": "textures",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "techy",
+      "minimal"
+    ],
+    "energy": "low",
+    "placement": [
+      "background"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "textures/halftone_dots.png",
+    "category": "textures",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "techy",
+      "minimal"
+    ],
+    "energy": "low",
+    "placement": [
+      "background",
+      "accent"
+    ],
+    "recolorable": true
+  },
+  {
+    "file": "textures/noise_grain.png",
+    "category": "textures",
+    "size": [
+      512,
+      512
+    ],
+    "tone": [
+      "professional",
+      "minimal"
+    ],
+    "energy": "low",
+    "placement": [
+      "background"
+    ],
+    "recolorable": false
+  }
+]

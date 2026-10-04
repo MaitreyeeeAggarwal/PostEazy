@@ -1,6 +1,7 @@
 import html
 from app.schemas import PresentationDeckScript, PresentationSlideLayout
 from app.pipelines.presentation.core.theme_engine import get_theme_config
+from app.pipelines.presentation.render.decorative import asset_data_uri, get_slide_decorations
 
 
 def render_presentation_html(deck: PresentationDeckScript) -> str:
@@ -9,6 +10,10 @@ def render_presentation_html(deck: PresentationDeckScript) -> str:
     
     slides_html = []
     for s in deck.slides:
+        decorations = get_slide_decorations(deck.theme, s.idx)
+        frame_uri = asset_data_uri(decorations.frame)
+        sticker_uris = [asset_data_uri(path) for path in (decorations.stickers or ((decorations.sticker,) if decorations.sticker else ()))]
+        accent_uri = asset_data_uri(decorations.accent)
         slide_content = ""
         
         if s.layout == PresentationSlideLayout.TITLE_HERO:
@@ -99,6 +104,9 @@ def render_presentation_html(deck: PresentationDeckScript) -> str:
             
         slides_html.append(f"""
         <section class="slide-card" id="slide-{s.idx}">
+            {f'<img class="decor-frame" src="{frame_uri}" alt="" aria-hidden="true">' if frame_uri else ''}
+            {''.join(f'<img class="decor-sticker decor-sticker-{index}" src="{uri}" alt="" aria-hidden="true">' for index, uri in enumerate(sticker_uris) if uri)}
+            {f'<img class="decor-accent" src="{accent_uri}" alt="" aria-hidden="true">' if accent_uri else ''}
             {slide_content}
             <div class="slide-footer">
                 <span>{html.escape(deck.title)}</span>
@@ -167,6 +175,7 @@ def render_presentation_html(deck: PresentationDeckScript) -> str:
         transform: translate(-50%, -50%);
         display: none;
         box-sizing: border-box;
+        overflow: hidden;
     }}
     .slide-card.active {{
         display: flex;
@@ -174,6 +183,13 @@ def render_presentation_html(deck: PresentationDeckScript) -> str:
         justify-content: space-between;
         animation: fadeIn 0.3s ease-out;
     }}
+    .slide-inner {{ position: relative; z-index: 2; }}
+    .decor-frame {{ position:absolute; inset:0; width:100%; height:100%; object-fit:fill; opacity:.52; pointer-events:none; z-index:1; }}
+    .decor-sticker {{ position:absolute; width:11%; max-width:124px; object-fit:contain; opacity:.9; pointer-events:none; z-index:1; }}
+    .decor-sticker-0 {{ right:4%; top:7%; transform:rotate(8deg); }}
+    .decor-sticker-1 {{ left:4%; top:16%; transform:rotate(-11deg); width:9%; opacity:.86; }}
+    .decor-sticker-2 {{ right:5%; top:31%; transform:rotate(13deg); width:8%; opacity:.82; }}
+    .decor-accent {{ position:absolute; width:18%; max-width:190px; left:4%; bottom:7%; object-fit:contain; opacity:.66; pointer-events:none; z-index:1; transform:rotate(-7deg); }}
     @keyframes fadeIn {{
         from {{ opacity: 0; transform: translate(-50%, -48%); }}
         to {{ opacity: 1; transform: translate(-50%, -50%); }}

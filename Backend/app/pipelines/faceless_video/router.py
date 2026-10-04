@@ -13,6 +13,8 @@ from app.schemas import (
 from app.services.ingest import extract_document_text
 from app.jobs import job_store
 from app.presets import get_preset
+from app.core.pipeline_logging import log_pipeline_event
+from app.pipelines.faceless_video.render.creative_video import enhance_video_with_remotion
 
 router = APIRouter(prefix="/api/video", tags=["Pipeline B: Faceless Video"])
 
@@ -31,11 +33,13 @@ async def render_master_short_mp4(job_id: str, duration: int, title: str, narrat
     )
 
     try:
-        from app.pipelines.faceless_video.assets.tts import TTSEngine
+        from app.pipelines.assets.tts import TTSEngine
         tts = TTSEngine()
         tts.synth_scene(voice_text, str(audio_path))
+        log_pipeline_event("faceless_video", "fallback_tts_ready", job_id=job_id, audio_exists=audio_path.exists())
     except Exception as tts_err:
         print(f"[TTS Synthesis Warning]: {tts_err}")
+        log_pipeline_event("faceless_video", "fallback_tts_warning", job_id=job_id, level=30, error_summary=str(tts_err)[:300])
 
     # Build FFmpeg command with Video + Audio Voiceover stream
     if audio_path.exists():
@@ -76,7 +80,10 @@ async def render_master_short_mp4(job_id: str, duration: int, title: str, narrat
         ]
 
     proc = await asyncio.create_subprocess_exec(*cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
-    await proc.communicate()
+    _, stderr = await proc.communicate()
+    log_pipeline_event("faceless_video", "fallback_ffmpeg_finished", job_id=job_id, return_code=proc.returncode, output_exists=mp4_path.exists(), stderr_tail=stderr.decode("utf-8", errors="replace")[-300:] if proc.returncode else None)
+    if proc.returncode:
+        raise RuntimeError(f"Fallback FFmpeg failed with exit code {proc.returncode}.")
     return str(mp4_path)
 
 async def run_video_job_pipeline(
@@ -92,6 +99,7 @@ async def run_video_job_pipeline(
 ):
     try:
         preset = get_preset(platform)
+        log_pipeline_event("faceless_video", "pipeline_started", job_id=job_id, platform=platform.value, duration_seconds=duration_seconds, style_template=style_template_key, typography_option=typography_option, song_option=song_option, source_filename=Path(file_path).name)
         print(f"\n=== Starting doc2video Pipeline: {file_path} ({duration_seconds}.0s target) ===", flush=True)
         print(f"[UI Sync] Typography Option: {typography_option}, Template: {style_template_key}, Song Option: {song_option}", flush=True)
 
@@ -117,10 +125,12 @@ async def run_video_job_pipeline(
                 song_option=song_option,
                 job_id=job_id
             )
+            log_pipeline_event("faceless_video", "orchestrated_render_completed", job_id=job_id, output=Path(out_mp4).name)
         except Exception as orch_err:
             import traceback
             print(f"[Orchestrator Fallback Traceback]:", flush=True)
             traceback.print_exc()
+            log_pipeline_event("faceless_video", "orchestrator_fallback", job_id=job_id, level=30, error_summary=str(orch_err)[:300])
             v_script = generate_document_video_script(file_path, Path(file_path).name, platform, duration_seconds)
             script_data = v_script.model_dump()
             scenes_list = script_data.get("scenes", []) if isinstance(script_data, dict) else getattr(script_data, "scenes", [])
@@ -129,6 +139,17 @@ async def run_video_job_pipeline(
                 for s in scenes_list
             ])
             out_mp4 = await render_master_short_mp4(job_id, duration_seconds, f"Faceless Video ({duration_seconds}s)", narration=narrative_text)
+
+        # Apply the Remotion treatment to both the main and fallback video
+        # paths. The source MP4 is retained whenever optional rendering fails.
+        creative_mp4 = await asyncio.to_thread(
+            enhance_video_with_remotion,
+            str(out_mp4),
+            Path(file_path).stem,
+        )
+        if creative_mp4:
+            os.replace(creative_mp4, out_mp4)
+            log_pipeline_event("faceless_video", "remotion_treatment_rendered", job_id=job_id, output=Path(out_mp4).name)
 
         print(f"SUCCESS! Video generated -> {out_mp4}\n", flush=True)
 
@@ -143,10 +164,12 @@ async def run_video_job_pipeline(
             progress=100,
             output_urls=output_urls
         )
+        log_pipeline_event("faceless_video", "pipeline_completed", job_id=job_id, output=Path(out_mp4).name, output_exists=Path(out_mp4).exists())
     except Exception as e:
         import traceback
         print(f"[Pipeline Error Traceback]:", flush=True)
         traceback.print_exc()
+        log_pipeline_event("faceless_video", "pipeline_failed", job_id=job_id, level=40, error_summary=str(e)[:300])
         job_store.update_job(job_id, status=JobState.FAILED, stage="error", error=str(e))
 
 STOP_WORDS = {
@@ -481,4 +504,3 @@ async def create_video_job_from_prompt(
 
     background_tasks.add_task(run_video_job_pipeline, job.job_id, str(file_path), platform, duration_seconds)
     return job
-

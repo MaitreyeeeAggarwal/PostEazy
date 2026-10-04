@@ -13,6 +13,7 @@ from app.services.ingest import load_document, extract_url_text, extract_prompt_
 from app.jobs import job_store
 from app.pipelines.presentation.core.llm_planner import plan_presentation_deck
 from app.pipelines.presentation.orchestrator import run_presentation_job_pipeline
+from app.core.pipeline_logging import log_pipeline_event
 
 router = APIRouter(prefix="/api/presentation", tags=["Pipeline C: Presentation Deck"])
 
@@ -49,7 +50,33 @@ async def generate_presentation_plan(
             detail="Must provide either a file, url, or prompt."
         )
 
-    return plan_presentation_deck(doc, theme=theme)
+    deck = plan_presentation_deck(doc, theme=theme)
+    log_pipeline_event("presentation_slides", "plan_created", theme=theme, source_type="file" if file else "url" if url else "prompt", slides=len(deck.slides), document_title=doc.title)
+    return deck
+
+
+@router.post("/jobs/from-script", response_model=JobStatus, status_code=status.HTTP_202_ACCEPTED)
+async def create_presentation_job_from_script(
+    background_tasks: BackgroundTasks,
+    deck: PresentationDeckScript
+):
+    """Render a presentation from the user-reviewed, approved deck content."""
+    if not deck.slides:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="A presentation needs at least one slide before it can be rendered."
+        )
+
+    job = job_store.create_job(pipeline="presentation_slides", initial_stage="deck_approved")
+    log_pipeline_event("presentation_slides", "approved_draft_received", job_id=job.job_id, slides=len(deck.slides), theme=deck.theme)
+    background_tasks.add_task(
+        run_presentation_job_pipeline,
+        job.job_id,
+        None,
+        deck.theme,
+        deck.model_dump()
+    )
+    return job
 
 
 @router.post("/jobs", response_model=JobStatus, status_code=status.HTTP_202_ACCEPTED)
@@ -61,6 +88,7 @@ async def create_presentation_job(
 ):
     """Launch presentation slide deck generation pipeline from uploaded file."""
     job = job_store.create_job(pipeline="presentation_slides", initial_stage="file_received")
+    log_pipeline_event("presentation_slides", "job_source_received", job_id=job.job_id, source_filename=file.filename, theme=theme, has_approved_script=bool(script_json))
 
     uploads_dir = Path(settings.WORK_DIR) / "uploads"
     uploads_dir.mkdir(parents=True, exist_ok=True)
@@ -96,6 +124,7 @@ async def create_presentation_job_from_url(
 ):
     """Launch presentation slide deck generation directly from a Web URL."""
     job = job_store.create_job(pipeline="presentation_slides", initial_stage="url_ingested")
+    log_pipeline_event("presentation_slides", "job_source_received", job_id=job.job_id, source_type="url", theme=theme)
     uploads_dir = Path(settings.WORK_DIR) / "uploads"
     uploads_dir.mkdir(parents=True, exist_ok=True)
     file_path = uploads_dir / f"{job.job_id}_url.txt"
@@ -116,6 +145,7 @@ async def create_presentation_job_from_prompt(
 ):
     """Launch presentation slide deck generation directly from a topic prompt."""
     job = job_store.create_job(pipeline="presentation_slides", initial_stage="prompt_received")
+    log_pipeline_event("presentation_slides", "job_source_received", job_id=job.job_id, source_type="prompt", theme=theme)
     uploads_dir = Path(settings.WORK_DIR) / "uploads"
     uploads_dir.mkdir(parents=True, exist_ok=True)
     file_path = uploads_dir / f"{job.job_id}_prompt.txt"

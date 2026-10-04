@@ -13,17 +13,18 @@ from app.services.ingest import load_document
 from app.pipelines.faceless_video.distil.claims import extract_claims
 from app.pipelines.faceless_video.plan.arc import plan_narrative_arc
 from app.pipelines.faceless_video.compile.scenes import compile_scenes
-from app.pipelines.faceless_video.assets.tts import TTSEngine
-from app.pipelines.faceless_video.assets.align import align_scene_audio
-from app.pipelines.faceless_video.assets.stock import StockAssetFetcher
-from app.pipelines.faceless_video.assets.music import MusicManager
-from app.pipelines.faceless_video.assets.ledger import LicenseLedger
+from app.pipelines.assets.tts import TTSEngine
+from app.pipelines.assets.align import align_scene_audio
+from app.pipelines.assets.stock import StockAssetFetcher
+from app.pipelines.assets.music import MusicManager
+from app.pipelines.assets.ledger import LicenseLedger
 from app.pipelines.faceless_video.render.ffmpeg import render_scene_typography_mov
 from app.pipelines.faceless_video.mix.composite import composite_scene
 from app.pipelines.faceless_video.mix.audio import mix_master_audio
 from app.pipelines.faceless_video.mix.export import export_deliverable
 from app.pipelines.faceless_video.qc.checks import run_quality_gates
 from app.core.brand import BrandKit, StyleTemplate, STYLE_TEMPLATES
+from app.core.pipeline_logging import log_pipeline_event
 
 
 
@@ -36,6 +37,14 @@ class PipelineOrchestrator:
         self.ledger = LicenseLedger(str(self.work_dir / "credits.txt"))
 
     def _update_progress(self, job_id: Optional[str], stage: str, progress: int, script_data: Optional[dict] = None):
+        log_pipeline_event(
+            "faceless_video",
+            "stage_progress",
+            job_id=job_id,
+            stage=stage,
+            progress=progress,
+            has_script=script_data is not None,
+        )
         if not job_id:
             return
         try:
@@ -68,30 +77,35 @@ class PipelineOrchestrator:
         """Executes the 8-stage doc2video compilation DAG pipeline."""
         start_time = time.time()
         print(f"=== Starting doc2video Pipeline: {input_file} ({target_seconds}s target, voice={tts_voice or 'default'}, template={style_template_key}, song=#{song_option}) ===")
+        log_pipeline_event("faceless_video", "orchestrator_started", job_id=job_id, target_seconds=target_seconds, preset=preset, style_template=style_template_key, source_filename=Path(input_file).name)
 
         # Stage 1: Ingest
         print("[Stage 1/8] Ingesting document...")
         self._update_progress(job_id, "Stage 1/8: Ingesting document...", 12)
         doc = load_document(input_file)
         print(f"  -> Retained {len(doc.blocks)} content blocks for doc '{doc.title}'.")
+        log_pipeline_event("faceless_video", "document_ingested", job_id=job_id, blocks=len(doc.blocks), document_title=doc.title)
 
         # Stage 2: Distil
         print("[Stage 2/8] Distilling claims...")
         self._update_progress(job_id, "Stage 2/8: Distilling claims & metrics...", 25)
         claims = extract_claims(doc)
         print(f"  -> Extracted {len(claims)} high-salience claims.")
+        log_pipeline_event("faceless_video", "claims_extracted", job_id=job_id, claims=len(claims))
 
         # Stage 3: Narrative Plan
         print("[Stage 3/8] Planning narrative script arc...")
         self._update_progress(job_id, "Stage 3/8: Planning narrative script arc...", 38)
         beats = plan_narrative_arc(claims, target_seconds=target_seconds)
         print(f"  -> Built script arc with {len(beats)} beats.")
+        log_pipeline_event("faceless_video", "narrative_planned", job_id=job_id, beats=len(beats))
 
         # Stage 4: Compile Scenes
         print("[Stage 4/8] Compiling shot list & SceneSpecs...")
         self._update_progress(job_id, "Stage 4/8: Compiling visual scene specs...", 50)
         scenes = compile_scenes(beats, claims, brand_kit=brand_kit)
         print(f"  -> Compiled {len(scenes)} visual scenes.")
+        log_pipeline_event("faceless_video", "scenes_compiled", job_id=job_id, scenes=len(scenes))
 
         script_summary = {
             "title": doc.title,

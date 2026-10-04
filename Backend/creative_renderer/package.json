@@ -1,0 +1,21 @@
+{
+  "name": "posteazy-creative-renderer",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "render:presentation": "node render-presentation.mjs",
+    "render:video": "node render-video.mjs"
+  },
+  "dependencies": {
+    "@lottiefiles/dotlottie-web": "^0.45.0",
+    "@remotion/bundler": "^4.0.0",
+    "@remotion/cli": "^4.0.0",
+    "@remotion/media": "^4.0.0",
+    "@remotion/renderer": "^4.0.0",
+    "pptxgenjs": "^4.0.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "remotion": "^4.0.0",
+    "reveal.js": "^5.2.1"
+  }
+}

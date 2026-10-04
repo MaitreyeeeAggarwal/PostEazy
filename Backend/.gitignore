@@ -26,6 +26,13 @@ storage/
 *.jpeg
 work/
 
+# Decorative source assets are part of the renderers, not generated job media.
+!app/pipelines/assets/
+!app/pipelines/assets/decorative/
+!app/pipelines/assets/decorative/**
+app/pipelines/assets/decorative/__pycache__/
+app/pipelines/assets/decorative/**/*.pyc
+
 # IDE / Editor files
 .vscode/
 .idea/

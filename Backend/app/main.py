@@ -15,7 +15,9 @@ from app.auth.router import router as auth_router
 from app.pipelines.static_posts.router import router as static_posts_router
 from app.pipelines.faceless_video.router import router as faceless_video_router
 from app.pipelines.presentation.router import router as presentation_router
+from app.pipelines.business_documents.router import router as business_documents_router
 from app.services.media import check_ffmpeg_available
+from app.core.pipeline_logging import configure_pipeline_logging, log_pipeline_event
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -38,6 +40,8 @@ from app import models  # Register models
 # Startup Event: Ensure runtime data directories and DB tables exist
 @app.on_event("startup")
 async def startup_event():
+    configure_pipeline_logging(settings.LOG_LEVEL)
+    log_pipeline_event("system", "startup", version=settings.VERSION, work_dir=settings.WORK_DIR)
     os.makedirs(settings.WORK_DIR, exist_ok=True)
     os.makedirs(settings.MUSIC_DIR, exist_ok=True)
     os.makedirs(settings.FONTS_DIR, exist_ok=True)
@@ -45,6 +49,7 @@ async def startup_event():
         Base.metadata.create_all(bind=engine)
     except Exception as e:
         print(f"[Database Init Warning] Could not initialize database tables: {e}")
+        log_pipeline_event("system", "database_init_warning", level=30, error_type=type(e).__name__)
 
 from pathlib import Path
 from fastapi.staticfiles import StaticFiles
@@ -72,6 +77,17 @@ if frontend_dir.exists():
         app.mount("/media", StaticFiles(directory=str(frontend_dir / "media")), name="media")
     if (frontend_dir / "assets").exists():
         app.mount("/assets", StaticFiles(directory=str(frontend_dir / "assets")), name="assets")
+
+# The same source-controlled decorative pack is used in video and presentation
+# renders. Expose it for the in-app presentation preview as well, so the preview
+# faithfully represents the exported HTML, PDF, and PPTX files.
+decorative_assets_dir = backend_dir / "app" / "pipelines" / "assets" / "decorative"
+if decorative_assets_dir.exists():
+    app.mount(
+        "/decorative-assets",
+        StaticFiles(directory=str(decorative_assets_dir)),
+        name="decorative-assets",
+    )
 
 @app.get("/", include_in_schema=False)
 @app.get("/index.html", include_in_schema=False)
@@ -101,6 +117,7 @@ app.include_router(auth_router)
 app.include_router(static_posts_router)
 app.include_router(faceless_video_router)
 app.include_router(presentation_router)
+app.include_router(business_documents_router)
 
 @app.get("/health", tags=["Health"])
 async def health_check():
@@ -114,4 +131,3 @@ async def health_check():
             "pexels": bool(settings.PEXELS_API_KEY)
         }
     }
-

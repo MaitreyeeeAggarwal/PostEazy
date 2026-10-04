@@ -12,7 +12,7 @@ def align_scene_audio(scene: SceneSpec, wav_path: str, tts_bounds: list[tuple[st
     if not words:
         words = scene.narration.split()
 
-    from app.pipelines.faceless_video.assets.tts import TTSEngine
+    from app.pipelines.assets.tts import TTSEngine
     audio_dur = TTSEngine().get_duration(Path(wav_path))
 
     # Case 1: Match with exact TTS word boundary timestamps if available
