@@ -238,38 +238,54 @@
       </p>
     </div>
 
-    <!-- MAIN CHOICE GRID: Create a Video vs Create a Post -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto w-full mb-10" id="studioChoiceGrid">
+    <!-- MAIN CHOICE GRID: Create a Video vs Create a Post vs Create Presentation -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto w-full mb-10" id="studioChoiceGrid">
       
       <!-- Option 1: Create a Video -->
-      <div class="relative bg-paper-card border-doodle-card p-6 sm:p-8 shadow-sketch-lg hover:shadow-sketch-active transition-all cursor-pointer group flex flex-col justify-between" onclick="openStudioMode('video')">
+      <div class="relative bg-paper-card border-doodle-card p-6 shadow-sketch-lg hover:shadow-sketch-active transition-all cursor-pointer group flex flex-col justify-between" onclick="openStudioMode('video')">
         <div class="washi-tape-top"></div>
         <div class="pt-2">
           <span class="px-2.5 py-0.5 bg-moss-surface text-moss-dark font-hand text-xs font-bold rounded-md border border-moss/30 uppercase tracking-wider">Short &amp; Long Form Video</span>
-          <h3 class="font-sketch text-3xl font-bold text-charcoal mt-2 mb-2">Create a Video</h3>
-          <p class="font-hand text-base text-charcoal/80 leading-relaxed mb-6">
-            Transform documents into AI faceless kinetic videos. Supports short-form (Reels / Shorts / TikTok) and long-form (YouTube) formats with custom typography &amp; music.
+          <h3 class="font-sketch text-2xl font-bold text-charcoal mt-2 mb-2">Create a Video</h3>
+          <p class="font-hand text-sm text-charcoal/80 leading-relaxed mb-6">
+            Transform documents into AI faceless kinetic videos. Supports Reels, Shorts, and TikTok with custom voiceover &amp; music.
           </p>
         </div>
-        <button class="btn-bounce w-full py-3.5 text-white font-sketch text-xl font-bold rounded-xl border-2 border-charcoal shadow-sketch flex items-center justify-center gap-2" style="background: linear-gradient(135deg, #728c69 0%, #64845b 50%, #d97d64 100%); border: 2px solid #322d29; color: #ffffff !important;">
+        <button class="btn-bounce w-full py-3 text-white font-sketch text-lg font-bold rounded-xl border-2 border-charcoal shadow-sketch flex items-center justify-center gap-2" style="background: linear-gradient(135deg, #728c69 0%, #64845b 50%, #d97d64 100%); border: 2px solid #322d29; color: #ffffff !important;">
           <span>Launch Video Studio</span>
-          <span class="text-2xl">➔</span>
+          <span class="text-xl">➔</span>
         </button>
       </div>
 
       <!-- Option 2: Create a Post -->
-      <div class="relative bg-paper-card border-doodle-card p-6 sm:p-8 shadow-sketch-lg hover:shadow-sketch transition-all cursor-pointer group flex flex-col justify-between" onclick="openStudioMode('post')">
+      <div class="relative bg-paper-card border-doodle-card p-6 shadow-sketch-lg hover:shadow-sketch transition-all cursor-pointer group flex flex-col justify-between" onclick="openStudioMode('post')">
         <div class="washi-tape-right"></div>
         <div class="pt-2">
           <span class="px-2.5 py-0.5 bg-paper-tint text-charcoal/80 font-hand text-xs font-bold rounded-md border border-charcoal/30 uppercase tracking-wider">Carousel Decks &amp; Image Posts</span>
-          <h3 class="font-sketch text-3xl font-bold text-charcoal mt-2 mb-2">Create a Post</h3>
-          <p class="font-hand text-base text-charcoal/80 leading-relaxed mb-6">
-            Distill long documents into multi-slide static carousel posts, infographic callouts, and key insight decks for LinkedIn &amp; Instagram.
+          <h3 class="font-sketch text-2xl font-bold text-charcoal mt-2 mb-2">Create a Post</h3>
+          <p class="font-hand text-sm text-charcoal/80 leading-relaxed mb-6">
+            Distill long documents into multi-slide static carousel posts and key insight decks for LinkedIn &amp; Instagram.
           </p>
         </div>
-        <button class="btn-bounce w-full py-3.5 text-charcoal font-sketch text-xl font-bold rounded-xl border-2 border-charcoal shadow-sketch flex items-center justify-center gap-2 hover:bg-paper-tint" style="background: #ffffff; border: 2px solid #322d29; color: #322d29 !important;">
+        <button class="btn-bounce w-full py-3 text-charcoal font-sketch text-lg font-bold rounded-xl border-2 border-charcoal shadow-sketch flex items-center justify-center gap-2 hover:bg-paper-tint" style="background: #ffffff; border: 2px solid #322d29; color: #322d29 !important;">
           <span>Launch Post Studio</span>
-          <span class="text-2xl">➔</span>
+          <span class="text-xl">➔</span>
+        </button>
+      </div>
+
+      <!-- Option 3: Create Presentation -->
+      <div class="relative bg-paper-card border-doodle-card p-6 shadow-sketch-lg hover:shadow-sketch transition-all cursor-pointer group flex flex-col justify-between" onclick="openStudioMode('presentation')">
+        <div class="washi-tape-left"></div>
+        <div class="pt-2">
+          <span class="px-2.5 py-0.5 bg-blue-100 text-blue-900 font-hand text-xs font-bold rounded-md border border-blue-300 uppercase tracking-wider">16:9 Slide Decks &amp; PDF/PPTX</span>
+          <h3 class="font-sketch text-2xl font-bold text-charcoal mt-2 mb-2">Create Presentation</h3>
+          <p class="font-hand text-sm text-charcoal/80 leading-relaxed mb-6">
+            Synthesize executive 16:9 slide decks with picture elements, themes, statistics, and downloadable PDF, PPTX &amp; HTML.
+          </p>
+        </div>
+        <button class="btn-bounce w-full py-3 text-charcoal font-sketch text-lg font-bold rounded-xl border-2 border-charcoal shadow-sketch flex items-center justify-center gap-2 hover:bg-blue-50" style="background: #ffffff; border: 2px solid #322d29; color: #322d29 !important;">
+          <span>Launch Presentation Studio</span>
+          <span class="text-xl">➔</span>
         </button>
       </div>
 
@@ -861,6 +877,83 @@
             Upload Document for Carousel Post
           </button>
         </div>
+      </div>
+    </div>
+
+    <!-- DEDICATED PRESENTATION GENERATION STUDIO CONTAINER -->
+    <div id="presentationStudioContainer" style="display: none;" class="w-full max-w-5xl mx-auto">
+      <div class="bg-paper-card border-doodle-card p-8 shadow-sketch-lg">
+        <div class="flex items-center justify-between mb-6">
+          <button class="px-4 py-1.5 rounded-full border-2 border-charcoal bg-white font-sketch text-base font-bold shadow-sketch-sm hover:bg-paper-tint" onclick="backToStudioChoice()">
+            ◀ Back to Home
+          </button>
+          <span class="font-sketch text-xl font-bold text-charcoal">Presentation Slide Deck Studio</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Input Form -->
+          <div class="p-6 bg-paper-tint/30 border-2 border-charcoal rounded-2xl">
+            <h3 class="font-sketch text-2xl font-bold text-charcoal mb-4">1. Ingest Document or Topic</h3>
+            
+            <div class="mb-4">
+              <label class="font-hand font-bold text-sm block mb-1">Select File (PDF, Video, PPTX, Image)</label>
+              <input type="file" id="presFileInput" class="w-full p-2 bg-white border-2 border-charcoal rounded-xl font-hand text-sm">
+            </div>
+
+            <div class="mb-4">
+              <label class="font-hand font-bold text-sm block mb-1">Or Ingest Web URL</label>
+              <input type="url" id="presUrlInput" placeholder="https://example.com/article" class="w-full p-2.5 bg-white border-2 border-charcoal rounded-xl font-hand text-sm">
+            </div>
+
+            <div class="mb-4">
+              <label class="font-hand font-bold text-sm block mb-1">Or Topic Request Prompt</label>
+              <textarea id="presPromptInput" rows="3" placeholder="Create a presentation on Enterprise AI Security Best Practices..." class="w-full p-2.5 bg-white border-2 border-charcoal rounded-xl font-hand text-sm"></textarea>
+            </div>
+
+            <div class="mb-6">
+              <label class="font-hand font-bold text-sm block mb-1">Visual Theme Palette</label>
+              <select id="presThemeSelect" class="w-full p-2.5 bg-white border-2 border-charcoal rounded-xl font-hand text-sm font-bold">
+                <option value="bold_tech">Bold Tech (Dark Navy & Electric Blue)</option>
+                <option value="minimalist_editorial">Minimalist Editorial (Cream Parchment & Terracotta)</option>
+                <option value="neon_cyberpunk">Neon Cyberpunk (Dark Obsidian & Glowing Magenta)</option>
+                <option value="warm_corporate">Warm Corporate (Forest Sage & Warm Gold)</option>
+              </select>
+            </div>
+
+            <button class="w-full py-3 bg-moss text-white font-sketch text-xl font-bold rounded-xl border-2 border-charcoal shadow-sketch hover:translate-y-[-1px] transition-all" onclick="generatePresentationDeck()">
+              Generate Presentation Deck ➔
+            </button>
+          </div>
+
+          <!-- Preview & Export Area -->
+          <div class="p-6 bg-white border-2 border-charcoal rounded-2xl flex flex-col justify-between" id="presResultArea">
+            <div>
+              <h3 class="font-sketch text-2xl font-bold text-charcoal mb-2">2. Slide Deck Preview</h3>
+              <p class="font-hand text-sm text-charcoal/70 mb-4" id="presStatusText">Generate a deck to view interactive slides and export formats.</p>
+              
+              <div id="presDeckPreview" class="p-4 bg-paper-tint/40 border-2 border-dashed border-charcoal/40 rounded-xl min-h-[220px] flex flex-col justify-center items-center text-center">
+                <span class="text-4xl mb-2">📊</span>
+                <span class="font-hand font-bold text-charcoal/70">Your generated slide outline and HTML preview will appear here.</span>
+              </div>
+            </div>
+
+            <div id="presDownloadGroup" style="display: none;" class="mt-6 space-y-2">
+              <h4 class="font-sketch text-lg font-bold text-charcoal mb-2">Export Formats:</h4>
+              <div class="grid grid-cols-3 gap-2">
+                <a id="btnPresDownloadHtml" target="_blank" class="py-2 px-3 bg-blue-600 text-white font-sketch text-sm font-bold rounded-xl text-center border-2 border-charcoal shadow-sketch-sm">
+                  🌐 HTML Deck
+                </a>
+                <a id="btnPresDownloadPdf" download class="py-2 px-3 bg-red-600 text-white font-sketch text-sm font-bold rounded-xl text-center border-2 border-charcoal shadow-sketch-sm">
+                  📄 Vector PDF
+                </a>
+                <a id="btnPresDownloadPptx" download class="py-2 px-3 bg-orange-600 text-white font-sketch text-sm font-bold rounded-xl text-center border-2 border-charcoal shadow-sketch-sm">
+                  📊 Editable PPTX
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 

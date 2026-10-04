@@ -14,6 +14,7 @@ from app.config import settings
 from app.auth.router import router as auth_router
 from app.pipelines.static_posts.router import router as static_posts_router
 from app.pipelines.faceless_video.router import router as faceless_video_router
+from app.pipelines.presentation.router import router as presentation_router
 from app.services.media import check_ffmpeg_available
 
 app = FastAPI(
@@ -99,6 +100,7 @@ async def favicon():
 app.include_router(auth_router)
 app.include_router(static_posts_router)
 app.include_router(faceless_video_router)
+app.include_router(presentation_router)
 
 @app.get("/health", tags=["Health"])
 async def health_check():

@@ -251,19 +251,127 @@ function openStudioMode(mode) {
   const choiceGrid = document.getElementById('studioChoiceGrid');
   if (choiceGrid) choiceGrid.style.display = 'none';
 
+  const postContainer = document.getElementById('postStudioContainer');
+  const presContainer = document.getElementById('presentationStudioContainer');
+
   if (mode === 'video') {
     videoContainer.style.display = 'block';
-    const postContainer = document.getElementById('postStudioContainer');
     if (postContainer) postContainer.style.display = 'none';
+    if (presContainer) presContainer.style.display = 'none';
     goToVideoStep(1);
+  } else if (mode === 'presentation') {
+    videoContainer.style.display = 'none';
+    if (postContainer) postContainer.style.display = 'none';
+    if (presContainer) presContainer.style.display = 'block';
   } else {
     videoContainer.style.display = 'none';
-    const postContainer = document.getElementById('postStudioContainer');
     if (postContainer) postContainer.style.display = 'block';
+    if (presContainer) presContainer.style.display = 'none';
   }
 
   const studio = document.getElementById('studio');
   if (studio) studio.scrollIntoView({ behavior: 'smooth' });
+}
+
+async function generatePresentationDeck() {
+  const fileInput = document.getElementById('presFileInput');
+  const urlInput = document.getElementById('presUrlInput');
+  const promptInput = document.getElementById('presPromptInput');
+  const themeSelect = document.getElementById('presThemeSelect');
+  const statusText = document.getElementById('presStatusText');
+  const previewBox = document.getElementById('presDeckPreview');
+  const downloadGroup = document.getElementById('presDownloadGroup');
+
+  const file = fileInput ? fileInput.files[0] : null;
+  const url = urlInput ? urlInput.value.trim() : '';
+  const prompt = promptInput ? promptInput.value.trim() : '';
+  const theme = themeSelect ? themeSelect.value : 'bold_tech';
+
+  if (!file && !url && !prompt) {
+    alert('Please select a file, enter a Web URL, or type a topic request prompt.');
+    return;
+  }
+
+  if (statusText) statusText.innerText = 'Creating presentation job...';
+  if (previewBox) previewBox.innerHTML = '<div class="animate-spin text-3xl">⏳</div><div class="font-hand font-bold mt-2">AI is synthesizing slides...</div>';
+
+  try {
+    let endpoint = '/api/presentation/jobs';
+    let formData = new FormData();
+    formData.append('theme', theme);
+
+    if (file) {
+      formData.append('file', file);
+    } else if (url) {
+      endpoint = '/api/presentation/jobs/from-url';
+      formData = JSON.stringify({ url: url, theme: theme });
+    } else if (prompt) {
+      endpoint = '/api/presentation/jobs/from-prompt';
+      formData = JSON.stringify({ prompt: prompt, theme: theme });
+    }
+
+    const headers = {};
+    if (endpoint !== '/api/presentation/jobs') {
+      headers['Content-Type'] = 'application/json';
+    }
+
+    const resp = await fetch(`${API_BASE}${endpoint}`, {
+      method: 'POST',
+      headers: headers,
+      body: formData
+    });
+
+    if (!resp.ok) throw new Error(`Server returned ${resp.status}`);
+    const job = await resp.json();
+
+    pollPresentationJob(job.job_id);
+  } catch (err) {
+    if (statusText) statusText.innerText = `Error: ${err.message}`;
+    if (previewBox) previewBox.innerHTML = `<span class="text-red-600 font-bold">Failed to create presentation: ${err.message}</span>`;
+  }
+}
+
+async function pollPresentationJob(jobId) {
+  const statusText = document.getElementById('presStatusText');
+  const previewBox = document.getElementById('presDeckPreview');
+  const downloadGroup = document.getElementById('presDownloadGroup');
+
+  const interval = setInterval(async () => {
+    try {
+      const resp = await fetch(`${API_BASE}/api/presentation/jobs/${jobId}`);
+      if (!resp.ok) return;
+      const job = await resp.json();
+
+      if (statusText) statusText.innerText = `Status: ${job.stage} (${job.progress}%)`;
+
+      if (job.status === 'done') {
+        clearInterval(interval);
+        if (statusText) statusText.innerText = 'Presentation Slide Deck ready!';
+
+        const slides = job.script ? job.script.slides || [] : [];
+        const slidesSummary = slides.map(s => `<div class="text-xs p-2 bg-white rounded border border-charcoal/30 my-1"><b>Slide ${s.idx}:</b> ${s.heading}</div>`).join('');
+
+        if (previewBox) {
+          previewBox.innerHTML = `
+            <div class="text-left w-full max-h-48 overflow-y-auto">
+              <div class="font-bold text-sm text-charcoal mb-2">🎉 ${job.script ? job.script.title : 'Presentation'} (${slides.length} slides)</div>
+              ${slidesSummary}
+            </div>
+          `;
+        }
+
+        if (downloadGroup) {
+          downloadGroup.style.display = 'block';
+          document.getElementById('btnPresDownloadHtml').href = `${API_BASE}/api/presentation/jobs/${jobId}/download?format=html_view`;
+          document.getElementById('btnPresDownloadPdf').href = `${API_BASE}/api/presentation/jobs/${jobId}/download?format=pdf`;
+          document.getElementById('btnPresDownloadPptx').href = `${API_BASE}/api/presentation/jobs/${jobId}/download?format=pptx`;
+        }
+      } else if (job.status === 'failed') {
+        clearInterval(interval);
+        if (statusText) statusText.innerText = `Failed: ${job.error}`;
+      }
+    } catch (e) {}
+  }, 2000);
 }
 
 function checkUrlParamsStudioMode() {

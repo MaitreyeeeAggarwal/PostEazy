@@ -95,3 +95,37 @@ class StaticPostScript(BaseModel):
     slides: List[SlideContent]
     caption: str
     hashtags: List[str]
+
+# --- Presentation Deck Schemas (Pipeline C contract) ---
+class PresentationSlideLayout(str, Enum):
+    TITLE_HERO = "title_hero"
+    BIG_STAT = "big_stat"
+    FEATURE_CARDS = "feature_cards"
+    SPLIT_IMAGE_TEXT = "split_image_text"
+    PROCESS_STEPPER = "process_stepper"
+    QUOTE_CARD = "quote_card"
+    COMPARISON_TABLE = "comparison_table"
+    END_CTA = "end_cta"
+
+class PresentationSlide(BaseModel):
+    idx: int
+    layout: PresentationSlideLayout = PresentationSlideLayout.FEATURE_CARDS
+    heading: str
+    subheading: Optional[str] = None
+    body_points: List[str] = []
+    stat_number: Optional[str] = None
+    stat_label: Optional[str] = None
+    quote_author: Optional[str] = None
+    image_url: Optional[str] = None
+    image_query: Optional[str] = None
+    card_items: List[Dict[str, str]] = []  # [{"title": "...", "desc": "..."}]
+
+class PresentationDeckScript(BaseModel):
+    title: str
+    subtitle: str
+    target_audience: str = "General"
+    theme: str = "bold_tech"  # "bold_tech", "minimalist_editorial", "neon_cyberpunk", "warm_corporate"
+    aspect_ratio: str = "16:9"  # "16:9" or "4:3"
+    slides: List[PresentationSlide]
+    speaker_notes: Optional[List[str]] = []
+
