@@ -1,8 +1,71 @@
-from typing import Optional
+import re
+from typing import Iterable, Optional
 from app.core.ir import DocIR
 from app.schemas import PresentationDeckScript, PresentationSlide, PresentationSlideLayout
 from app.pipelines.faceless_video.core.llm import get_llm_client
 from app.services.ingest.video_ingest import clean_display_title
+
+
+_METRIC_RE = re.compile(r"(?<![\w.])(?:[$€£]\s?\d[\d,.]*|\d[\d,.]*\s?(?:%|x|X|days?|weeks?|months?|years?|users?|customers?|hours?))(?!\w)")
+_GENERIC_HEADINGS = {
+    "overview", "key insights", "key strategic pillars", "core impact & key metric",
+    "deep dive & key takeaways", "next steps & conclusion", "additional insight",
+}
+
+
+def _clean_text(text: str, limit: int = 150) -> str:
+    """Make a source phrase compact without changing its meaning."""
+    value = " ".join((text or "").split()).strip(" -:;,.\u2013\u2014")
+    if len(value) <= limit:
+        return value
+    clipped = value[:limit].rsplit(" ", 1)[0]
+    return f"{clipped}\u2026"
+
+
+def _source_heading(text: str, fallback: str, max_words: int = 8) -> str:
+    """Return a distinct, source-derived slide heading rather than a template label."""
+    source = _clean_text(text, 180)
+    if not source:
+        return fallback
+    first_clause = re.split(r"[.:;\u2013\u2014]", source, maxsplit=1)[0].strip()
+    words = first_clause.split()
+    if len(words) > max_words:
+        # Keep the subject and the first predicate, which makes a useful headline
+        # while staying extractive instead of inventing a claim.
+        verbs = {"is", "are", "was", "were", "increases", "increase", "decreases", "decrease", "requires", "require", "identifies", "identify", "enables", "enable", "drives", "drive", "should", "will", "can"}
+        cut = next((idx + 2 for idx, word in enumerate(words) if word.lower().strip(",") in verbs), max_words)
+        words = words[:max(4, min(max_words, cut))]
+    heading = " ".join(words).strip(" -:;,.\u2013\u2014")
+    if heading.lower() in _GENERIC_HEADINGS or len(heading) < 3:
+        return fallback
+    return heading
+
+
+def _content_blocks(doc: DocIR) -> list[str]:
+    title = _clean_text(doc.title).lower()
+    seen: set[str] = set()
+    result: list[str] = []
+    for block in doc.blocks:
+        text = _clean_text(block.text)
+        key = text.lower()
+        if not text or key == title or key in seen:
+            continue
+        seen.add(key)
+        result.append(text)
+    return result
+
+
+def _first_metric(blocks: Iterable[str]) -> tuple[str | None, str | None]:
+    for block in blocks:
+        match = _METRIC_RE.search(block)
+        if match:
+            return match.group(0).replace(" ", ""), block
+    return None, None
+
+
+def _action_block(blocks: Iterable[str]) -> str | None:
+    action_words = ("should", "next", "recommend", "implement", "review", "launch", "prioritize", "assign", "plan")
+    return next((block for block in blocks if any(word in block.lower() for word in action_words)), None)
 
 
 def plan_presentation_deck(doc: DocIR, theme: str = "bold_tech") -> PresentationDeckScript:
@@ -27,7 +90,8 @@ def plan_presentation_deck(doc: DocIR, theme: str = "bold_tech") -> Presentation
                 f"   - split_image_text, quote_card, or comparison_table only when that layout suits the content\n"
                 f"   - Final Slide: end_cta for the strongest next step or summary\n"
                 f"3. Keep text crisp, executive-ready, and bullet points concise (under 12 words per point).\n"
-                f"4. Return ONLY valid JSON structured according to PresentationDeckScript."
+                f"4. Every slide heading must be a distinct, document-specific phrase grounded in the source. Never use generic labels such as 'Overview', 'Key Insights', 'Pillars', 'Deep Dive', or 'Next Steps'.\n"
+                f"5. Return ONLY valid JSON structured according to PresentationDeckScript."
             )
 
             res = llm.complete_structured(
@@ -41,58 +105,83 @@ def plan_presentation_deck(doc: DocIR, theme: str = "bold_tech") -> Presentation
         except Exception as llm_err:
             print(f"[Presentation Planner Note]: LLM slide planning failed ({llm_err}). Using rule-based generator.")
 
-    # Rule-Based Fallback Slide Generator
-    blocks = [b.text for b in doc.blocks if b.text.strip()]
-    
-    slides = [
+    # Rule-based fallback. It intentionally keeps headings and labels tethered
+    # to the source so a deck about shipping, hiring, or product adoption does
+    # not collapse into the same five generic slides.
+    blocks = _content_blocks(doc)
+    if not blocks:
+        blocks = [display_title]
+    metric, metric_block = _first_metric(blocks)
+    action = _action_block(blocks)
+    lead = blocks[0]
+    supporting = blocks[1:] or [lead]
+
+    slides: list[PresentationSlide] = [
         PresentationSlide(
             idx=1,
             layout=PresentationSlideLayout.TITLE_HERO,
             heading=display_title,
-            subheading="Key Insights & Strategic Overview",
-            body_points=["Executive briefing distilled from source content.", "High-impact takeaways for immediate implementation."]
-        ),
-        PresentationSlide(
-            idx=2,
-            layout=PresentationSlideLayout.BIG_STAT,
-            heading="Core Impact & Key Metric",
-            stat_number="10X",
-            stat_label="Efficiency Increase Observed across Primary Analysis",
-            body_points=["Key performance metrics derived directly from data analysis."]
-        ),
-        PresentationSlide(
-            idx=3,
-            layout=PresentationSlideLayout.FEATURE_CARDS,
-            heading="Key Strategic Pillars",
-            subheading="Core principles driving results",
-            card_items=[
-                {"title": "Pillar 1", "desc": blocks[0][:80] if len(blocks) > 0 else "High retention content structure."},
-                {"title": "Pillar 2", "desc": blocks[1][:80] if len(blocks) > 1 else "Automated distillation and summary."},
-                {"title": "Pillar 3", "desc": blocks[2][:80] if len(blocks) > 2 else "Scalable visual presentation assets."}
-            ]
-        ),
-        PresentationSlide(
-            idx=4,
-            layout=PresentationSlideLayout.SPLIT_IMAGE_TEXT,
-            heading="Deep Dive & Key Takeaways",
-            image_query="abstract technology presentation",
-            body_points=[
-                blocks[3][:100] if len(blocks) > 3 else "Structured workflow optimization.",
-                blocks[4][:100] if len(blocks) > 4 else "Data-driven audience engagement."
-            ]
-        ),
-        PresentationSlide(
-            idx=5,
-            layout=PresentationSlideLayout.END_CTA,
-            heading="Next Steps & Conclusion",
-            subheading="Transforming insights into action",
-            body_points=["Review findings and implement recommendations.", "PostEazy Content Engine Deliverable."]
+            subheading=_clean_text(lead, 110),
+            body_points=[_clean_text(supporting[0], 105)],
         )
     ]
 
+    if metric and metric_block:
+        slides.append(PresentationSlide(
+            idx=0,
+            layout=PresentationSlideLayout.BIG_STAT,
+            heading=_source_heading(metric_block, "Measured source signal"),
+            stat_number=metric,
+            stat_label=_clean_text(metric_block.replace(metric, "").strip(" .,:;-"), 90),
+            body_points=[_clean_text(metric_block, 120)],
+        ))
+    else:
+        slides.append(PresentationSlide(
+            idx=0,
+            layout=PresentationSlideLayout.SPLIT_IMAGE_TEXT,
+            heading=_source_heading(supporting[0], "Primary source finding"),
+            image_query=_source_heading(supporting[0], display_title, 5),
+            body_points=[_clean_text(supporting[0], 115), _clean_text(supporting[-1], 115)],
+        ))
+
+    card_source = (supporting + [lead])[:3]
+    slides.append(PresentationSlide(
+        idx=0,
+        layout=PresentationSlideLayout.FEATURE_CARDS,
+        heading=_source_heading(card_source[0], "Evidence to consider"),
+        subheading="Source signals to carry into the discussion",
+        card_items=[
+            {"title": _source_heading(item, f"Source signal {idx}"), "desc": _clean_text(item, 105)}
+            for idx, item in enumerate(card_source, start=1)
+        ],
+    ))
+
+    deep_dive = supporting[2:5] or supporting[:2]
+    slides.append(PresentationSlide(
+        idx=0,
+        layout=PresentationSlideLayout.PROCESS_STEPPER if len(deep_dive) >= 3 else PresentationSlideLayout.SPLIT_IMAGE_TEXT,
+        heading=_source_heading(deep_dive[-1], "Source detail"),
+        subheading=_clean_text(deep_dive[0], 105),
+        image_query=_source_heading(deep_dive[-1], display_title, 5),
+        body_points=[_clean_text(item, 110) for item in deep_dive],
+        card_items=[
+            {"title": _source_heading(item, f"Source step {idx}"), "desc": _clean_text(item, 95)}
+            for idx, item in enumerate(deep_dive, start=1)
+        ],
+    ))
+
+    if action:
+        slides.append(PresentationSlide(
+            idx=0,
+            layout=PresentationSlideLayout.END_CTA,
+            heading=f"{display_title}: {_source_heading(action, 'Action from the source')}",
+            subheading="A source-grounded action to resolve next",
+            body_points=[_clean_text(action, 130)],
+        ))
+
     # Preserve more source detail in longer documents instead of forcing every
     # plan into the same five-slide outline.
-    additional_blocks = blocks[5:15]
+    additional_blocks = supporting[5:15]
     for offset in range(0, len(additional_blocks), 3):
         points = additional_blocks[offset:offset + 3]
         if not points:
@@ -100,8 +189,8 @@ def plan_presentation_deck(doc: DocIR, theme: str = "bold_tech") -> Presentation
         slides.insert(-1, PresentationSlide(
             idx=0,
             layout=PresentationSlideLayout.FEATURE_CARDS,
-            heading=f"Additional Insight {offset // 3 + 1}",
-            subheading="Source-backed detail for review",
+            heading=_source_heading(points[0], f"Source detail {offset // 3 + 1}"),
+            subheading="Additional source detail",
             body_points=[point[:120] for point in points]
         ))
 
@@ -110,7 +199,7 @@ def plan_presentation_deck(doc: DocIR, theme: str = "bold_tech") -> Presentation
 
     return PresentationDeckScript(
         title=f"Presentation: {display_title}",
-        subtitle="Automated Presentation Slide Deck",
+        subtitle="A source-grounded briefing",
         target_audience="Executive & General",
         theme=theme,
         aspect_ratio="16:9",

@@ -49,8 +49,8 @@ for (const [position, spec] of (deck.slides || []).entries()) {
 
   const stickerPositions = [
     {x: 11.72, y: 0.35, size: 0.9, rotate: position % 2 ? -8 : 8, transparency: 4},
-    {x: 0.3, y: 1.18, size: 0.78, rotate: -12, transparency: 10},
-    {x: 11.72, y: 2.35, size: 0.68, rotate: 14, transparency: 14},
+    {x: 0.3, y: 3.85, size: 0.78, rotate: -12, transparency: 10},
+    {x: 11.76, y: 3.95, size: 0.68, rotate: 14, transparency: 14},
   ];
   theme.stickers.forEach((sticker, stickerIndex) => {
     const stickerPath = path.join(stickerDir, sticker);

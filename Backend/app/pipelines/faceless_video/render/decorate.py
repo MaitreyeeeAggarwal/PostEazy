@@ -136,6 +136,29 @@ def _pick_tint_color(entry: dict) -> tuple[int, int, int]:
     return PALETTE["purple"]
 
 
+def _semantic_stickers(picker: AssetPicker, context: str, count: int) -> list[dict]:
+    """Use sticker semantics that reinforce the current narration when possible."""
+    text = (context or "").lower()
+    if any(word in text for word in ("data", "ai", "automation", "software", "code", "system")):
+        preferred = ("brain", "code_brackets", "terminal")
+    elif any(word in text for word in ("growth", "revenue", "metric", "sales", "increase", "%", "performance")):
+        preferred = ("chart_up", "arrow_up_right", "target")
+    elif any(word in text for word in ("launch", "start", "build", "next", "action", "roadmap")):
+        preferred = ("rocket", "target", "arrow_up_right")
+    elif any(word in text for word in ("risk", "challenge", "delay", "problem", "warning")):
+        preferred = ("lightning", "target", "circle_ring")
+    else:
+        return []
+
+    matches: list[dict] = []
+    stickers = [entry for entry in picker._manifest if entry.get("category") == "stickers"]
+    for token in preferred:
+        entry = next((candidate for candidate in stickers if token in candidate.get("file", "")), None)
+        if entry and entry not in matches:
+            matches.append(entry)
+    return matches[:count]
+
+
 # ---------------------------------------------------------------------------
 # Main compositing function
 # ---------------------------------------------------------------------------
@@ -146,6 +169,7 @@ def overlay_decoration(
     style_key: str = "bold_creator",
     scene_fade: float = 1.0,
     rotation_deg: float = 0.0,
+    scene_context: str = "",
     enabled: bool = True,
 ) -> Image.Image:
     """
@@ -159,6 +183,7 @@ def overlay_decoration(
         scene_fade:     Opacity multiplier matching the scene's fade in/out.
                         Pass the same value computed in render_frame().
         rotation_deg:   Optional overall rotation offset (subtle tilt on stickers).
+        scene_context:  Narration/background cue used to choose topical stickers.
         enabled:        Master switch; if False, returns frame unchanged.
 
     Returns:
@@ -175,6 +200,9 @@ def overlay_decoration(
     _rng.seed(scene_idx * 1337)  # deterministic per scene
 
     assets = picker.pick_for_theme(style_key, reseed=scene_idx)
+    topical_stickers = _semantic_stickers(picker, scene_context, len(assets.get("stickers", [])))
+    if topical_stickers:
+        assets["stickers"] = topical_stickers
     used_zones: set[str] = set()
 
     # -----------------------------------------------------------------------

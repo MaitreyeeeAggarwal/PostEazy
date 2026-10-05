@@ -47,8 +47,8 @@ def render_presentation_pptx(deck: PresentationDeckScript, output_path: str) -> 
             slide.shapes.add_picture(str(decorations.frame), Inches(0), Inches(0), width=prs.slide_width, height=prs.slide_height)
         sticker_positions = [
             (Inches(11.6), Inches(0.45), Inches(0.85)),
-            (Inches(0.34), Inches(1.2), Inches(0.78)),
-            (Inches(11.72), Inches(2.35), Inches(0.68)),
+            (Inches(0.3), Inches(3.85), Inches(0.78)),
+            (Inches(11.76), Inches(3.95), Inches(0.68)),
         ]
         for sticker, (x, y, size) in zip(decorations.stickers or ((decorations.sticker,) if decorations.sticker else ()), sticker_positions):
             slide.shapes.add_picture(str(sticker), x, y, width=size, height=size)

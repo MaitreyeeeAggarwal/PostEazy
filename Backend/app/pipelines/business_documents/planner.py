@@ -1,6 +1,8 @@
 """Structured planners with conservative, source-cited fallback documents."""
 from __future__ import annotations
 
+import re
+
 from app.core.ir import Block, DocIR
 from app.pipelines.faceless_video.core.llm import get_llm_client
 from app.schemas import (
@@ -29,18 +31,51 @@ def _short(text: str, length: int = 260) -> str:
     return text[:length].rstrip()
 
 
+def _topic(text: str, fallback: str = "Source item") -> str:
+    """Extract a short, readable label from a cited source sentence."""
+    value = _short(text, 150).strip(" .,:;-\u2013\u2014")
+    value = re.split(r"[.:;\u2013\u2014]", value, maxsplit=1)[0].strip()
+    words = value.split()
+    if len(words) > 9:
+        verbs = {"is", "are", "was", "were", "increased", "increases", "decreased", "requires", "identified", "identifies", "should", "need", "needs"}
+        cut = next((idx + 2 for idx, word in enumerate(words) if word.lower().strip(",") in verbs), 8)
+        words = words[:max(4, min(9, cut))]
+    return " ".join(words) or fallback
+
+
+def _directive(block: Block) -> str:
+    text = _short(block.text, 170)
+    directive_match = re.search(r"\b(should|recommend(?:ed|s)?|need(?:s)? to|must|prioriti[sz]e|review|implement|assign)\b.*", text, re.I)
+    if directive_match:
+        return directive_match.group(0)[0].upper() + directive_match.group(0)[1:].rstrip(".")
+    return f"Review {_topic(block.text).lower()}"
+
+
+def _severity(text: str) -> str:
+    lower = text.lower()
+    if any(word in lower for word in ("critical", "breach", "failure", "blocked", "severe")):
+        return "critical"
+    if any(word in lower for word in ("delay", "decline", "risk", "dependency", "gap", "increase")):
+        return "high"
+    if any(word in lower for word in ("monitor", "watch", "potential")):
+        return "low"
+    return "medium"
+
+
 def _fallback_executive(doc: DocIR, source_document_id: str, audience: str) -> ExecutiveSummaryDraft:
     blocks = _useful_blocks(doc)
     selected = blocks[:4]
+    if not selected:
+        raise ValueError("A source document needs at least one non-empty content block.")
     findings = [
-        EvidenceFinding(heading=f"Finding {idx}", detail=_short(block.text), citations=[_citation(block)])
+        EvidenceFinding(heading=_topic(block.text, f"Source finding {idx}"), detail=_short(block.text), citations=[_citation(block)])
         for idx, block in enumerate(selected[:3], start=1)
     ]
     anchor = selected[0]
     implications = [
         EvidenceFinding(
-            heading="Leadership implication",
-            detail="This source item should be reviewed in the current leadership decision context.",
+            heading=f"Decision attention: {_topic(anchor.text)}",
+            detail=f"The cited evidence makes {_topic(anchor.text).lower()} a leadership item for review.",
             citations=[_citation(anchor)],
         )
     ]
@@ -51,18 +86,20 @@ def _fallback_executive(doc: DocIR, source_document_id: str, audience: str) -> E
         overview=_short(" ".join(block.text for block in selected[:2]), 420),
         key_findings=findings,
         implications=implications,
-        decision_requests=[PriorityAction(action="Confirm the accountable decision owner.", rationale="The source identifies material items requiring leadership review.", citations=[_citation(anchor)])],
-        priority_actions=[PriorityAction(action="Review and prioritize the cited source finding.", rationale="The action preserves traceability to the supplied evidence.", citations=[_citation(anchor)])],
+        decision_requests=[PriorityAction(action=_directive(anchor), rationale=f"This request is anchored in the cited evidence on {_topic(anchor.text).lower()}.", citations=[_citation(anchor)])],
+        priority_actions=[PriorityAction(action=f"Assign an owner for {_topic(anchor.text).lower()}.", rationale="Ownership is needed to move the cited item from review into action.", citations=[_citation(anchor)])],
     )
 
 
 def _fallback_advisory(doc: DocIR, source_document_id: str, audience: str) -> AdvisoryReportDraft:
     blocks = _useful_blocks(doc)
     selected = blocks[:4]
+    if not selected:
+        raise ValueError("A source document needs at least one non-empty content block.")
     risks = [
         AdvisoryRisk(
-            title=f"Review area {idx}",
-            severity="medium",
+            title=f"Risk: {_topic(block.text, f'Source area {idx}')}",
+            severity=_severity(block.text),
             impact=_short(block.text),
             citations=[_citation(block)],
         )
@@ -75,8 +112,8 @@ def _fallback_advisory(doc: DocIR, source_document_id: str, audience: str) -> Ad
         audience=audience,
         assessment=_short(" ".join(block.text for block in selected[:2]), 500),
         risks=risks,
-        recommendations=[AdvisoryRecommendation(recommendation="Validate the cited review area and assign an accountable owner.", priority="now", timeframe="Current planning cycle", rationale="The recommendation is limited to reviewing the supplied source evidence.", citations=[_citation(anchor)])],
-        immediate_next_steps=[PriorityAction(action="Schedule review of the cited source evidence.", rationale="A documented review is the next source-grounded action.", citations=[_citation(anchor)])],
+        recommendations=[AdvisoryRecommendation(recommendation=_directive(anchor), priority="now" if _severity(anchor.text) in {"high", "critical"} else "next", timeframe="Current planning cycle", rationale=f"The recommendation addresses the cited evidence on {_topic(anchor.text).lower()}.", citations=[_citation(anchor)])],
+        immediate_next_steps=[PriorityAction(action=f"Confirm owner and review date for {_topic(anchor.text).lower()}.", rationale="An accountable review turns the cited risk into a tracked next step.", citations=[_citation(anchor)])],
     )
 
 

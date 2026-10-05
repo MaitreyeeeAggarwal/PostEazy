@@ -59,7 +59,7 @@ def render_presentation_html(deck: PresentationDeckScript) -> str:
                 """)
             slide_content = f"""
             <div class="slide-inner">
-                <div class="theme-badge mb-2">STRATEGIC PILLARS</div>
+                <div class="theme-badge mb-2">SOURCE SIGNALS</div>
                 <h2 class="slide-heading text-3xl font-bold mb-6">{html.escape(s.heading)}</h2>
                 <div class="grid grid-cols-3 gap-6">
                     {"".join(cards_html)}
@@ -81,7 +81,7 @@ def render_presentation_html(deck: PresentationDeckScript) -> str:
                 """)
             slide_content = f"""
             <div class="slide-inner">
-                <div class="theme-badge mb-2">EXECUTION WORKFLOW</div>
+                <div class="theme-badge mb-2">SOURCE WORKFLOW</div>
                 <h2 class="slide-heading text-3xl font-bold mb-8">{html.escape(s.heading)}</h2>
                 <div class="flex gap-4 items-stretch">
                     {"".join(steps_html)}
@@ -93,7 +93,7 @@ def render_presentation_html(deck: PresentationDeckScript) -> str:
             pts = "".join([f"<li class='mb-3 flex items-start gap-2'><span>✦</span> {html.escape(pt)}</li>" for pt in s.body_points])
             slide_content = f"""
             <div class="slide-inner flex flex-col justify-center">
-                <div class="theme-badge mb-2">SUMMARY & TAKEAWAYS</div>
+                <div class="theme-badge mb-2">SOURCE-BACKED TAKEAWAYS</div>
                 <h2 class="slide-heading text-4xl font-bold mb-6">{html.escape(s.heading)}</h2>
                 {f'<p class="text-xl mb-6 opacity-90">{html.escape(s.subheading)}</p>' if s.subheading else ''}
                 <ul class="text-lg space-y-3">
@@ -187,8 +187,8 @@ def render_presentation_html(deck: PresentationDeckScript) -> str:
     .decor-frame {{ position:absolute; inset:0; width:100%; height:100%; object-fit:fill; opacity:.52; pointer-events:none; z-index:1; }}
     .decor-sticker {{ position:absolute; width:11%; max-width:124px; object-fit:contain; opacity:.9; pointer-events:none; z-index:1; }}
     .decor-sticker-0 {{ right:4%; top:7%; transform:rotate(8deg); }}
-    .decor-sticker-1 {{ left:4%; top:16%; transform:rotate(-11deg); width:9%; opacity:.86; }}
-    .decor-sticker-2 {{ right:5%; top:31%; transform:rotate(13deg); width:8%; opacity:.82; }}
+    .decor-sticker-1 {{ left:3.5%; top:46%; transform:rotate(-11deg); width:9%; opacity:.9; }}
+    .decor-sticker-2 {{ right:4%; top:47%; transform:rotate(13deg); width:8%; opacity:.86; }}
     .decor-accent {{ position:absolute; width:18%; max-width:190px; left:4%; bottom:7%; object-fit:contain; opacity:.66; pointer-events:none; z-index:1; transform:rotate(-7deg); }}
     @keyframes fadeIn {{
         from {{ opacity: 0; transform: translate(-50%, -48%); }}

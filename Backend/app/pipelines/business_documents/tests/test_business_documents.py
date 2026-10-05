@@ -43,6 +43,9 @@ def test_rule_based_plans_are_source_cited(source_doc, kind):
     html = render_business_document_html(draft)
     assert "page:1" in html
     assert "SOURCE-GROUNDED" in html
+    assert "data:image/png;base64" in html
+    assert "Finding 1" not in html
+    assert "Review area 1" not in html
 
 
 def test_unknown_citation_is_rejected(source_doc):

@@ -1,4 +1,5 @@
 import pytest
+from types import SimpleNamespace
 from pptx import Presentation
 from app.core.ir import DocIR, Block, SourceRef
 from app.pipelines.presentation.core.llm_planner import plan_presentation_deck
@@ -25,6 +26,28 @@ def test_presentation_planner_rule_fallback():
     assert deck.title.startswith("Presentation:")
     assert len(deck.slides) >= 4
     assert deck.slides[0].layout.value == "title_hero"
+
+
+@pytest.mark.parametrize(
+    ("title", "lines"),
+    [
+        ("AI workflow rollout", ["Generative AI automation increased analyst output by 300%.", "Security and integration remain architectural requirements.", "Map priority workflows before deployment."]),
+        ("Q3 delivery review", ["Delivery delays increased by 18% during the last quarter.", "Vendor dependency is the leading operational risk.", "Leadership should assign an owner for mitigation planning."]),
+        ("Customer retention plan", ["Retention fell to 82% after the onboarding change.", "Product teams identified setup friction in the first seven days.", "Review onboarding experiments and launch a guided setup flow."]),
+    ],
+)
+def test_fallback_headings_are_distinct_and_source_specific(monkeypatch, title, lines):
+    monkeypatch.setattr(
+        "app.pipelines.presentation.core.llm_planner.get_llm_client",
+        lambda: SimpleNamespace(is_configured=False),
+    )
+    ref = SourceRef(file="sample.txt", locator="line:1")
+    doc = DocIR(doc_id=title, title=title, blocks=[Block(level=3, text=line, source=ref) for line in lines])
+    headings = [slide.heading for slide in plan_presentation_deck(doc).slides]
+    prohibited = {"overview", "key insights", "key strategic pillars", "core impact & key metric", "deep dive & key takeaways", "next steps & conclusion"}
+    assert len(headings) == len(set(headings))
+    assert not any(heading.lower() in prohibited for heading in headings)
+    assert any("%" in (slide.stat_number or "") for slide in plan_presentation_deck(doc).slides)
 
 
 def test_html_presentation_renderer():

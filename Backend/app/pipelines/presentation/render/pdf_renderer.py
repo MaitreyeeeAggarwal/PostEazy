@@ -140,8 +140,8 @@ def render_presentation_pdf(deck: PresentationDeckScript, output_path: str) -> s
             canvas.drawImage(ImageReader(str(decorations.frame)), 0, 0, page_width, page_height, mask="auto")
         sticker_positions = [
             (page_width - 78, page_height - 78, 42),
-            (36, page_height - 126, 38),
-            (page_width - 72, page_height - 210, 34),
+            (34, page_height / 2 - 22, 38),
+            (page_width - 68, page_height / 2 - 24, 34),
         ]
         for sticker, (x, y, size) in zip(decorations.stickers or ((decorations.sticker,) if decorations.sticker else ()), sticker_positions):
             canvas.drawImage(ImageReader(str(sticker)), x, y, size, size, mask="auto", preserveAspectRatio=True)

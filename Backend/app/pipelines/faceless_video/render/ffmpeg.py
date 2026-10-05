@@ -9,7 +9,7 @@ from app.pipelines.faceless_video.render.decorate import overlay_decoration
 
 # Bump this whenever the alpha overlay composition changes. It prevents an
 # already-rendered, undecorated scene MOV from being reused after an upgrade.
-DECORATION_RENDER_VERSION = "stickers-v1"
+DECORATION_RENDER_VERSION = "stickers-v2"
 
 
 def render_scene_typography_mov(
@@ -55,6 +55,7 @@ def render_scene_typography_mov(
                 img,
                 scene_idx=scene.idx,
                 style_key=getattr(style_template, "key", theme),
+                scene_context=f"{scene.narration} {scene.bg_query}",
                 enabled=True,
             )
             proc.stdin.write(img.tobytes())
